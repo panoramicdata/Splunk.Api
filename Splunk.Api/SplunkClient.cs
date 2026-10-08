@@ -12,7 +12,9 @@ namespace Splunk.Api;
 /// <remarks>
 /// <para>
 /// Every request asks for JSON (<c>output_mode=json</c>), authenticates as <see cref="SplunkClientOptions"/> describes,
-/// and retries transient failures. Non-success responses raise <see cref="SplunkApiException"/>.
+/// and retries transient failures. Non-success responses raise <see cref="SplunkApiException"/>; a failure to send raises
+/// the transport's own exception (such as <see cref="HttpRequestException"/>, or <see cref="TimeoutException"/> when an
+/// attempt exceeds <see cref="SplunkClientOptions.Timeout"/>).
 /// </para>
 /// <para>
 /// A client is thread-safe and intended to be long-lived: create one per Splunk instance and identity, and dispose it
@@ -76,7 +78,10 @@ public sealed partial class SplunkClient : IDisposable
 		// Interface paths are relative (no leading slash) so they append to a path-prefixed BaseUrl.
 		UrlResolution = UrlResolutionMode.Rfc3986,
 		UrlParameterFormatter = new SplunkUrlParameterFormatter(),
-		ExceptionFactory = response => new ValueTask<Exception?>(SplunkErrorMapper.CreateAsync(response))
+		ExceptionFactory = response => new ValueTask<Exception?>(SplunkErrorMapper.CreateAsync(response)),
+		// Refit would wrap every exception thrown while sending in its ApiRequestException; surface them as themselves
+		// (TimeoutException, HttpRequestException, ObjectDisposedException...), as documented.
+		TransportExceptionFactory = static (_, exception, _) => exception
 	};
 
 	/// <summary>
