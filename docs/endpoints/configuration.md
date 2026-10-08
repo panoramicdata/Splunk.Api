@@ -6,18 +6,18 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 
 | Method | Path | Client method | Test |
 |---|---|---|---|
-| GET | `configs/conf-{file}` |  |  |
-| POST | `configs/conf-{file}` |  |  |
-| GET | `configs/conf-{file}/{stanza}` |  |  |
-| POST | `configs/conf-{file}/{stanza}` |  |  |
-| DELETE | `configs/conf-{file}/{stanza}` |  |  |
-| GET | `properties` |  |  |
-| POST | `properties` |  |  |
-| GET | `properties/{file}` |  |  |
-| POST | `properties/{file}` |  |  |
-| GET | `properties/{file}/{stanza}` |  |  |
-| POST | `properties/{file}/{stanza}` |  |  |
-| DELETE | `properties/{file}/{stanza}` |  |  |
-| GET | `properties/{file}/{stanza}/{key}` |  |  |
-| POST | `properties/{file}/{stanza}/{key}` |  |  |
-| DELETE | `properties/{file}/{stanza}/{key}` |  |  |
+| GET | `configs/conf-{file}` | IConfigs.ListStanzasAsync | ConfigsTests.ListStanzasAsync_SendsGetWithTheFileInThePath |
+| POST | `configs/conf-{file}` | IConfigs.CreateStanzaAsync | ConfigsTests.CreateStanzaAsync_PostsTheNameThenTheKeys |
+| GET | `configs/conf-{file}/{stanza}` | IConfigs.GetStanzaAsync | ConfigsTests.GetStanzaAsync_EscapesTheStanzaAsOneSegment |
+| POST | `configs/conf-{file}/{stanza}` | IConfigs.UpdateStanzaAsync | ConfigsTests.UpdateStanzaAsync_PostsTheKeys |
+| DELETE | `configs/conf-{file}/{stanza}` | IConfigs.DeleteStanzaAsync | ConfigsTests.DeleteStanzaAsync_SendsDelete |
+| GET | `properties` | IConfigProperties.ListFilesAsync | ConfigPropertiesTests.ListFilesAsync_SendsGet |
+| POST | `properties` | IConfigProperties.CreateFileAsync | ConfigPropertiesTests.CreateFileAsync_PostsConf |
+| GET | `properties/{file}` | IConfigProperties.ListStanzasAsync | ConfigPropertiesTests.ListStanzasAsync_SendsGet |
+| POST | `properties/{file}` | IConfigProperties.CreateStanzaAsync | ConfigPropertiesTests.CreateStanzaAsync_PostsStanza |
+| GET | `properties/{file}/{stanza}` | IConfigProperties.GetStanzaAsync | ConfigPropertiesTests.GetStanzaAsync_SendsGet |
+| POST | `properties/{file}/{stanza}` | IConfigProperties.UpdateStanzaAsync | ConfigPropertiesTests.UpdateStanzaAsync_PostsTheKeys |
+| DELETE | `properties/{file}/{stanza}` | IConfigProperties.DeleteStanzaAsync | ConfigPropertiesTests.DeleteStanzaAsync_SendsDeleteLocalOnly |
+| GET | `properties/{file}/{stanza}/{key}` | IConfigProperties.GetValueAsync | ConfigPropertiesTests.GetValueAsync_SendsGet |
+| POST | `properties/{file}/{stanza}/{key}` | IConfigProperties.SetValueAsync | ConfigPropertiesTests.SetValueAsync_PostsValue |
+| DELETE | `properties/{file}/{stanza}/{key}` | IConfigProperties.DeleteValueAsync | ConfigPropertiesTests.DeleteValueAsync_SendsDeleteLocalOnly |
