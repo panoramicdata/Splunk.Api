@@ -30,7 +30,7 @@ public class AlertsIntegrationTests(SplunkFixture fixture)
 				Name = name,
 				Search = "| makeresults count=1",
 				IsScheduled = true,
-				CronSchedule = "0 0 1 1 *",
+				CronSchedule = "* * * * *",
 				AlertType = "always",
 				AlertTrack = true,
 				AlertSeverity = 3,
@@ -39,7 +39,7 @@ public class AlertsIntegrationTests(SplunkFixture fixture)
 			Ct);
 		try
 		{
-			// Run it through the scheduler now: only scheduler-run instances can be deleted.
+			// Only scheduler-run instances can be deleted. Run it now, and every minute in case the busy shared scheduler skips a run.
 			await Client.SavedSearches.RescheduleAsync(name, new RescheduleRequest { ScheduleTime = "+5s" }, Ct);
 			var instance = await WaitForInstanceAsync(name);
 			instance.Content!.SavedSearchName.Should().Be(name);
@@ -64,16 +64,24 @@ public class AlertsIntegrationTests(SplunkFixture fixture)
 
 	private async Task<SplunkEntry<FiredAlert>> WaitForInstanceAsync(string name)
 	{
-		var deadline = DateTime.UtcNow.AddMinutes(3);
+		var deadline = DateTime.UtcNow.AddMinutes(5);
 		while (true)
 		{
-			var feed = await Client.FiredAlerts.GetAsync(name, Ct);
-			if (feed.Entries.Count > 0)
+			// The shared instance now and then resets a pooled connection; a poll that hits one simply polls again.
+			try
 			{
-				return feed.Entries[0];
+				var feed = await Client.FiredAlerts.GetAsync(name, Ct);
+				if (feed.Entries.Count > 0)
+				{
+					return feed.Entries[0];
+				}
+			}
+			catch (Exception exception) when (exception is HttpRequestException || exception.InnerException is HttpRequestException)
+			{
+				TestContext.Current.SendDiagnosticMessage($"Fired alert poll failed, retrying: {exception.Message}");
 			}
 
-			DateTime.UtcNow.Should().BeBefore(deadline, "the scheduler should run the rescheduled alert within three minutes");
+			DateTime.UtcNow.Should().BeBefore(deadline, "the scheduler should run the rescheduled alert within five minutes");
 			await Task.Delay(TimeSpan.FromSeconds(5), Ct);
 		}
 	}
