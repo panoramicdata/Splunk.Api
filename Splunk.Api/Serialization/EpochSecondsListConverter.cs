@@ -27,7 +27,7 @@ internal sealed class EpochSecondsListConverter : JsonConverter<IReadOnlyList<Da
 		}
 
 		var times = new List<DateTimeOffset>();
-		while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+		for (reader.Read(); reader.TokenType != JsonTokenType.EndArray; reader.Read())
 		{
 			if (TolerantReader.ReadNumberText(ref reader) is { } text)
 			{
