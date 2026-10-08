@@ -15,4 +15,22 @@ public sealed partial class SplunkClient
 
 	/// <summary>Streaming search export (<c>search/v2/jobs/export</c>).</summary>
 	public ISearchExport SearchExport => field ??= For<ISearchExport>();
+
+	/// <summary>Search language parsing (<c>search/v2/parser</c>).</summary>
+	public ISearchParser SearchParser => field ??= For<ISearchParser>();
+
+	/// <summary>Time argument parsing (<c>search/timeparser</c>).</summary>
+	public ISearchTimeParser TimeParser => field ??= For<ISearchTimeParser>();
+
+	/// <summary>Search auto-complete (<c>search/typeahead</c>).</summary>
+	public ISearchTypeahead Typeahead => field ??= For<ISearchTypeahead>();
+
+	/// <summary>The search scheduler's state (<c>search/scheduler</c>).</summary>
+	public ISearchScheduler SearchScheduler => field ??= For<ISearchScheduler>();
+
+	/// <summary>Search concurrency limits (<c>search/concurrency-settings</c>).</summary>
+	public ISearchConcurrencySettings SearchConcurrencySettings => field ??= For<ISearchConcurrencySettings>();
+
+	/// <summary>Custom search commands (<c>data/commands</c>).</summary>
+	public ISearchCommands SearchCommands => field ??= For<ISearchCommands>();
 }

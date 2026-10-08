@@ -15,8 +15,8 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 | GET | `alerts/metric_alerts/{alert_name}` |  |  |
 | POST | `alerts/metric_alerts/{alert_name}` |  |  |
 | DELETE | `alerts/metric_alerts/{alert_name}` |  |  |
-| GET | `data/commands` |  |  |
-| GET | `data/commands/{name}` |  |  |
+| GET | `data/commands` | ISearchCommands.ListAsync | SearchCommandsTests.ListAsync_SendsGetWithPaging |
+| GET | `data/commands/{name}` | ISearchCommands.GetAsync | SearchCommandsTests.GetAsync_SendsGetToTheCommand |
 | GET | `saved/searches` |  |  |
 | POST | `saved/searches` |  |  |
 | GET | `saved/searches/{name}` |  |  |
@@ -36,9 +36,9 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 | GET | `scheduled/views/{name}/history` |  |  |
 | POST | `scheduled/views/{name}/reschedule` |  |  |
 | GET | `scheduled/views/{name}/scheduled_times` |  |  |
-| GET | `search/concurrency-settings` |  |  |
-| POST | `search/concurrency-settings/scheduler` |  |  |
-| POST | `search/concurrency-settings/search` |  |  |
+| GET | `search/concurrency-settings` | ISearchConcurrencySettings.ListAsync | SearchConcurrencySettingsTests.ListAsync_SendsGet |
+| POST | `search/concurrency-settings/scheduler` | ISearchConcurrencySettings.UpdateSchedulerAsync | SearchConcurrencySettingsTests.UpdateSchedulerAsync_SendsThePercentages |
+| POST | `search/concurrency-settings/search` | ISearchConcurrencySettings.UpdateSearchAsync | SearchConcurrencySettingsTests.UpdateSearchAsync_SendsTheLimits |
 | GET | `search/jobs` | ISearchJobs.ListAsync | SearchJobsTests.ListAsync_SendsGetWithPagingAndFilter |
 | POST | `search/jobs` | ISearchJobs.CreateAsync, ISearchJobs.RunOneshotAsync | SearchJobsTests.CreateAsync_SendsEveryTypedParameterAsForm, SearchJobsTests.RunOneshotAsync_SendsOneshotForm |
 | POST | `search/v2/jobs/export` | ISearchExport.ExportAsync, ISearchExport.ExportCsvAsync, ISearchExport.ExportRawAsync | SearchExportTests.ExportAsync_SendsPostAndStreamsJsonLines, SearchExportTests.ExportCsvAsync_SendsPostForCsv, SearchExportTests.ExportRawAsync_SendsPostForRawText |
@@ -60,9 +60,9 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 | GET | `search/jobs/{search_id}/search.log` | ISearchJobs.GetSearchLogAsync | SearchJobsTests.GetSearchLogAsync_SendsGetAndReturnsTheText |
 | GET | `search/jobs/{search_id}/summary` | ISearchJobs.GetSummaryAsync | SearchJobsTests.GetSummaryAsync_SendsGetWithEveryOption |
 | GET | `search/jobs/{search_id}/timeline` | ISearchJobs.GetTimelineAsync | SearchJobsTests.GetTimelineAsync_SendsGetWithTimeFormats |
-| POST | `search/v2/parser` |  |  |
+| POST | `search/v2/parser` | ISearchParser.ParseAsync | SearchParserTests.ParseAsync_SendsPostWithEveryOption |
 | GET | `search/parser (deprecated)` |  |  |
-| GET | `search/scheduler` |  |  |
-| POST | `search/scheduler/status` |  |  |
-| GET | `search/timeparser` |  |  |
-| GET | `search/typeahead` |  |  |
+| GET | `search/scheduler` | ISearchScheduler.GetStatusAsync | SearchSchedulerTests.GetStatusAsync_SendsGet |
+| POST | `search/scheduler/status` | ISearchScheduler.SetStatusAsync | SearchSchedulerTests.SetStatusAsync_SendsDisabled |
+| GET | `search/timeparser` | ISearchTimeParser.ParseAsync | SearchTimeParserTests.ParseAsync_SendsEachTimeAndTheOptions |
+| GET | `search/typeahead` | ISearchTypeahead.GetAsync | SearchTypeaheadTests.GetAsync_SendsThePrefixAndCount |
