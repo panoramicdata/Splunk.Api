@@ -11,7 +11,7 @@ namespace Splunk.Api.Models.Knowledge;
 public sealed class GlobalBannerCreateRequest : SplunkFormRequest
 {
 	/// <summary>The name Splunk Web reads the banner from.</summary>
-	public const string SingletonName = "BANNER_MESSAGE_SINGLETON";
+	public static string SingletonName { get; } = "BANNER_MESSAGE_SINGLETON";
 
 	/// <summary>The banner name; Splunk Web shows the banner named <see cref="SingletonName"/>.</summary>
 	[JsonPropertyName("name")]
