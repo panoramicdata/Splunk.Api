@@ -16,22 +16,30 @@ internal static class SplunkFormEncoder
 	private static readonly ConcurrentDictionary<Type, FormProperty[]> PropertyCache = new();
 
 	/// <summary>
-	/// Encodes <paramref name="body"/>: a <see cref="SplunkFormRequest"/> (or any object) property by property, or a
-	/// sequence of key/value pairs as given.
+	/// Encodes <paramref name="body"/>: a <see cref="SplunkFormRequest"/> (or any object) property by property, a
+	/// sequence of string key/value pairs as given, or any other dictionary entry by entry (keys and values formatted as
+	/// scalars, sequences repeated). A <see langword="null"/> pair or entry value is sent as an empty string.
 	/// </summary>
 	public static List<KeyValuePair<string, string>> Encode(object body)
 	{
 		ArgumentNullException.ThrowIfNull(body);
 		var fields = new List<KeyValuePair<string, string>>();
+		// Nullable annotations are erased: this also matches IEnumerable<KeyValuePair<string, string>>.
 		if (body is IEnumerable<KeyValuePair<string, string?>> pairs)
 		{
 			fields.AddRange(pairs.Select(p => new KeyValuePair<string, string>(p.Key, p.Value ?? string.Empty)));
 			return fields;
 		}
 
-		if (body is IEnumerable<KeyValuePair<string, string>> plainPairs)
+		// Any other dictionary (such as Dictionary<string, object>) would otherwise be encoded by its own properties
+		// (comparer, count, keys, values).
+		if (body is IDictionary dictionary)
 		{
-			fields.AddRange(plainPairs);
+			foreach (DictionaryEntry entry in dictionary)
+			{
+				AddValue(fields, FormatScalar(entry.Key), entry.Value ?? string.Empty);
+			}
+
 			return fields;
 		}
 
