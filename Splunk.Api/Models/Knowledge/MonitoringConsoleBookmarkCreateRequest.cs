@@ -5,7 +5,7 @@ namespace Splunk.Api.Models.Knowledge;
 /// <summary>Adds a bookmark to another deployment's monitoring console (<c>POST saved/bookmarks/monitoring_console</c>).</summary>
 public sealed class MonitoringConsoleBookmarkCreateRequest : SplunkFormRequest
 {
-	/// <summary>The bookmark name.</summary>
+	/// <summary>The bookmark name, at most 25 characters (Splunk refuses longer names with "Name can only be 25 characters long").</summary>
 	[JsonPropertyName("name")]
 	public required string Name { get; init; }
 
