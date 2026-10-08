@@ -6,7 +6,7 @@ namespace Splunk.Api.Test.Support;
 /// One-line request pinning for endpoint tests: send one call through a stubbed client and assert the exact request, or
 /// assert how an error response surfaces.
 /// </summary>
-internal static class RequestAssert
+internal static class EndpointRequests
 {
 	/// <summary>An empty feed, the response of most write operations.</summary>
 	public const string EmptyFeed = """{"links":{},"entry":[],"paging":{"total":0,"perPage":30,"offset":0},"messages":[]}""";
@@ -33,7 +33,7 @@ internal static class RequestAssert
 	}
 
 	/// <summary>Asserts the request's method, path, query and form body (<see langword="null"/> for none).</summary>
-	public static void ShouldBe(this RecordedCall call, HttpMethod method, string path, string? body = null, string query = JsonQuery)
+	public static void ShouldBeEndpointRequest(this RecordedCall call, HttpMethod method, string path, string? body = null, string query = JsonQuery)
 	{
 		call.Method.Should().Be(method);
 		call.Uri.AbsolutePath.Should().Be(path);

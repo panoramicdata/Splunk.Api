@@ -53,7 +53,7 @@ public partial class SamlProvidersTests
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.SamlProviders.GetAsync("saml", ct), SamlJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.SamlProviders.GetAsync("saml", ct), SamlJson);
 
 		var saml = feed.Entries.Should().ContainSingle().Subject.Content!;
 		saml.EntityId.Should().Be("splunk01");

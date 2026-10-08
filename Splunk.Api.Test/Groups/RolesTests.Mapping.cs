@@ -62,7 +62,7 @@ public partial class RolesTests
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.Roles.GetAsync("admin", ct), RoleJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.Roles.GetAsync("admin", ct), RoleJson);
 
 		var role = feed.Entries.Should().ContainSingle().Subject.Content!;
 		role.Capabilities.Should().Equal("accelerate_datamodel", "admin_all_objects");

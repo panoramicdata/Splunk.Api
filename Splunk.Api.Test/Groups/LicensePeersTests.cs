@@ -32,18 +32,18 @@ public class LicensePeersTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicensePeers.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/peers");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicensePeers.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/peers");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheGuid()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicensePeers.GetAsync("00000000-0000-0000-0000-000000000001", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/peers/00000000-0000-0000-0000-000000000001");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicensePeers.GetAsync("00000000-0000-0000-0000-000000000001", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/peers/00000000-0000-0000-0000-000000000001");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.LicensePeers.ListAsync(null, ct), PeersJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.LicensePeers.ListAsync(null, ct), PeersJson);
 
 		var peer = feed.Entries.Should().ContainSingle().Subject.Content!;
 		peer.ActivePoolIds.Should().Equal("auto_generated_pool_download-trial");
@@ -57,5 +57,5 @@ public class LicensePeersTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicensePeers.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicensePeers.GetAsync("missing", ct));
 }

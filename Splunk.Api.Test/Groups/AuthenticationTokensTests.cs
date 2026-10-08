@@ -60,35 +60,35 @@ public class AuthenticationTokensTests
 
 	[Fact]
 	public async Task ListAsync_SendsTheFilters()
-		=> (await RequestAssert.SendAsync((c, ct) => c.AuthenticationTokens.ListAsync(new AuthenticationTokenListOptions { Username = "admin", TokenId = "aa", Status = TokenStatus.Disabled }, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authorization/tokens", query: "?username=admin&id=aa&status=disabled&output_mode=json");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.AuthenticationTokens.ListAsync(new AuthenticationTokenListOptions { Username = "admin", TokenId = "aa", Status = TokenStatus.Disabled }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authorization/tokens", query: "?username=admin&id=aa&status=disabled&output_mode=json");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheToken()
-		=> (await RequestAssert.SendAsync(
+		=> (await EndpointRequests.SendAsync(
 			(c, ct) => c.AuthenticationTokens.CreateAsync(new AuthenticationTokenCreateRequest { Name = "admin", Audience = "ci", ExpiresOn = "+90d", NotBefore = "+1m", Status = TokenStatus.Enabled }, ct),
 			CreatedJson))
-			.ShouldBe(HttpMethod.Post, "/services/authorization/tokens", "name=admin&audience=ci&expires_on=%2B90d&not_before=%2B1m&status=enabled");
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authorization/tokens", "name=admin&audience=ci&expires_on=%2B90d&not_before=%2B1m&status=enabled");
 
 	[Fact]
 	public async Task UpdateStatusAsync_PostsTheStatus()
-		=> (await RequestAssert.SendAsync((c, ct) => c.AuthenticationTokens.UpdateStatusAsync("admin", new AuthenticationTokenStatusRequest { Status = TokenStatus.Disabled, TokenId = "aa" }, ct), UpdatedJson))
-			.ShouldBe(HttpMethod.Post, "/services/authorization/tokens/admin", "status=disabled&id=aa");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.AuthenticationTokens.UpdateStatusAsync("admin", new AuthenticationTokenStatusRequest { Status = TokenStatus.Disabled, TokenId = "aa" }, ct), UpdatedJson))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authorization/tokens/admin", "status=disabled&id=aa");
 
 	[Fact]
 	public async Task DeleteAsync_SendsTheTokenId()
-		=> (await RequestAssert.SendAsync((c, ct) => c.AuthenticationTokens.DeleteAsync("admin", "aa", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/authorization/tokens/admin", query: "?id=aa&output_mode=json");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.AuthenticationTokens.DeleteAsync("admin", "aa", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/authorization/tokens/admin", query: "?id=aa&output_mode=json");
 
 	[Fact]
 	public async Task DeleteAsync_WithoutATokenId_SendsNoId()
-		=> (await RequestAssert.SendAsync((c, ct) => c.AuthenticationTokens.DeleteAsync("admin", null, ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/authorization/tokens/admin");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.AuthenticationTokens.DeleteAsync("admin", null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/authorization/tokens/admin");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.AuthenticationTokens.ListAsync(null, ct), TokensJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.AuthenticationTokens.ListAsync(null, ct), TokensJson);
 
 		var token = feed.Entries.Should().ContainSingle().Subject.Content!;
 		token.Status.Should().Be(TokenStatus.Enabled);
@@ -111,7 +111,7 @@ public class AuthenticationTokensTests
 	[Fact]
 	public async Task Created_MapsTheIdAndToken()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.AuthenticationTokens.CreateAsync(new AuthenticationTokenCreateRequest { Name = "admin", Audience = "ci" }, ct), CreatedJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.AuthenticationTokens.CreateAsync(new AuthenticationTokenCreateRequest { Name = "admin", Audience = "ci" }, ct), CreatedJson);
 
 		var created = feed.Entries.Should().ContainSingle().Subject.Content!;
 		created.TokenId.Should().Be("00000000000000000000000000000000000000000000000000000000000000aa");
@@ -121,7 +121,7 @@ public class AuthenticationTokensTests
 	[Fact]
 	public async Task UpdateStatus_ReturnsSplunksMessage()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.AuthenticationTokens.UpdateStatusAsync("admin", new AuthenticationTokenStatusRequest { Status = TokenStatus.Disabled }, ct), UpdatedJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.AuthenticationTokens.UpdateStatusAsync("admin", new AuthenticationTokenStatusRequest { Status = TokenStatus.Disabled }, ct), UpdatedJson);
 
 		feed.Entries.Should().BeEmpty();
 		feed.Messages.Should().ContainSingle().Which.Text.Should().Be("Token(s) updated to status: disabled.");
@@ -129,5 +129,5 @@ public class AuthenticationTokensTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.AuthenticationTokens.UpdateStatusAsync("admin", new AuthenticationTokenStatusRequest { Status = TokenStatus.Enabled }, ct), HttpStatusCode.BadRequest);
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.AuthenticationTokens.UpdateStatusAsync("admin", new AuthenticationTokenStatusRequest { Status = TokenStatus.Enabled }, ct), HttpStatusCode.BadRequest);
 }

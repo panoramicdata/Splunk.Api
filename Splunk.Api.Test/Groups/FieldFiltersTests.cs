@@ -27,12 +27,12 @@ public class FieldFiltersTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.FieldFilters.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authorization/fieldfilters");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.FieldFilters.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authorization/fieldfilters");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheFilter()
-		=> (await RequestAssert.SendAsync((c, ct) => c.FieldFilters.CreateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.FieldFilters.CreateAsync(
 			new FieldFilterCreateRequest
 			{
 				Name = "mask_ssn",
@@ -45,30 +45,30 @@ public class FieldFiltersTests
 				RoleExemptions = "admin"
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/authorization/fieldfilters",
 				"name=mask_ssn&action.field=ssn&action.operator=null%28%29&description=d&index=main&limit.key=host&limit.value=%22web01%22&roleExemptions=admin");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.FieldFilters.GetAsync("mask_ssn", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authorization/fieldfilters/mask_ssn");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.FieldFilters.GetAsync("mask_ssn", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authorization/fieldfilters/mask_ssn");
 
 	[Fact]
 	public async Task UpdateAsync_PostsTheChanges()
-		=> (await RequestAssert.SendAsync((c, ct) => c.FieldFilters.UpdateAsync("mask_ssn", new FieldFilterUpdateRequest { ActionOperator = "sha512()" }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/authorization/fieldfilters/mask_ssn", "action.operator=sha512%28%29");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.FieldFilters.UpdateAsync("mask_ssn", new FieldFilterUpdateRequest { ActionOperator = "sha512()" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authorization/fieldfilters/mask_ssn", "action.operator=sha512%28%29");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.FieldFilters.DeleteAsync("mask_ssn", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/authorization/fieldfilters/mask_ssn");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.FieldFilters.DeleteAsync("mask_ssn", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/authorization/fieldfilters/mask_ssn");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.FieldFilters.GetAsync("mask_ssn", ct), FilterJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.FieldFilters.GetAsync("mask_ssn", ct), FilterJson);
 
 		var filter = feed.Entries.Should().ContainSingle().Subject.Content!;
 		filter.ActionField.Should().Be("ssn");
@@ -82,5 +82,5 @@ public class FieldFiltersTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.FieldFilters.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.FieldFilters.GetAsync("missing", ct));
 }

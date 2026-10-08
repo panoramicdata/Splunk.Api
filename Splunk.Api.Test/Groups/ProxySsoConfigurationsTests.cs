@@ -27,12 +27,12 @@ public class ProxySsoConfigurationsTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.ProxySsoConfigurations.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/admin/ProxySSO-auth");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.ProxySsoConfigurations.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/admin/ProxySSO-auth");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheConfiguration()
-		=> (await RequestAssert.SendAsync((c, ct) => c.ProxySsoConfigurations.CreateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.ProxySsoConfigurations.CreateAsync(
 			new ProxySsoConfigurationCreateRequest
 			{
 				Name = "proxy1",
@@ -43,40 +43,40 @@ public class ProxySsoConfigurationsTests
 				BlacklistedAutoMappedRoles = "admin"
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/admin/ProxySSO-auth",
 				"name=proxy1&defaultRoleIfMissing=user&excludedUsers=admin&excludedAutoMappedRoles=can_delete&blacklistedUsers=root&blacklistedAutoMappedRoles=admin");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.ProxySsoConfigurations.GetAsync("proxy1", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/admin/ProxySSO-auth/proxy1");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.ProxySsoConfigurations.GetAsync("proxy1", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/admin/ProxySSO-auth/proxy1");
 
 	[Fact]
 	public async Task UpdateAsync_PostsTheChanges()
-		=> (await RequestAssert.SendAsync((c, ct) => c.ProxySsoConfigurations.UpdateAsync("proxy1", new ProxySsoConfigurationUpdateRequest { DefaultRoleIfMissing = "power" }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/admin/ProxySSO-auth/proxy1", "defaultRoleIfMissing=power");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.ProxySsoConfigurations.UpdateAsync("proxy1", new ProxySsoConfigurationUpdateRequest { DefaultRoleIfMissing = "power" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/admin/ProxySSO-auth/proxy1", "defaultRoleIfMissing=power");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.ProxySsoConfigurations.DeleteAsync("proxy1", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/admin/ProxySSO-auth/proxy1");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.ProxySsoConfigurations.DeleteAsync("proxy1", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/admin/ProxySSO-auth/proxy1");
 
 	[Fact]
 	public async Task DisableAsync_SendsGetToDisable()
-		=> (await RequestAssert.SendAsync((c, ct) => c.ProxySsoConfigurations.DisableAsync("proxy1", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/admin/ProxySSO-auth/proxy1/disable");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.ProxySsoConfigurations.DisableAsync("proxy1", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/admin/ProxySSO-auth/proxy1/disable");
 
 	[Fact]
 	public async Task EnableAsync_SendsGetToEnable()
-		=> (await RequestAssert.SendAsync((c, ct) => c.ProxySsoConfigurations.EnableAsync("proxy1", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/admin/ProxySSO-auth/proxy1/enable");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.ProxySsoConfigurations.EnableAsync("proxy1", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/admin/ProxySSO-auth/proxy1/enable");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.ProxySsoConfigurations.GetAsync("proxy1", ct), ConfigurationJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.ProxySsoConfigurations.GetAsync("proxy1", ct), ConfigurationJson);
 
 		var proxy = feed.Entries.Should().ContainSingle().Subject.Content!;
 		proxy.Title.Should().Be("proxy1");
@@ -90,5 +90,5 @@ public class ProxySsoConfigurationsTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.ProxySsoConfigurations.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.ProxySsoConfigurations.GetAsync("missing", ct));
 }

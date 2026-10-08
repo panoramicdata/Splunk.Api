@@ -21,23 +21,23 @@ public class LicenseGroupsTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicenseGroups.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/groups");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicenseGroups.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/groups");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicenseGroups.GetAsync("Trial", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/groups/Trial");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicenseGroups.GetAsync("Trial", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/groups/Trial");
 
 	[Fact]
 	public async Task UpdateAsync_PostsIsActive()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicenseGroups.UpdateAsync("Enterprise", new LicenseGroupUpdateRequest { IsActive = true }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/licenser/groups/Enterprise", "is_active=true");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicenseGroups.UpdateAsync("Enterprise", new LicenseGroupUpdateRequest { IsActive = true }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/licenser/groups/Enterprise", "is_active=true");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.LicenseGroups.ListAsync(null, ct), GroupsJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.LicenseGroups.ListAsync(null, ct), GroupsJson);
 
 		feed.Entries.Should().HaveCount(2);
 		feed.Entries[0].Content!.IsActive.Should().BeFalse();
@@ -49,5 +49,5 @@ public class LicenseGroupsTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseGroups.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseGroups.GetAsync("missing", ct));
 }

@@ -41,12 +41,12 @@ public class DuoMfaTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.DuoMfa.ListAsync(new ListOptions { Count = 5 }, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/admin/Duo-MFA", query: "?count=5&output_mode=json");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.DuoMfa.ListAsync(new ListOptions { Count = 5 }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/admin/Duo-MFA", query: "?count=5&output_mode=json");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheConfiguration()
-		=> (await RequestAssert.SendAsync((c, ct) => c.DuoMfa.CreateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.DuoMfa.CreateAsync(
 			new DuoMfaCreateRequest
 			{
 				Name = "duo",
@@ -67,33 +67,33 @@ public class DuoMfaTests
 				EnableMfaAuthRest = false
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/admin/Duo-MFA",
 				"name=duo&integrationKey=DIXXXXXXXXXXXXXXXXXX&secretKey=secret&apiHostname=api-0.duosecurity.com&appSecretKey=abc&failOpen=false&timeout=10&sslVersions=tls1.2&cipherSuite=c&ecdhCurves=e&sslVerifyServerCert=true&sslRootCAPath=%2Fca.pem&sslCommonNameToCheck=cn&sslAltNameToCheck=alt&useClientSSLCompression=true&enableMfaAuthRest=false");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.DuoMfa.GetAsync("duo-mfa", ct), DuoJson))
-			.ShouldBe(HttpMethod.Get, "/services/admin/Duo-MFA/duo-mfa");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.DuoMfa.GetAsync("duo-mfa", ct), DuoJson))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/admin/Duo-MFA/duo-mfa");
 
 	[Fact]
 	public async Task UpdateAsync_PostsTheChanges()
-		=> (await RequestAssert.SendAsync((c, ct) => c.DuoMfa.UpdateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.DuoMfa.UpdateAsync(
 			"duo-mfa",
 			new DuoMfaUpdateRequest { IntegrationKey = "k", SecretKey = "s", ApiHostname = "h", Timeout = 20 },
 			ct)))
-			.ShouldBe(HttpMethod.Post, "/services/admin/Duo-MFA/duo-mfa", "timeout=20&integrationKey=k&secretKey=s&apiHostname=h");
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/admin/Duo-MFA/duo-mfa", "timeout=20&integrationKey=k&secretKey=s&apiHostname=h");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.DuoMfa.DeleteAsync("duo-mfa", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/admin/Duo-MFA/duo-mfa");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.DuoMfa.DeleteAsync("duo-mfa", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/admin/Duo-MFA/duo-mfa");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.DuoMfa.ListAsync(null, ct), DuoJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.DuoMfa.ListAsync(null, ct), DuoJson);
 
 		var entry = feed.Entries.Should().ContainSingle().Subject;
 		entry.Name.Should().Be("duo-mfa");
@@ -116,5 +116,5 @@ public class DuoMfaTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.DuoMfa.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.DuoMfa.GetAsync("missing", ct));
 }

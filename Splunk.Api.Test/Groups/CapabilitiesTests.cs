@@ -24,18 +24,18 @@ public class CapabilitiesTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Capabilities.ListAsync(ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authorization/capabilities");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Capabilities.ListAsync(ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authorization/capabilities");
 
 	[Fact]
 	public async Task ListGrantableAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Capabilities.ListGrantableAsync(ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authorization/grantable_capabilities");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Capabilities.ListGrantableAsync(ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authorization/grantable_capabilities");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.Capabilities.ListGrantableAsync(ct), CapabilitiesJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.Capabilities.ListGrantableAsync(ct), CapabilitiesJson);
 
 		var entry = feed.Entries.Should().ContainSingle().Subject;
 		entry.Name.Should().Be("capabilities");
@@ -44,5 +44,5 @@ public class CapabilitiesTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.Capabilities.ListAsync(ct), System.Net.HttpStatusCode.Forbidden);
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.Capabilities.ListAsync(ct), System.Net.HttpStatusCode.Forbidden);
 }

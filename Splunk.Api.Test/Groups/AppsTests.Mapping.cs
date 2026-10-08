@@ -89,7 +89,7 @@ public partial class AppsTests
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.Apps.ListAsync(null, ct), AppsJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.Apps.ListAsync(null, ct), AppsJson);
 
 		feed.Entries.Should().HaveCount(2);
 		var search = feed.Entries[0].Content!;
@@ -115,7 +115,7 @@ public partial class AppsTests
 	[Fact]
 	public async Task Setup_MapsTheSetupXml()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.Apps.GetSetupAsync("search", ct), SetupJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.Apps.GetSetupAsync("search", ct), SetupJson);
 
 		feed.Entries.Should().ContainSingle().Which.Content!.Setup.Should().Contain("<text>setup_stub</text>");
 	}
@@ -123,7 +123,7 @@ public partial class AppsTests
 	[Fact]
 	public async Task UpdateCheck_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.Apps.CheckForUpdateAsync("my_app", ct), UpdateJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.Apps.CheckForUpdateAsync("my_app", ct), UpdateJson);
 
 		var update = feed.Entries.Should().ContainSingle().Subject.Content!;
 		update.UpdateName.Should().Be("My App");

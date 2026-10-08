@@ -26,18 +26,18 @@ public class LicenseMessagesTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicenseMessages.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/messages");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicenseMessages.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/messages");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheId()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicenseMessages.GetAsync("2541354125", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/messages/2541354125");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicenseMessages.GetAsync("2541354125", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/messages/2541354125");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.LicenseMessages.ListAsync(null, ct), MessagesJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.LicenseMessages.ListAsync(null, ct), MessagesJson);
 
 		var message = feed.Entries.Should().ContainSingle().Subject.Content!;
 		message.Category.Should().Be("pool_over_quota");
@@ -51,5 +51,5 @@ public class LicenseMessagesTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseMessages.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseMessages.GetAsync("missing", ct));
 }

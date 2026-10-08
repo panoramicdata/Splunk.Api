@@ -20,18 +20,18 @@ public class AppTemplatesTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.AppTemplates.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/apps/apptemplates");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.AppTemplates.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/apps/apptemplates");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.AppTemplates.GetAsync("barebones", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/apps/apptemplates/barebones");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.AppTemplates.GetAsync("barebones", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/apps/apptemplates/barebones");
 
 	[Fact]
 	public async Task Content_MapsTheTemplates()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.AppTemplates.ListAsync(null, ct), TemplatesJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.AppTemplates.ListAsync(null, ct), TemplatesJson);
 
 		feed.Entries.Select(e => e.Name).Should().Equal("barebones", "sample_app");
 		feed.Entries[0].Content!.AdditionalProperties["lol"].GetString().Should().Be("wut");
@@ -39,5 +39,5 @@ public class AppTemplatesTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.AppTemplates.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.AppTemplates.GetAsync("missing", ct));
 }

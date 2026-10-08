@@ -43,12 +43,12 @@ public class LdapStrategiesTests
 
 	[Fact]
 	public async Task ListAsync_SendsTheStrategyFilter()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LdapStrategies.ListAsync(new LdapStrategyListOptions { Strategy = "corp_ldap" }, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authentication/providers/LDAP", query: "?strategy=corp_ldap&output_mode=json");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LdapStrategies.ListAsync(new LdapStrategyListOptions { Strategy = "corp_ldap" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authentication/providers/LDAP", query: "?strategy=corp_ldap&output_mode=json");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheStrategy()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LdapStrategies.CreateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LdapStrategies.CreateAsync(
 			new LdapStrategyCreateRequest
 			{
 				Name = "corp",
@@ -76,14 +76,14 @@ public class LdapStrategiesTests
 				NetworkTimeout = 20
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/authentication/providers/LDAP",
 				"name=corp&host=ldap&userBaseDN=ou%3Dp&userNameAttribute=uid&realNameAttribute=cn&groupBaseDN=ou%3Dg&groupNameAttribute=cn&groupMemberAttribute=member&port=636&SSLEnabled=true&bindDN=cn%3Ds&bindDNpassword=pw&userBaseFilter=uf&emailAttribute=mail&groupBaseFilter=gf&groupMappingAttribute=dn&dynamicGroupFilter=dg&dynamicMemberAttribute=dm&nestedGroups=false&anonymous_referrals=true&sizelimit=100&timelimit=10&network_timeout=20");
 
 	[Fact]
 	public async Task UpdateAsync_PostsTheChanges()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LdapStrategies.UpdateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LdapStrategies.UpdateAsync(
 			"corp",
 			new LdapStrategyUpdateRequest
 			{
@@ -97,30 +97,30 @@ public class LdapStrategiesTests
 				Port = 389
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/authentication/providers/LDAP/corp",
 				"port=389&host=ldap2&userBaseDN=u&userNameAttribute=n&realNameAttribute=r&groupBaseDN=g&groupNameAttribute=gn&groupMemberAttribute=gm");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LdapStrategies.DeleteAsync("corp", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/authentication/providers/LDAP/corp");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LdapStrategies.DeleteAsync("corp", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/authentication/providers/LDAP/corp");
 
 	[Fact]
 	public async Task EnableAsync_PostsToEnable()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LdapStrategies.EnableAsync("corp", ct)))
-			.ShouldBe(HttpMethod.Post, "/services/authentication/providers/LDAP/corp/enable");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LdapStrategies.EnableAsync("corp", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authentication/providers/LDAP/corp/enable");
 
 	[Fact]
 	public async Task DisableAsync_PostsToDisable()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LdapStrategies.DisableAsync("corp", ct)))
-			.ShouldBe(HttpMethod.Post, "/services/authentication/providers/LDAP/corp/disable");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LdapStrategies.DisableAsync("corp", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authentication/providers/LDAP/corp/disable");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.LdapStrategies.ListAsync(null, ct), StrategyJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.LdapStrategies.ListAsync(null, ct), StrategyJson);
 
 		var ldap = feed.Entries.Should().ContainSingle().Subject.Content!;
 		ldap.Host.Should().Be("ldap.example.com");
@@ -150,5 +150,5 @@ public class LdapStrategiesTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.LdapStrategies.DeleteAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.LdapStrategies.DeleteAsync("missing", ct));
 }

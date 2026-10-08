@@ -33,18 +33,18 @@ public class LicenseStacksTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicenseStacks.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/stacks");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicenseStacks.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/stacks");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheId()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicenseStacks.GetAsync("free", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/stacks/free");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicenseStacks.GetAsync("free", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/stacks/free");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.LicenseStacks.GetAsync("free", ct), StackJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.LicenseStacks.GetAsync("free", ct), StackJson);
 
 		var stack = feed.Entries.Should().ContainSingle().Subject.Content!;
 		stack.ConditionalEnforcementActive.Should().BeFalse();
@@ -59,5 +59,5 @@ public class LicenseStacksTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseStacks.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseStacks.GetAsync("missing", ct));
 }

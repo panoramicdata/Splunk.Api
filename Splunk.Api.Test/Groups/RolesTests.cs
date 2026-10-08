@@ -7,12 +7,12 @@ public partial class RolesTests
 {
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Roles.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authorization/roles");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Roles.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authorization/roles");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheRole()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Roles.CreateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Roles.CreateAsync(
 			new RoleCreateRequest
 			{
 				Name = "analyst",
@@ -38,7 +38,7 @@ public partial class RolesTests
 				FieldFilterExemption = ["mask_ssn"]
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/authorization/roles",
 				"name=analyst&capabilities=search&capabilities=rtsearch&imported_roles=user&grantable_roles=user&defaultApp=search"
@@ -49,20 +49,20 @@ public partial class RolesTests
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Roles.GetAsync("user", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authorization/roles/user");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Roles.GetAsync("user", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authorization/roles/user");
 
 	[Fact]
 	public async Task UpdateAsync_PostsTheChanges()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Roles.UpdateAsync("analyst", new RoleUpdateRequest { SearchJobsQuota = 7, Capabilities = ["search"] }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/authorization/roles/analyst", "capabilities=search&srchJobsQuota=7");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Roles.UpdateAsync("analyst", new RoleUpdateRequest { SearchJobsQuota = 7, Capabilities = ["search"] }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authorization/roles/analyst", "capabilities=search&srchJobsQuota=7");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Roles.DeleteAsync("analyst", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/authorization/roles/analyst");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Roles.DeleteAsync("analyst", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/authorization/roles/analyst");
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.Roles.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.Roles.GetAsync("missing", ct));
 }

@@ -19,13 +19,13 @@ public class LicenseUsageTests
 
 	[Fact]
 	public async Task GetAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicenseUsage.GetAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/usage");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicenseUsage.GetAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/usage");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.LicenseUsage.GetAsync(null, ct), UsageJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.LicenseUsage.GetAsync(null, ct), UsageJson);
 
 		var usage = feed.Entries.Should().ContainSingle().Subject.Content!;
 		usage.PeersUsageBytes.Should().Be(1048576);
@@ -35,5 +35,5 @@ public class LicenseUsageTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseUsage.GetAsync(null, ct), System.Net.HttpStatusCode.Forbidden);
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseUsage.GetAsync(null, ct), System.Net.HttpStatusCode.Forbidden);
 }

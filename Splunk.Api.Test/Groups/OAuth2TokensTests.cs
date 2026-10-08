@@ -11,8 +11,8 @@ public class OAuth2TokensTests
 
 	[Fact]
 	public async Task ExchangeAsync_PostsTheAssertionToTheRootPath()
-		=> (await RequestAssert.SendAsync((c, ct) => c.OAuth2Tokens.ExchangeAsync(new OAuth2TokenExchangeRequest { ClientId = "app", ClientAssertion = "a.b.c" }, ct), TokenJson))
-			.ShouldBe(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.OAuth2Tokens.ExchangeAsync(new OAuth2TokenExchangeRequest { ClientId = "app", ClientAssertion = "a.b.c" }, ct), TokenJson))
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/oauth2/v1/token",
 				"grant_type=client_credentials&client_id=app&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&client_assertion=a.b.c");
@@ -33,7 +33,7 @@ public class OAuth2TokensTests
 	[Fact]
 	public async Task Response_MapsEveryModelledField()
 	{
-		var token = await RequestAssert.ReadAsync((c, ct) => c.OAuth2Tokens.ExchangeAsync(new OAuth2TokenExchangeRequest { ClientId = "app", ClientAssertion = "a.b.c" }, ct), TokenJson);
+		var token = await EndpointRequests.ReadAsync((c, ct) => c.OAuth2Tokens.ExchangeAsync(new OAuth2TokenExchangeRequest { ClientId = "app", ClientAssertion = "a.b.c" }, ct), TokenJson);
 
 		token.AccessToken.Should().Be("fake-access-token");
 		token.TokenType.Should().Be("Bearer");
@@ -44,5 +44,5 @@ public class OAuth2TokensTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.OAuth2Tokens.ExchangeAsync(new OAuth2TokenExchangeRequest { ClientId = "app", ClientAssertion = "x" }, ct), HttpStatusCode.BadRequest);
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.OAuth2Tokens.ExchangeAsync(new OAuth2TokenExchangeRequest { ClientId = "app", ClientAssertion = "x" }, ct), HttpStatusCode.BadRequest);
 }

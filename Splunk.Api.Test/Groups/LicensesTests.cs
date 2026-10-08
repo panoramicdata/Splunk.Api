@@ -56,28 +56,28 @@ public class LicensesTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Licenses.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/licenses");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Licenses.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/licenses");
 
 	[Fact]
 	public async Task AddAsync_PostsThePayload()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Licenses.AddAsync(new LicenseAddRequest { Name = "/tmp/x.lic", Payload = "<license/>" }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/licenser/licenses", "name=%2Ftmp%2Fx.lic&payload=%3Clicense%2F%3E");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Licenses.AddAsync(new LicenseAddRequest { Name = "/tmp/x.lic", Payload = "<license/>" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/licenser/licenses", "name=%2Ftmp%2Fx.lic&payload=%3Clicense%2F%3E");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheHash()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Licenses.GetAsync("ABC", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/licenses/ABC");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Licenses.GetAsync("ABC", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/licenses/ABC");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Licenses.DeleteAsync("ABC", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/licenser/licenses/ABC");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Licenses.DeleteAsync("ABC", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/licenser/licenses/ABC");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.Licenses.ListAsync(null, ct), LicensesJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.Licenses.ListAsync(null, ct), LicensesJson);
 
 		var license = feed.Entries[0].Content!;
 		license.AddOns!["hadoop"].GetProperty("maxNodes").GetString().Should().Be("200");
@@ -112,5 +112,5 @@ public class LicensesTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.Licenses.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.Licenses.GetAsync("missing", ct));
 }

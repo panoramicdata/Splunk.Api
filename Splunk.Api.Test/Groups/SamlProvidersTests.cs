@@ -7,12 +7,12 @@ public partial class SamlProvidersTests
 {
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.SamlProviders.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authentication/providers/SAML");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.SamlProviders.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authentication/providers/SAML");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheConfiguration()
-		=> (await RequestAssert.SendAsync((c, ct) => c.SamlProviders.CreateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.SamlProviders.CreateAsync(
 			new SamlConfigurationCreateRequest
 			{
 				Name = "saml",
@@ -49,7 +49,7 @@ public partial class SamlProvidersTests
 				SslKeysFilePassword = "kp"
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/authentication/providers/SAML",
 				"name=saml&entityId=splunk&idpSSOUrl=https%3A%2F%2Fidp%2Fsso&idpSLOUrl=https%3A%2F%2Fidp%2Fslo&idpAttributeQueryUrl=https%3A%2F%2Fidp%2Faq"
@@ -62,25 +62,25 @@ public partial class SamlProvidersTests
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.SamlProviders.GetAsync("saml", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authentication/providers/SAML/saml");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.SamlProviders.GetAsync("saml", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authentication/providers/SAML/saml");
 
 	[Fact]
 	public async Task UpdateAsync_PostsTheChanges()
-		=> (await RequestAssert.SendAsync((c, ct) => c.SamlProviders.UpdateAsync("saml", new SamlConfigurationUpdateRequest { EntityId = "splunk2", IdpSsoUrl = "https://sso" }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/authentication/providers/SAML/saml", "entityId=splunk2&idpSSOUrl=https%3A%2F%2Fsso");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.SamlProviders.UpdateAsync("saml", new SamlConfigurationUpdateRequest { EntityId = "splunk2", IdpSsoUrl = "https://sso" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authentication/providers/SAML/saml", "entityId=splunk2&idpSSOUrl=https%3A%2F%2Fsso");
 
 	[Fact]
 	public async Task EnableAsync_PostsToEnable()
-		=> (await RequestAssert.SendAsync((c, ct) => c.SamlProviders.EnableAsync("saml", ct)))
-			.ShouldBe(HttpMethod.Post, "/services/authentication/providers/SAML/saml/enable");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.SamlProviders.EnableAsync("saml", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authentication/providers/SAML/saml/enable");
 
 	[Fact]
 	public async Task DisableAsync_PostsToDisable()
-		=> (await RequestAssert.SendAsync((c, ct) => c.SamlProviders.DisableAsync("saml", ct)))
-			.ShouldBe(HttpMethod.Post, "/services/authentication/providers/SAML/saml/disable");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.SamlProviders.DisableAsync("saml", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authentication/providers/SAML/saml/disable");
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.SamlProviders.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.SamlProviders.GetAsync("missing", ct));
 }

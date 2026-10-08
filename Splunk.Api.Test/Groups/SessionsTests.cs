@@ -33,15 +33,15 @@ public class SessionsTests
 
 	[Fact]
 	public async Task LoginAsync_PostsTheCredentials()
-		=> (await RequestAssert.SendAsync(
+		=> (await EndpointRequests.SendAsync(
 			(c, ct) => c.Sessions.LoginAsync(new LoginRequest { Username = "jo", Password = "p&ss", Passcode = "123456", Cookie = true }, ct),
 			LoginJson))
-			.ShouldBe(HttpMethod.Post, "/services/auth/login", "username=jo&password=p%26ss&passcode=123456&cookie=true");
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/auth/login", "username=jo&password=p%26ss&passcode=123456&cookie=true");
 
 	[Fact]
 	public async Task LoginAsync_ReturnsTheSessionKey()
 	{
-		var login = await RequestAssert.ReadAsync((c, ct) => c.Sessions.LoginAsync(new LoginRequest { Username = "jo", Password = "pw" }, ct), LoginJson);
+		var login = await EndpointRequests.ReadAsync((c, ct) => c.Sessions.LoginAsync(new LoginRequest { Username = "jo", Password = "pw" }, ct), LoginJson);
 
 		login.SessionKey.Should().Be("fake-session-key");
 		login.Message.Should().BeEmpty();
@@ -70,23 +70,23 @@ public class SessionsTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Sessions.ListAsync(new ListOptions { Search = "userName=admin" }, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authentication/httpauth-tokens", query: "?search=userName%3Dadmin&output_mode=json");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Sessions.ListAsync(new ListOptions { Search = "userName=admin" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authentication/httpauth-tokens", query: "?search=userName%3Dadmin&output_mode=json");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Sessions.GetAsync("abc", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authentication/httpauth-tokens/abc");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Sessions.GetAsync("abc", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authentication/httpauth-tokens/abc");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Sessions.DeleteAsync("abc", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/authentication/httpauth-tokens/abc");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Sessions.DeleteAsync("abc", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/authentication/httpauth-tokens/abc");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.Sessions.ListAsync(null, ct), SessionsJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.Sessions.ListAsync(null, ct), SessionsJson);
 
 		var entry = feed.Entries.Should().ContainSingle().Subject;
 		entry.Name.Should().Be("00000000000000000000000000000001");
@@ -98,5 +98,5 @@ public class SessionsTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.Sessions.LoginAsync(new LoginRequest { Username = "jo", Password = "wrong" }, ct), HttpStatusCode.Unauthorized);
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.Sessions.LoginAsync(new LoginRequest { Username = "jo", Password = "wrong" }, ct), HttpStatusCode.Unauthorized);
 }

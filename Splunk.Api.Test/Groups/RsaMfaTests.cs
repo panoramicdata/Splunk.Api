@@ -29,12 +29,12 @@ public class RsaMfaTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.RsaMfa.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/admin/Rsa-MFA");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.RsaMfa.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/admin/Rsa-MFA");
 
 	[Fact]
 	public async Task SaveAsync_PostsTheConfiguration()
-		=> (await RequestAssert.SendAsync((c, ct) => c.RsaMfa.SaveAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.RsaMfa.SaveAsync(
 			new RsaMfaRequest
 			{
 				Name = "rsa",
@@ -49,25 +49,25 @@ public class RsaMfaTests
 				ReplicateCertificates = true
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/admin/Rsa-MFA",
 				"name=rsa&authManagerUrl=https%3A%2F%2Frsa&accessKey=key&clientId=agent&caCertBundlePayload=pem&failOpen=true&timeout=5&messageOnError=no&enableMfaAuthRest=false&replicateCertificates=true");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDeleteToTheCollection()
-		=> (await RequestAssert.SendAsync((c, ct) => c.RsaMfa.DeleteAsync(ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/admin/Rsa-MFA");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.RsaMfa.DeleteAsync(ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/admin/Rsa-MFA");
 
 	[Fact]
 	public async Task VerifyAsync_PostsTheUserAndPasscode()
-		=> (await RequestAssert.SendAsync((c, ct) => c.RsaMfa.VerifyAsync("rsa-mfa", new RsaMfaVerifyRequest { Username = "jo", Passcode = "1234567890" }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/admin/Rsa-MFA-config-verify/rsa-mfa", "username=jo&passcode=1234567890");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.RsaMfa.VerifyAsync("rsa-mfa", new RsaMfaVerifyRequest { Username = "jo", Passcode = "1234567890" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/admin/Rsa-MFA-config-verify/rsa-mfa", "username=jo&passcode=1234567890");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.RsaMfa.ListAsync(null, ct), RsaJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.RsaMfa.ListAsync(null, ct), RsaJson);
 
 		var rsa = feed.Entries.Should().ContainSingle().Subject.Content!;
 		rsa.AuthManagerUrl.Should().Be("https://rsa.example.com:5555/mfa/v1_1");
@@ -83,5 +83,5 @@ public class RsaMfaTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.RsaMfa.VerifyAsync("missing", new RsaMfaVerifyRequest(), ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.RsaMfa.VerifyAsync("missing", new RsaMfaVerifyRequest(), ct));
 }

@@ -27,12 +27,12 @@ public class OAuth2ProvidersTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.OAuth2Providers.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authentication/providers/oauth2");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.OAuth2Providers.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authentication/providers/oauth2");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheConfiguration()
-		=> (await RequestAssert.SendAsync((c, ct) => c.OAuth2Providers.CreateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.OAuth2Providers.CreateAsync(
 			new OAuth2ProviderCreateRequest
 			{
 				Name = "okta",
@@ -44,33 +44,33 @@ public class OAuth2ProvidersTests
 				ClientFullNameClaim = "name"
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/authentication/providers/oauth2",
 				"name=okta&jwks_uri=https%3A%2F%2Fidp%2Fkeys&audience=aud&groupsClaim=groups&issuer=https%3A%2F%2Fidp&clientIdClaim=cid&clientFullNameClaim=name");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.OAuth2Providers.GetAsync("okta", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authentication/providers/oauth2/okta");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.OAuth2Providers.GetAsync("okta", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authentication/providers/oauth2/okta");
 
 	[Fact]
 	public async Task UpdateAsync_PostsTheChanges()
-		=> (await RequestAssert.SendAsync((c, ct) => c.OAuth2Providers.UpdateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.OAuth2Providers.UpdateAsync(
 			"okta",
 			new OAuth2ProviderUpdateRequest { JwksUri = "k", Audience = "a", GroupsClaim = "g", ClientIdClaim = "c", ClientFullNameClaim = "n", Disabled = true },
 			ct)))
-			.ShouldBe(HttpMethod.Post, "/services/authentication/providers/oauth2/okta", "jwks_uri=k&audience=a&groupsClaim=g&clientIdClaim=c&clientFullNameClaim=n&disabled=true");
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authentication/providers/oauth2/okta", "jwks_uri=k&audience=a&groupsClaim=g&clientIdClaim=c&clientFullNameClaim=n&disabled=true");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.OAuth2Providers.DeleteAsync("okta", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/authentication/providers/oauth2/okta");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.OAuth2Providers.DeleteAsync("okta", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/authentication/providers/oauth2/okta");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.OAuth2Providers.GetAsync("okta", ct), ProviderJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.OAuth2Providers.GetAsync("okta", ct), ProviderJson);
 
 		var provider = feed.Entries.Should().ContainSingle().Subject.Content!;
 		provider.JwksUri.Should().Be("https://idp.example.com/oauth2/v1/keys");
@@ -84,5 +84,5 @@ public class OAuth2ProvidersTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.OAuth2Providers.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.OAuth2Providers.GetAsync("missing", ct));
 }

@@ -33,18 +33,18 @@ public class StoragePasswordsTests
 
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.StoragePasswords.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/storage/passwords");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.StoragePasswords.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/storage/passwords");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheCredential()
-		=> (await RequestAssert.SendAsync((c, ct) => c.StoragePasswords.CreateAsync(new StoredPasswordCreateRequest { Name = "svc", Password = "p@ss word", Realm = "api" }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/storage/passwords", "name=svc&password=p%40ss+word&realm=api");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.StoragePasswords.CreateAsync(new StoredPasswordCreateRequest { Name = "svc", Password = "p@ss word", Realm = "api" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/storage/passwords", "name=svc&password=p%40ss+word&realm=api");
 
 	[Fact]
 	public async Task GetAsync_EscapesTheColonsOfTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.StoragePasswords.GetAsync("api:svc:", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/storage/passwords/api%3Asvc%3A");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.StoragePasswords.GetAsync("api:svc:", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/storage/passwords/api%3Asvc%3A");
 
 	[Fact]
 	public async Task GetAsync_InAnAppNamespace_UsesServicesNS()
@@ -59,18 +59,18 @@ public class StoragePasswordsTests
 
 	[Fact]
 	public async Task UpdateAsync_PostsTheNewPassword()
-		=> (await RequestAssert.SendAsync((c, ct) => c.StoragePasswords.UpdateAsync("api:svc:", new StoredPasswordUpdateRequest { Password = "new" }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/storage/passwords/api%3Asvc%3A", "password=new");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.StoragePasswords.UpdateAsync("api:svc:", new StoredPasswordUpdateRequest { Password = "new" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/storage/passwords/api%3Asvc%3A", "password=new");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.StoragePasswords.DeleteAsync("api:svc:", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/storage/passwords/api%3Asvc%3A");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.StoragePasswords.DeleteAsync("api:svc:", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/storage/passwords/api%3Asvc%3A");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.StoragePasswords.GetAsync("splunk_api_it_realm:splunk_api_it_user:", ct), PasswordJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.StoragePasswords.GetAsync("splunk_api_it_realm:splunk_api_it_user:", ct), PasswordJson);
 
 		var entry = feed.Entries.Should().ContainSingle().Subject;
 		entry.Name.Should().Be("splunk_api_it_realm:splunk_api_it_user:");
@@ -83,5 +83,5 @@ public class StoragePasswordsTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.StoragePasswords.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.StoragePasswords.GetAsync("missing", ct));
 }

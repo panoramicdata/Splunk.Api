@@ -7,12 +7,12 @@ public class UsersTests
 {
 	[Fact]
 	public async Task ListAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Users.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authentication/users");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Users.ListAsync(null, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authentication/users");
 
 	[Fact]
 	public async Task CreateAsync_PostsTheUser()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Users.CreateAsync(
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Users.CreateAsync(
 			new UserCreateRequest
 			{
 				Name = "jo",
@@ -29,30 +29,30 @@ public class UsersTests
 				LockedOut = false
 			},
 			ct)))
-			.ShouldBe(
+			.ShouldBeEndpointRequest(
 				HttpMethod.Post,
 				"/services/authentication/users",
 				"name=jo&password=s3cret%21&createrole=false&roles=user&roles=power&realname=Jo+Bloggs&email=jo%40example.com&defaultApp=search&tz=Europe%2FLondon&lang=en-GB&force-change-pass=true&restart_background_jobs=false&locked-out=false");
 
 	[Fact]
 	public async Task GetAsync_SendsGetForTheName()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Users.GetAsync("jo", ct)))
-			.ShouldBe(HttpMethod.Get, "/services/authentication/users/jo");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Users.GetAsync("jo", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/authentication/users/jo");
 
 	[Fact]
 	public async Task UpdateAsync_PostsTheChanges()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Users.UpdateAsync("jo", new UserUpdateRequest { RealName = "Jo", Password = "new", OldPassword = "old" }, ct)))
-			.ShouldBe(HttpMethod.Post, "/services/authentication/users/jo", "realname=Jo&password=new&oldpassword=old");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Users.UpdateAsync("jo", new UserUpdateRequest { RealName = "Jo", Password = "new", OldPassword = "old" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/authentication/users/jo", "realname=Jo&password=new&oldpassword=old");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
-		=> (await RequestAssert.SendAsync((c, ct) => c.Users.DeleteAsync("jo", ct)))
-			.ShouldBe(HttpMethod.Delete, "/services/authentication/users/jo");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.Users.DeleteAsync("jo", ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Delete, "/services/authentication/users/jo");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.Users.GetAsync("admin", ct), UserJson.User);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.Users.GetAsync("admin", ct), UserJson.User);
 
 		var entry = feed.Entries.Should().ContainSingle().Subject;
 		entry.Name.Should().Be("admin");
@@ -61,5 +61,5 @@ public class UsersTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.Users.GetAsync("missing", ct));
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.Users.GetAsync("missing", ct));
 }

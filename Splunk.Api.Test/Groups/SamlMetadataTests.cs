@@ -33,23 +33,23 @@ public class SamlMetadataTests
 
 	[Fact]
 	public async Task GetIdentityProviderMetadataAsync_SendsTheFile()
-		=> (await RequestAssert.SendAsync((c, ct) => c.SamlMetadata.GetIdentityProviderMetadataAsync(new SamlIdpMetadataOptions { IdpMetadataFile = "/opt/idp.xml" }, ct)))
-			.ShouldBe(HttpMethod.Get, "/services/admin/SAML-idp-metadata", query: "?idpMetadataFile=%2Fopt%2Fidp.xml&output_mode=json");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.SamlMetadata.GetIdentityProviderMetadataAsync(new SamlIdpMetadataOptions { IdpMetadataFile = "/opt/idp.xml" }, ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/admin/SAML-idp-metadata", query: "?idpMetadataFile=%2Fopt%2Fidp.xml&output_mode=json");
 
 	[Fact]
 	public async Task GetServiceProviderMetadataAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.SamlMetadata.GetServiceProviderMetadataAsync(ct), SpMetadataJson))
-			.ShouldBe(HttpMethod.Get, "/services/admin/SAML-sp-metadata");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.SamlMetadata.GetServiceProviderMetadataAsync(ct), SpMetadataJson))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/admin/SAML-sp-metadata");
 
 	[Fact]
 	public async Task ReplicateCertificatesAsync_Posts()
-		=> (await RequestAssert.SendAsync((c, ct) => c.SamlMetadata.ReplicateCertificatesAsync(ct)))
-			.ShouldBe(HttpMethod.Post, "/services/admin/replicate-SAML-certs");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.SamlMetadata.ReplicateCertificatesAsync(ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Post, "/services/admin/replicate-SAML-certs");
 
 	[Fact]
 	public async Task ServiceProviderMetadata_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.SamlMetadata.GetServiceProviderMetadataAsync(ct), SpMetadataJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.SamlMetadata.GetServiceProviderMetadataAsync(ct), SpMetadataJson);
 
 		var entry = feed.Entries.Should().ContainSingle().Subject;
 		entry.Name.Should().Be("spMetadata");
@@ -59,12 +59,12 @@ public class SamlMetadataTests
 	[Fact]
 	public async Task IdentityProviderMetadata_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.SamlMetadata.GetIdentityProviderMetadataAsync(null, ct), IdpMetadataJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.SamlMetadata.GetIdentityProviderMetadataAsync(null, ct), IdpMetadataJson);
 
 		feed.Entries.Should().ContainSingle().Subject.Content!.IdpMetadataPayload.Should().Be("<md:EntityDescriptor entityID=\"https://idp.example.com\"/>");
 	}
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.SamlMetadata.GetIdentityProviderMetadataAsync(null, ct), HttpStatusCode.BadRequest);
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.SamlMetadata.GetIdentityProviderMetadataAsync(null, ct), HttpStatusCode.BadRequest);
 }

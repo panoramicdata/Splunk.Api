@@ -43,13 +43,13 @@ public class LicenseLocalPeerTests
 
 	[Fact]
 	public async Task GetAsync_SendsGet()
-		=> (await RequestAssert.SendAsync((c, ct) => c.LicenseLocalPeer.GetAsync(ct)))
-			.ShouldBe(HttpMethod.Get, "/services/licenser/localpeer");
+		=> (await EndpointRequests.SendAsync((c, ct) => c.LicenseLocalPeer.GetAsync(ct)))
+			.ShouldBeEndpointRequest(HttpMethod.Get, "/services/licenser/localpeer");
 
 	[Fact]
 	public async Task Content_MapsEveryModelledField()
 	{
-		var feed = await RequestAssert.ReadAsync((c, ct) => c.LicenseLocalPeer.GetAsync(ct), LocalPeerJson);
+		var feed = await EndpointRequests.ReadAsync((c, ct) => c.LicenseLocalPeer.GetAsync(ct), LocalPeerJson);
 
 		var entry = feed.Entries.Should().ContainSingle().Subject;
 		entry.Name.Should().Be("license");
@@ -74,5 +74,5 @@ public class LicenseLocalPeerTests
 
 	[Fact]
 	public Task Error_RaisesSplunkApiException()
-		=> RequestAssert.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseLocalPeer.GetAsync(ct), System.Net.HttpStatusCode.Forbidden);
+		=> EndpointRequests.ShouldRaiseSplunkErrorAsync((c, ct) => c.LicenseLocalPeer.GetAsync(ct), System.Net.HttpStatusCode.Forbidden);
 }
