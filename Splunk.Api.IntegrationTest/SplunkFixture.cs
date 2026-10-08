@@ -15,7 +15,7 @@ namespace Splunk.Api.IntegrationTest;
 public sealed class SplunkFixture : IDisposable
 {
 	/// <summary>The prefix of every object the integration tests create, so leftovers are recognisable.</summary>
-	public const string Prefix = "splunk_api_it_";
+	internal const string Prefix = "splunk_api_it_";
 
 	private readonly Lazy<SplunkClient> _client;
 
@@ -34,7 +34,10 @@ public sealed class SplunkFixture : IDisposable
 	public SplunkClient Client => _client.Value;
 
 	/// <summary>Builds options from configuration, failing loudly when a required setting is missing.</summary>
-	public SplunkClientOptions CreateOptions(Action<SplunkClientOptions>? tweak = null)
+	public SplunkClientOptions CreateOptions() => CreateOptions(static _ => { });
+
+	/// <summary>Builds options from configuration, then lets <paramref name="tweak"/> change them.</summary>
+	public SplunkClientOptions CreateOptions(Action<SplunkClientOptions> tweak)
 	{
 		var options = new SplunkClientOptions
 		{
@@ -52,7 +55,7 @@ public sealed class SplunkFixture : IDisposable
 				+ "or run docker/Start-SplunkTestInstance.ps1.");
 		}
 
-		tweak?.Invoke(options);
+		tweak(options);
 		return options;
 	}
 
