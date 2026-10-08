@@ -5,11 +5,37 @@ using System.Net;
 namespace Splunk.Api.IntegrationTest.Spl2;
 
 [Collection(SplunkTestGroup.Name)]
-public class Spl2IntegrationTests(SplunkFixture fixture)
+public class Spl2IntegrationTests(SplunkFixture fixture) : IAsyncLifetime
 {
 	private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
 	private SplunkClient Client => fixture.Client;
+
+	/// <summary>
+	/// The orchestrator runs as a splunkd sidecar that the shared instance restarts now and then; while it is down its
+	/// routes answer 404 <c>Not Found</c>. Wait (up to a minute) until it answers before each test.
+	/// </summary>
+	public async ValueTask InitializeAsync()
+	{
+		for (var attempt = 0; ; attempt++)
+		{
+			try
+			{
+				await Client.Spl2Modules.ListAsync(new Spl2ModuleListOptions { Count = 1 }, Ct);
+				return;
+			}
+			catch (SplunkApiException exception) when (exception.StatusCode == HttpStatusCode.NotFound && attempt < 30)
+			{
+				await Task.Delay(TimeSpan.FromSeconds(2), Ct);
+			}
+		}
+	}
+
+	public ValueTask DisposeAsync()
+	{
+		GC.SuppressFinalize(this);
+		return ValueTask.CompletedTask;
+	}
 
 	[Fact]
 	public async Task Datasets_PageThroughAndGetOne()
