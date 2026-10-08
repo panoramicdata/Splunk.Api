@@ -85,19 +85,8 @@ public class MetricsCatalogIntegrationTests(SplunkFixture fixture)
 	}
 
 	/// <summary>The catalog is built in the background: poll until it lists something.</summary>
-	private static async Task<SplunkFeed<MetricCatalogItem>> WaitForAsync(Func<Task<SplunkFeed<MetricCatalogItem>>> read)
-	{
-		for (var attempt = 0; ; attempt++)
-		{
-			var feed = await read();
-			if (feed.Entries.Count > 0 || attempt == 30)
-			{
-				return feed;
-			}
-
-			await Task.Delay(TimeSpan.FromSeconds(2), Ct);
-		}
-	}
+	private static Task<SplunkFeed<MetricCatalogItem>> WaitForAsync(Func<Task<SplunkFeed<MetricCatalogItem>>> read)
+		=> Poll.UntilAsync(read, feed => feed.Entries.Count > 0, 31, TimeSpan.FromSeconds(2));
 
 	private Task CreateMetricIndexAsync(string name)
 		=> SearchRawRequests.SendAsync(fixture, HttpMethod.Post, "services/data/indexes", new Dictionary<string, string> { ["name"] = name, ["datatype"] = "metric" });

@@ -17,19 +17,19 @@ public sealed class SearchEventsOptions : SearchPageOptions
 	[AliasAs("max_lines")]
 	public int? MaxLines { get; init; }
 
-	/// <summary>How <see cref="MaxLines"/> shortens an event (<c>truncation_mode</c>).</summary>
-	[AliasAs("truncation_mode")]
-	public TruncationMode? TruncationMode { get; init; }
+	/// <summary>The strftime format of times in the output (<c>output_time_format</c>).</summary>
+	[AliasAs("output_time_format")]
+	public string? OutputTimeFormat { get; init; }
 
 	/// <summary>The segmentation to apply (<c>segmentation</c>), for example <c>raw</c> or <c>full</c>.</summary>
 	[AliasAs("segmentation")]
 	public string? Segmentation { get; init; }
 
-	/// <summary>The strftime format of times in the output (<c>output_time_format</c>).</summary>
-	[AliasAs("output_time_format")]
-	public string? OutputTimeFormat { get; init; }
-
 	/// <summary>The strftime format of absolute times in <see cref="EarliestTime"/> and <see cref="LatestTime"/> (<c>time_format</c>).</summary>
 	[AliasAs("time_format")]
 	public string? TimeFormat { get; init; }
+
+	/// <summary>How <see cref="MaxLines"/> shortens an event (<c>truncation_mode</c>).</summary>
+	[AliasAs("truncation_mode")]
+	public TruncationMode? TruncationMode { get; init; }
 }

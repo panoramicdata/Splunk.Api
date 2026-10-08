@@ -16,20 +16,11 @@ public class Spl2IntegrationTests(SplunkFixture fixture) : IAsyncLifetime
 	/// routes answer 404 <c>Not Found</c>. Wait (up to a minute) until it answers before each test.
 	/// </summary>
 	public async ValueTask InitializeAsync()
-	{
-		for (var attempt = 0; ; attempt++)
-		{
-			try
-			{
-				await Client.Spl2Modules.ListAsync(new Spl2ModuleListOptions { Count = 1 }, Ct);
-				return;
-			}
-			catch (SplunkApiException exception) when (exception.StatusCode == HttpStatusCode.NotFound && attempt < 30)
-			{
-				await Task.Delay(TimeSpan.FromSeconds(2), Ct);
-			}
-		}
-	}
+		=> await Poll.RetryAsync<SplunkApiException>(
+			() => Client.Spl2Modules.ListAsync(new Spl2ModuleListOptions { Count = 1 }, Ct),
+			exception => exception.StatusCode == HttpStatusCode.NotFound,
+			31,
+			TimeSpan.FromSeconds(2));
 
 	public ValueTask DisposeAsync()
 	{
@@ -55,10 +46,7 @@ public class Spl2IntegrationTests(SplunkFixture fixture) : IAsyncLifetime
 	[Fact]
 	public async Task Datasets_RejectedArguments_RaiseBadRequest()
 	{
-		var withConnection = () => Client.Spl2Datasets.GetAsync("indexes.main", true, Ct);
-		var thrown = await withConnection.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-		thrown.Which.Message.Should().Be("The with_connection parameter is supported only for unified datasets.");
+		await SplunkAssert.FailsAsync(() => Client.Spl2Datasets.GetAsync("indexes.main", true, Ct), HttpStatusCode.BadRequest, "The with_connection parameter is supported only for unified datasets.");
 
 		var metricKind = () => Client.Spl2Datasets.ListAsync(new Spl2DatasetListOptions { Kind = "metric" }, Ct);
 		(await metricKind.Should().ThrowAsync<SplunkApiException>()).Which.Message.Should().Be("Validation Failed: kind=metric is not allowed.");
@@ -71,10 +59,10 @@ public class Spl2IntegrationTests(SplunkFixture fixture) : IAsyncLifetime
 		list.Results.Should().OnlyContain(m => m.Name != null);
 
 		var unknown = "apps.search." + SplunkFixture.UniqueName("none");
-		await ShouldFailAsync(() => Client.Spl2Modules.GetAsync(unknown, null, Ct), HttpStatusCode.NotFound, "Module not found.");
-		await ShouldFailAsync(() => Client.Spl2Modules.DeleteAsync(unknown, Ct), HttpStatusCode.NotFound, "Module not found.");
-		await ShouldFailAsync(() => Client.Spl2Modules.GetPermissionsAsync(unknown, Ct), HttpStatusCode.NotFound, "Module not found.");
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(() => Client.Spl2Modules.GetAsync(unknown, null, Ct), HttpStatusCode.NotFound, "Module not found.");
+		await SplunkAssert.FailsAsync(() => Client.Spl2Modules.DeleteAsync(unknown, Ct), HttpStatusCode.NotFound, "Module not found.");
+		await SplunkAssert.FailsAsync(() => Client.Spl2Modules.GetPermissionsAsync(unknown, Ct), HttpStatusCode.NotFound, "Module not found.");
+		await SplunkAssert.FailsAsync(
 			() => Client.Spl2Modules.UpdatePermissionsAsync(unknown, Permissions(unknown), Ct),
 			HttpStatusCode.BadRequest,
 			"failed to find module " + unknown);
@@ -85,7 +73,7 @@ public class Spl2IntegrationTests(SplunkFixture fixture) : IAsyncLifetime
 	{
 		using var namespaced = Client.InNamespace("admin", "search");
 
-		await ShouldFailAsync(() => namespaced.Spl2Modules.ListAsync(null, Ct), HttpStatusCode.NotFound, "route not found.");
+		await SplunkAssert.FailsAsync(() => namespaced.Spl2Modules.ListAsync(null, Ct), HttpStatusCode.NotFound, "route not found.");
 	}
 
 	[Fact]
@@ -136,13 +124,6 @@ public class Spl2IntegrationTests(SplunkFixture fixture) : IAsyncLifetime
 
 	private static JsonBody<Spl2ModulePermissionsRequest> Permissions(string resource)
 		=> new(new Spl2ModulePermissionsRequest { ResourceName = resource, Permissions = [new("read", ["admin"]), new("write", ["admin"])] });
-
-	private static async Task ShouldFailAsync(Func<Task> act, HttpStatusCode status, string message)
-	{
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(status);
-		thrown.Which.Message.Should().Be(message);
-	}
 
 	/// <summary>
 	/// Runs an operation that needs Splunk's SPL2 language server. The splunk/splunk 10.6 Docker image does not run it, and

@@ -23,7 +23,7 @@ public class FormEncoderTests
 		[JsonIgnore]
 		public string Ignored { get; init; } = "ignored";
 
-		public string WriteOnly { set => AdditionalParameters["write-only"] = value; }
+		public string NotPubliclyReadable { internal get; init; } = "hidden";
 
 		public string this[int index] => "indexer";
 
@@ -51,6 +51,15 @@ public class FormEncoderTests
 			Numbers = [1, null, 2],
 			AdditionalParameters = { ["action.email"] = "1", ["empty"] = null }
 		}).Should().Be("dotted.name=a b&camel_case_number=3&flag=false&mode=alpha_case&numbers=1&numbers=2&action.email=1&empty=");
+
+	[Fact]
+	public void PropertiesWithoutAPublicGetter_AreLeftOut()
+	{
+		var body = new Everything { NotPubliclyReadable = "set" };
+
+		body.NotPubliclyReadable.Should().Be("set");
+		Encode(body).Should().BeEmpty();
+	}
 
 	[Fact]
 	public void NullAndEmptyValues_AreLeftOutOrSentEmpty()

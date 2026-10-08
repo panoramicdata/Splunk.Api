@@ -12,7 +12,7 @@ public class RawTcpInputsTests
 		{
 			"SSL": false, "_rcvbuf": 1572864, "connection_host": "ip", "disabled": false, "eai:acl": null, "group": "listenerports",
 			"host": "web01", "host_resolved": "splunk01", "index": "main", "queue": "parsingQueue", "rawTcpDoneTimeout": 5,
-			"restrictToHost": "10.0.0.5", "source": "tcp:47011", "sourcetype": "app_tcp"
+			"restrictToHost": "forwarder.example.com", "source": "tcp:47011", "sourcetype": "app_tcp"
 		}
 		""");
 
@@ -37,13 +37,13 @@ public class RawTcpInputsTests
 				Index = "main",
 				Queue = "parsingQueue",
 				RawTcpDoneTimeout = 5,
-				RestrictToHost = "10.0.0.5",
+				RestrictToHost = "forwarder.example.com",
 				Ssl = false,
 				Source = "tcp",
 				Sourcetype = "app_tcp"
 			},
 			ct)))
-			.ShouldBePost(Path, "name=47011&connection_host=ip&disabled=false&host=web01&index=main&queue=parsingQueue&rawTcpDoneTimeout=5&restrictToHost=10.0.0.5&SSL=false&source=tcp&sourcetype=app_tcp");
+			.ShouldBePost(Path, "name=47011&connection_host=ip&disabled=false&host=web01&index=main&queue=parsingQueue&rawTcpDoneTimeout=5&restrictToHost=forwarder.example.com&SSL=false&source=tcp&sourcetype=app_tcp");
 
 	[Fact]
 	public async Task GetAsync_SendsExactRequest()
@@ -76,7 +76,7 @@ public class RawTcpInputsTests
 		input.Index.Should().Be("main");
 		input.Queue.Should().Be("parsingQueue");
 		input.RawTcpDoneTimeout.Should().Be(5);
-		input.RestrictToHost.Should().Be("10.0.0.5");
+		input.RestrictToHost.Should().Be("forwarder.example.com");
 		input.Source.Should().Be("tcp:47011");
 		input.Sourcetype.Should().Be("app_tcp");
 	}

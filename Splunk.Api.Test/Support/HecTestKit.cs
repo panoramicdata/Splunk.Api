@@ -15,12 +15,7 @@ internal static class HecTestKit
 	public static SplunkHecClient Create(StubHandler stub, string? channel)
 		=> new(new SplunkHecClientOptions { BaseUrl = BaseUrl, Token = Token, Channel = channel, MaxRetries = 0 }, stub);
 
-	public static StubHandler Stub(string json, HttpStatusCode status)
-	{
-		var stub = new StubHandler();
-		stub.Enqueue(status, json);
-		return stub;
-	}
+	public static StubHandler Stub(string json, HttpStatusCode status) => TestClient.Stub(json, status);
 
 	/// <summary>Sends one call through a client with the default channel, answering <paramref name="response"/>; returns the request.</summary>
 	public static async Task<RecordedCall> CaptureAsync(Func<SplunkHecClient, CancellationToken, Task> call, string response)
@@ -34,10 +29,7 @@ internal static class HecTestKit
 	/// <summary>Asserts the verb, path, query, JSON or text body and the authorization of a collector request.</summary>
 	public static void ShouldBeHec(this RecordedCall call, HttpMethod method, string path, string query, string? body)
 	{
-		call.Method.Should().Be(method);
-		call.Uri.AbsolutePath.Should().Be(path);
-		call.Uri.Query.Should().Be(query);
-		call.Body.Should().Be(body);
+		call.ShouldMatch(method, path, query, body);
 		call.Headers.Authorization!.Scheme.Should().Be("Splunk");
 		call.Headers.Authorization.Parameter.Should().Be(Token);
 	}

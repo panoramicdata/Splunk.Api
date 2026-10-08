@@ -9,7 +9,7 @@ namespace Splunk.Api.Models.Inputs;
 public sealed class HecSettingsUpdateRequest : SplunkFormRequest
 {
 	/// <summary>The name of the entry that holds the global settings, <c>http</c>.</summary>
-	public const string SettingsName = "http";
+	public static string SettingsName { get; } = "http";
 
 	/// <summary>Whether the whole collector is disabled.</summary>
 	[JsonPropertyName("disabled")]

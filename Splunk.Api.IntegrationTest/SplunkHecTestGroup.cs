@@ -4,5 +4,5 @@ namespace Splunk.Api.IntegrationTest;
 [CollectionDefinition(Name)]
 public sealed class SplunkHecTestGroup : ICollectionFixture<SplunkHecFixture>
 {
-	public const string Name = "SplunkHec";
+	internal const string Name = "SplunkHec";
 }

@@ -12,15 +12,8 @@ internal static class Calls
 	public const string EmptyFeed = """{"entry":[],"messages":[]}""";
 
 	/// <summary>Runs <paramref name="call"/> against a client answering <paramref name="json"/> and returns the one recorded request.</summary>
-	public static async Task<RecordedCall> RecordAsync(Func<SplunkClient, Task> call, string json)
-	{
-		var stub = TestClient.Stub(json);
-		using var client = TestClient.Create(stub);
-
-		await call(client);
-
-		return stub.Calls.Should().ContainSingle().Subject;
-	}
+	public static Task<RecordedCall> RecordAsync(Func<SplunkClient, Task> call, string json)
+		=> TestClient.CaptureAsync((client, _) => call(client), json);
 
 	/// <summary>Runs <paramref name="call"/> and asserts the request's method, unescaped path, raw query and form body.</summary>
 	public static async Task<RecordedCall> AssertAsync(
@@ -31,32 +24,17 @@ internal static class Calls
 		string? body)
 	{
 		var recorded = await RecordAsync(call, EmptyFeed);
-
-		recorded.Method.Should().Be(method);
-		recorded.Uri.AbsolutePath.Should().Be(path);
-		recorded.Uri.Query.Should().Be(query);
-		recorded.Body.Should().Be(body);
+		recorded.ShouldMatch(method, path, query, body);
 		return recorded;
 	}
 
 	/// <summary>Runs <paramref name="call"/> against a client that answers <paramref name="json"/> and returns the result.</summary>
-	public static async Task<T> MapAsync<T>(Func<SplunkClient, Task<T>> call, string json)
-	{
-		using var client = TestClient.Create(TestClient.Stub(json));
-		return await call(client);
-	}
+	public static Task<T> MapAsync<T>(Func<SplunkClient, Task<T>> call, string json)
+		=> TestClient.ReadAsync((client, _) => call(client), json);
 
 	/// <summary>Asserts that a Splunk error response raises <see cref="SplunkApiException"/> carrying its message.</summary>
-	public static async Task AssertErrorAsync(Func<SplunkClient, Task> call, HttpStatusCode status)
-	{
-		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"ERROR","text":"Splunk says no"}]}""", status));
-
-		var act = () => call(client);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(status);
-		thrown.Which.Message.Should().Be("Splunk says no");
-	}
+	public static Task AssertErrorAsync(Func<SplunkClient, Task> call, HttpStatusCode status)
+		=> TestClient.ShouldFailAsync((client, _) => call(client), status, """{"messages":[{"type":"ERROR","text":"Splunk says no"}]}""", "Splunk says no");
 
 	/// <summary>The test's cancellation token.</summary>
 	public static CancellationToken Token => TestContext.Current.CancellationToken;

@@ -111,7 +111,7 @@ internal static class SplunkFormEncoder
 
 	private static FormProperty[] DiscoverProperties(Type type)
 		=> [.. type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-			.Where(p => p.CanRead
+			.Where(p => p.GetGetMethod() is not null
 				&& p.GetIndexParameters().Length == 0
 				&& p.GetCustomAttribute<JsonIgnoreAttribute>() is null
 				&& !(p.DeclaringType == typeof(SplunkFormRequest) && p.Name == nameof(SplunkFormRequest.AdditionalParameters)))

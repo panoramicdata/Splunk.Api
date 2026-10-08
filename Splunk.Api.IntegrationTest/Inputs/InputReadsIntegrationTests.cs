@@ -29,18 +29,11 @@ public class InputReadsIntegrationTests(SplunkFixture fixture)
 	/// input changes (as other tests do), so an empty answer is retried for a few seconds.
 	/// </summary>
 	private async Task<IReadOnlyList<SplunkEntry<SplunkDynamicContent>>> ListMembersAsync(string name)
-	{
-		for (var attempt = 1; ; attempt++)
-		{
-			var members = (await fixture.Client.MonitorInputs.ListMembersAsync(name, new ListOptions { Count = 5 }, Ct)).Entries;
-			if (members.Count > 0 || attempt == 20)
-			{
-				return members;
-			}
-
-			await Task.Delay(TimeSpan.FromMilliseconds(500), Ct);
-		}
-	}
+		=> (await Poll.UntilAsync(
+			() => fixture.Client.MonitorInputs.ListMembersAsync(name, new ListOptions { Count = 5 }, Ct),
+			feed => feed.Entries.Count > 0,
+			20,
+			TimeSpan.FromMilliseconds(500))).Entries;
 
 	[Fact]
 	public async Task ScriptedInputs_ListAndGet()

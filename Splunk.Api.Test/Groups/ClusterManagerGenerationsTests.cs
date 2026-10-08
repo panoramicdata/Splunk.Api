@@ -33,10 +33,10 @@ public class ClusterManagerGenerationsTests
 	[Fact]
 	public async Task CreateAsync_SendsPostWithTheSearchHead()
 		=> (await RequestProbe.SendAsync((c, ct) => c.ClusterManagerGenerations.CreateAsync(
-			new ClusterGenerationCreateRequest { Name = "https://sh1:8089", GenerationPollInterval = 62, Label = "SH1", ManagementPort = "8089", RegisterSearchAddress = "10.0.0.5" },
+			new ClusterGenerationCreateRequest { Name = "https://sh1:8089", GenerationPollInterval = 62, Label = "SH1", ManagementPort = "8089", RegisterSearchAddress = "sh1.example.com" },
 			ct)))
 			.ShouldBeProbed(HttpMethod.Post, Path, body:
-				"name=https%3A%2F%2Fsh1%3A8089&generation_poll_interval=62&label=SH1&mgmt_port=8089&register_search_address=10.0.0.5");
+				"name=https%3A%2F%2Fsh1%3A8089&generation_poll_interval=62&label=SH1&mgmt_port=8089&register_search_address=sh1.example.com");
 
 	[Fact]
 	public async Task GetAsync_SendsGetWithTheName()
@@ -47,9 +47,9 @@ public class ClusterManagerGenerationsTests
 	public async Task UpdateAsync_SendsPostWithTheSettings()
 		=> (await RequestProbe.SendAsync((c, ct) => c.ClusterManagerGenerations.UpdateAsync(
 			"SH-GUID",
-			new ClusterGenerationUpdateRequest { GenerationPollInterval = 62, Label = "PEER2", ManagementPort = "8089", RegisterSearchAddress = "10.0.0.6" },
+			new ClusterGenerationUpdateRequest { GenerationPollInterval = 62, Label = "PEER2", ManagementPort = "8089", RegisterSearchAddress = "peer2.example.com" },
 			ct)))
-			.ShouldBeProbed(HttpMethod.Post, $"{Path}/SH-GUID", body: "generation_poll_interval=62&label=PEER2&mgmt_port=8089&register_search_address=10.0.0.6");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/SH-GUID", body: "generation_poll_interval=62&label=PEER2&mgmt_port=8089&register_search_address=peer2.example.com");
 
 	[Fact]
 	public async Task GetAsync_MapsEveryModelledField()

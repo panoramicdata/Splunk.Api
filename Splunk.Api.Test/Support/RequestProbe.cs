@@ -12,41 +12,20 @@ internal static class RequestProbe
 	public const string EmptyFeed = """{"links":{},"entry":[],"paging":{"total":0,"perPage":30,"offset":0},"messages":[]}""";
 
 	/// <summary>Runs <paramref name="call"/> against a client that answers <paramref name="json"/>; returns the one request sent.</summary>
-	public static async Task<RecordedCall> SendAsync(Func<SplunkClient, CancellationToken, Task> call, string json = EmptyFeed)
-	{
-		var stub = TestClient.Stub(json);
-		using var client = TestClient.Create(stub);
-		await call(client, TestContext.Current.CancellationToken);
-		return stub.Calls.Should().ContainSingle().Subject;
-	}
+	public static Task<RecordedCall> SendAsync(Func<SplunkClient, CancellationToken, Task> call, string json = EmptyFeed)
+		=> TestClient.CaptureAsync(call, json);
 
 	/// <summary>Runs <paramref name="call"/> against a client that answers <paramref name="json"/>; returns the result.</summary>
-	public static async Task<T> ReadAsync<T>(Func<SplunkClient, CancellationToken, Task<T>> call, string json)
-	{
-		using var client = TestClient.Create(TestClient.Stub(json));
-		return await call(client, TestContext.Current.CancellationToken);
-	}
+	public static Task<T> ReadAsync<T>(Func<SplunkClient, CancellationToken, Task<T>> call, string json)
+		=> TestClient.ReadAsync(call, json);
 
 	/// <summary>Asserts that <paramref name="call"/> raises <see cref="SplunkApiException"/> with the given status and message.</summary>
-	public static async Task FailsAsync(Func<SplunkClient, CancellationToken, Task> call, HttpStatusCode status, string body, string message)
-	{
-		using var client = TestClient.Create(TestClient.Stub(body, status));
-
-		var act = () => call(client, TestContext.Current.CancellationToken);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(status);
-		thrown.Which.Message.Should().Be(message);
-	}
+	public static Task FailsAsync(Func<SplunkClient, CancellationToken, Task> call, HttpStatusCode status, string body, string message)
+		=> TestClient.ShouldFailAsync(call, status, body, message);
 
 	/// <summary>Asserts the request's method, path, query and form body.</summary>
 	public static void ShouldBeProbed(this RecordedCall call, HttpMethod method, string path, string query = Json, string? body = null)
-	{
-		call.Method.Should().Be(method);
-		call.Uri.AbsolutePath.Should().Be(path);
-		call.Uri.Query.Should().Be(query);
-		call.Body.Should().Be(body);
-	}
+		=> call.ShouldMatch(method, path, query, body);
 
 	/// <summary>
 	/// Wraps one entry's <paramref name="content"/> (a JSON object) in Splunk's feed envelope, as a 10.6 server returns it.

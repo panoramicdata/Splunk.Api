@@ -44,6 +44,8 @@ public partial class SearchJobsTests
 	[InlineData(SearchJobAction.Touch, "action=touch")]
 	[InlineData(SearchJobAction.EnablePreview, "action=enablepreview")]
 	[InlineData(SearchJobAction.DisablePreview, "action=disablepreview")]
+	[InlineData(SearchJobAction.SetPriority, "action=setpriority")]
+	[InlineData(SearchJobAction.SetWorkloadPool, "action=setworkloadpool")]
 	public async Task ControlAsync_SendsTheAction(SearchJobAction action, string body)
 	{
 		var stub = TestClient.Stub("""{"messages":[]}""");
@@ -67,19 +69,6 @@ public partial class SearchJobsTests
 
 		SearchRequestAssert.Sent(stub, HttpMethod.Post, "/services/search/jobs/my_sid/control", "?output_mode=json", "action=setttl&ttl=120&priority=3&workload_pool=pool");
 		reply.Messages.Should().ContainSingle().Which.Text.Should().Be("The ttl of the search job was changed to 120.");
-	}
-
-	[Theory]
-	[InlineData(SearchJobAction.SetPriority, "action=setpriority")]
-	[InlineData(SearchJobAction.SetWorkloadPool, "action=setworkloadpool")]
-	public async Task ControlAsync_SendsTheArgumentActions(SearchJobAction action, string body)
-	{
-		var stub = TestClient.Stub("""{"messages":[]}""");
-		using var client = TestClient.Create(stub);
-
-		await client.SearchJobs.ControlAsync("my_sid", new SearchJobControlRequest { Action = action }, Ct);
-
-		stub.Calls[0].Body.Should().Be(body);
 	}
 
 	[Fact]

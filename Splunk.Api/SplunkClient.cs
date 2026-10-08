@@ -14,7 +14,7 @@ namespace Splunk.Api;
 /// Every request asks for JSON (<c>output_mode=json</c>), authenticates as <see cref="SplunkClientOptions"/> describes,
 /// and retries transient failures. Non-success responses raise <see cref="SplunkApiException"/>; a failure to send raises
 /// the transport's own exception (such as <see cref="HttpRequestException"/>, or <see cref="TimeoutException"/> when an
-/// attempt exceeds <see cref="SplunkClientOptions.Timeout"/>).
+/// attempt exceeds <see cref="SplunkConnectionOptions.Timeout"/>).
 /// </para>
 /// <para>
 /// A client is thread-safe and intended to be long-lived: create one per Splunk instance and identity, and dispose it
@@ -37,8 +37,8 @@ public sealed partial class SplunkClient : IDisposable
 	/// <summary>
 	/// Creates a client that sends requests through <paramref name="innerHandler"/> (for example a proxy-aware or
 	/// instrumented handler). The client takes ownership of the handler and disposes it.
-	/// <see cref="SplunkClientOptions.TrustedServerCertificateThumbprint"/> and
-	/// <see cref="SplunkClientOptions.ServerCertificateValidationCallback"/> are ignored: configure certificate
+	/// <see cref="SplunkConnectionOptions.TrustedServerCertificateThumbprint"/> and
+	/// <see cref="SplunkConnectionOptions.ServerCertificateValidationCallback"/> are ignored: configure certificate
 	/// validation on the handler instead.
 	/// </summary>
 	/// <param name="options">Connection options.</param>

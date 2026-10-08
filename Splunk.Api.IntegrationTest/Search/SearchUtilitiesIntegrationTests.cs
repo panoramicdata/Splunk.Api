@@ -25,11 +25,7 @@ public class SearchUtilitiesIntegrationTests(SplunkFixture fixture)
 	[Fact]
 	public async Task Parser_UnknownCommand_RaisesBadRequest()
 	{
-		var act = () => Client.SearchParser.ParseAsync(new SearchParserRequest { Query = "| nosuchcmd" }, Ct);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-		thrown.Which.Message.Should().Be("Unknown search command 'nosuchcmd'.");
+		await SplunkAssert.FailsAsync(() => Client.SearchParser.ParseAsync(new SearchParserRequest { Query = "| nosuchcmd" }, Ct), HttpStatusCode.BadRequest, "Unknown search command 'nosuchcmd'.");
 	}
 
 	[Fact]
@@ -45,11 +41,7 @@ public class SearchUtilitiesIntegrationTests(SplunkFixture fixture)
 	[Fact]
 	public async Task TimeParser_InvalidTime_RaisesBadRequest()
 	{
-		var act = () => Client.TimeParser.ParseAsync(["garbage"], null, Ct);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-		thrown.Which.Message.Should().Be("Invalid time.");
+		await SplunkAssert.FailsAsync(() => Client.TimeParser.ParseAsync(["garbage"], null, Ct), HttpStatusCode.BadRequest, "Invalid time.");
 	}
 
 	[Fact]

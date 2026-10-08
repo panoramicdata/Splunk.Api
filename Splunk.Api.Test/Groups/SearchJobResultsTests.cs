@@ -122,8 +122,8 @@ public class SearchJobResultsTests
 		SearchRequestAssert.Sent(stub,
 			HttpMethod.Get,
 			EventsPath,
-			"?earliest_time=-1h&latest_time=now&max_lines=5&truncation_mode=truncate&segmentation=full&output_time_format=%25s"
-				+ "&time_format=%25s&count=1&offset=-1&f=_raw&output_mode=json");
+			"?earliest_time=-1h&latest_time=now&max_lines=5&output_time_format=%25s&segmentation=full&time_format=%25s&truncation_mode=truncate"
+				+ "&count=1&offset=-1&f=_raw&output_mode=json");
 		events.Results.Should().HaveCount(2);
 	}
 

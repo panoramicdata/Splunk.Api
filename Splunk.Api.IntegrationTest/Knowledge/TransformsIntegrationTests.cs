@@ -6,40 +6,34 @@ namespace Splunk.Api.IntegrationTest.Knowledge;
 
 /// <summary>Round trips the <c>data/transforms/*</c> and <c>data/lookup-table-files</c> endpoints in the search app.</summary>
 [Collection(SplunkTestGroup.Name)]
-public sealed class TransformsIntegrationTests(SplunkFixture fixture) : IDisposable
+public sealed class TransformsIntegrationTests(SplunkFixture fixture) : SearchAppIntegrationTests(fixture)
 {
-	private readonly SplunkClient _app = fixture.Client.InNamespace("nobody", "search");
-
-	private static CancellationToken Token => TestContext.Current.CancellationToken;
-
-	public void Dispose() => _app.Dispose();
-
 	[Fact]
 	public async Task FieldTransform_CreateGetUpdateDelete_UpdateResetsOmittedSettings()
 	{
 		var name = SplunkFixture.UniqueName("tx");
 		try
 		{
-			var created = await _app.FieldTransforms.CreateAsync(
+			var created = await App.FieldTransforms.CreateAsync(
 				new FieldTransformCreateRequest { Name = name, Regex = "(?<k>[a-z]+)=(?<v>[a-z]+)", MultivalueAdd = true, CleanKeys = false },
 				Token);
 			created.Entries.Should().ContainSingle().Which.Content!.SourceKey.Should().Be("_raw", "Splunk defaults SOURCE_KEY although the reference marks it required");
 
-			await _app.FieldTransforms.UpdateAsync(name, new FieldTransformUpdateRequest { Regex = "(?<k>[a-z]+):(?<v>[a-z]+)", Format = "$1::$2" }, Token);
+			await App.FieldTransforms.UpdateAsync(name, new FieldTransformUpdateRequest { Regex = "(?<k>[a-z]+):(?<v>[a-z]+)", Format = "$1::$2" }, Token);
 
-			var transform = (await _app.FieldTransforms.GetAsync(name, Token)).Entries.Should().ContainSingle().Subject.Content!;
+			var transform = (await App.FieldTransforms.GetAsync(name, Token)).Entries.Should().ContainSingle().Subject.Content!;
 			transform.Regex.Should().Be("(?<k>[a-z]+):(?<v>[a-z]+)");
 			transform.Format.Should().Be("$1::$2");
 			transform.MultivalueAdd.Should().BeFalse("an update rewrites the stanza");
 			transform.CleanKeys.Should().BeTrue();
-			(await _app.FieldTransforms.ListAsync(new ListOptions { Search = name }, Token)).Entries.Should().ContainSingle();
+			(await App.FieldTransforms.ListAsync(new ListOptions { Search = name }, Token)).Entries.Should().ContainSingle();
 		}
 		finally
 		{
-			await Cleanup.IgnoreMissingAsync(() => _app.FieldTransforms.DeleteAsync(name, CancellationToken.None));
+			await Cleanup.IgnoreMissingAsync(() => App.FieldTransforms.DeleteAsync(name, CancellationToken.None));
 		}
 
-		await Cleanup.AssertGoneAsync(() => _app.FieldTransforms.GetAsync(name, Token));
+		await Cleanup.AssertGoneAsync(() => App.FieldTransforms.GetAsync(name, Token));
 	}
 
 	[Fact]
@@ -49,17 +43,17 @@ public sealed class TransformsIntegrationTests(SplunkFixture fixture) : IDisposa
 		const string Command = "external_lookup.py clienthost clientip";
 		try
 		{
-			var created = await _app.LookupDefinitions.CreateAsync(
+			var created = await App.LookupDefinitions.CreateAsync(
 				new LookupDefinitionCreateRequest { Name = name, ExternalCommand = Command, FieldsList = "clienthost,clientip", MaxMatches = 5 },
 				Token);
 			created.Entries.Should().ContainSingle().Which.Content!.Type.Should().Be("external");
 
-			await _app.LookupDefinitions.UpdateAsync(
+			await App.LookupDefinitions.UpdateAsync(
 				name,
 				new LookupDefinitionUpdateRequest { ExternalCommand = Command, FieldsList = "clienthost,clientip", DefaultMatch = "none", MinMatches = 1 },
 				Token);
 
-			var lookup = (await _app.LookupDefinitions.GetAsync(name, Token)).Entries.Should().ContainSingle().Subject.Content!;
+			var lookup = (await App.LookupDefinitions.GetAsync(name, Token)).Entries.Should().ContainSingle().Subject.Content!;
 			lookup.ExternalCommand.Should().Be(Command);
 			lookup.Fields.Should().Equal("clienthost", "clientip");
 			lookup.DefaultMatch.Should().Be("none");
@@ -67,16 +61,16 @@ public sealed class TransformsIntegrationTests(SplunkFixture fixture) : IDisposa
 		}
 		finally
 		{
-			await Cleanup.IgnoreMissingAsync(() => _app.LookupDefinitions.DeleteAsync(name, CancellationToken.None));
+			await Cleanup.IgnoreMissingAsync(() => App.LookupDefinitions.DeleteAsync(name, CancellationToken.None));
 		}
 
-		await Cleanup.AssertGoneAsync(() => _app.LookupDefinitions.GetAsync(name, Token));
+		await Cleanup.AssertGoneAsync(() => App.LookupDefinitions.GetAsync(name, Token));
 	}
 
 	[Fact]
 	public async Task LookupDefinitions_ListWithGetSize_ReportsFileSizes()
 	{
-		using var all = fixture.Client.InNamespace(SplunkNamespace.All);
+		using var all = Fixture.Client.InNamespace(SplunkNamespace.All);
 
 		var feed = await all.LookupDefinitions.ListAsync(new LookupDefinitionListOptions { GetSize = true, Search = "type=file" }, Token);
 
@@ -91,21 +85,21 @@ public sealed class TransformsIntegrationTests(SplunkFixture fixture) : IDisposa
 		var name = SplunkFixture.UniqueName("ms");
 		try
 		{
-			var created = await _app.MetricSchemas.CreateAsync(
+			var created = await App.MetricSchemas.CreateAsync(
 				new MetricSchemaCreateRequest { Name = name, FieldNames = "size,count", BlacklistDimensions = "location" },
 				Token);
 			created.Entries.Should().ContainSingle().Which.Name.Should().Be($"metric-schema:{name}");
 
-			var schema = (await _app.MetricSchemas.ListAsync(new ListOptions { Search = name }, Token)).Entries.Should().ContainSingle().Subject.Content!;
+			var schema = (await App.MetricSchemas.ListAsync(new ListOptions { Search = name }, Token)).Entries.Should().ContainSingle().Subject.Content!;
 			schema.Measures.Should().Be("size,count");
 			schema.BlacklistDimensions.Should().Be("location");
 		}
 		finally
 		{
-			await Cleanup.IgnoreMissingAsync(() => _app.MetricSchemas.DeleteAsync(name, CancellationToken.None));
+			await Cleanup.IgnoreMissingAsync(() => App.MetricSchemas.DeleteAsync(name, CancellationToken.None));
 		}
 
-		(await _app.MetricSchemas.ListAsync(new ListOptions { Search = name }, Token)).Entries.Should().BeEmpty();
+		(await App.MetricSchemas.ListAsync(new ListOptions { Search = name }, Token)).Entries.Should().BeEmpty();
 	}
 
 	[Fact]
@@ -114,7 +108,7 @@ public sealed class TransformsIntegrationTests(SplunkFixture fixture) : IDisposa
 		var name = SplunkFixture.UniqueName("sd");
 		try
 		{
-			var created = await _app.StatsdExtractions.CreateAsync(
+			var created = await App.StatsdExtractions.CreateAsync(
 				new StatsdExtractionCreateRequest { Name = name, Regex = "[.](?<hostname>[^.]+)[.]", RemoveDimensionsFromMetricName = true },
 				Token);
 
@@ -125,16 +119,16 @@ public sealed class TransformsIntegrationTests(SplunkFixture fixture) : IDisposa
 		}
 		finally
 		{
-			await Cleanup.DeleteUndocumentedAsync(fixture, "data/transforms/statsdextractions", name);
+			await Cleanup.DeleteUndocumentedAsync(Fixture, "data/transforms/statsdextractions", name);
 		}
 	}
 
 	[Fact]
 	public async Task LookupTableFiles_ListAndGet()
 	{
-		using var all = fixture.Client.InNamespace(SplunkNamespace.All);
+		using var all = Fixture.Client.InNamespace(SplunkNamespace.All);
 		var listed = (await all.LookupTableFiles.ListAsync(new ListOptions { Count = 1 }, Token)).Entries.Should().ContainSingle().Subject;
-		using var owner = fixture.Client.InNamespace("nobody", listed.Acl!.App!);
+		using var owner = Fixture.Client.InNamespace("nobody", listed.Acl!.App!);
 
 		var file = (await owner.LookupTableFiles.GetAsync(listed.Name, Token)).Entries.Should().ContainSingle().Subject.Content!;
 
@@ -150,8 +144,8 @@ public sealed class TransformsIntegrationTests(SplunkFixture fixture) : IDisposa
 		var name = SplunkFixture.UniqueName("ltf") + ".csv";
 		const string Outside = "/tmp/splunk_api_it.csv";
 
-		var create = () => _app.LookupTableFiles.CreateAsync(new LookupTableFileCreateRequest { Name = name, StagedPath = Outside }, Token);
-		var update = () => _app.LookupTableFiles.UpdateAsync(name, new LookupTableFileUpdateRequest { StagedPath = Outside }, Token);
+		var create = () => App.LookupTableFiles.CreateAsync(new LookupTableFileCreateRequest { Name = name, StagedPath = Outside }, Token);
+		var update = () => App.LookupTableFiles.UpdateAsync(name, new LookupTableFileUpdateRequest { StagedPath = Outside }, Token);
 
 		(await create.Should().ThrowAsync<SplunkApiException>()).Which.Message.Should().Contain("outside of staging area");
 		(await update.Should().ThrowAsync<SplunkApiException>()).Which.StatusCode.Should().BeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.NotFound);
@@ -159,5 +153,5 @@ public sealed class TransformsIntegrationTests(SplunkFixture fixture) : IDisposa
 
 	[Fact]
 	public async Task LookupTableFiles_DeleteMissing_RaisesNotFound()
-		=> await Cleanup.AssertGoneAsync(() => _app.LookupTableFiles.DeleteAsync(SplunkFixture.UniqueName("ltf") + ".csv", Token));
+		=> await Cleanup.AssertGoneAsync(() => App.LookupTableFiles.DeleteAsync(SplunkFixture.UniqueName("ltf") + ".csv", Token));
 }

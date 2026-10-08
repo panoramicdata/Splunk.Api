@@ -42,8 +42,8 @@ public class DeploymentIntegrationTests(SplunkFixture fixture)
 		var name = SplunkFixture.UniqueName("app");
 
 		(await apps.ListAsync(null, Ct)).Paging!.Total.Should().Be(0);
-		await ShouldFailAsync(() => apps.GetAsync(name, Ct), HttpStatusCode.NotFound, $"Could not find object id={name}");
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(() => apps.GetAsync(name, Ct), HttpStatusCode.NotFound, $"Could not find object id={name}");
+		await SplunkAssert.FailsAsync(
 			() => apps.ListAsync(new DeploymentApplicationListOptions { ClientId = name }, Ct),
 			HttpStatusCode.BadRequest,
 			$"No client id={name}");
@@ -58,12 +58,12 @@ public class DeploymentIntegrationTests(SplunkFixture fixture)
 		(await clients.ListAsync(new DeploymentServerClientListOptions { Action = "phonehome", HasDeploymentError = false }, Ct)).Entries.Should().BeEmpty();
 		(await clients.CountByMachineTypeAsync(Ct)).Entries.Should().ContainSingle().Which.Content!.Counts.Should().BeNull();
 		(await clients.CountRecentDownloadsAsync(3600, Ct)).Entries.Should().ContainSingle().Which.Content!.Count.Should().Be(0);
-		await ShouldFailAsync(() => clients.GetAsync(name, null, Ct), HttpStatusCode.NotFound, $"Could not find object id={name}");
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(() => clients.GetAsync(name, null, Ct), HttpStatusCode.NotFound, $"Could not find object id={name}");
+		await SplunkAssert.FailsAsync(
 			() => clients.GetAsync(name, new DeploymentServerClientFilter { Application = name }, Ct),
 			HttpStatusCode.InternalServerError,
 			$"Bad client selector application='{name}': no such application associated with any serverclass.");
-		await ShouldFailAsync(() => clients.DeleteAsync(name, Ct), HttpStatusCode.NotFound, "This functionality has been deprecated");
+		await SplunkAssert.FailsAsync(() => clients.DeleteAsync(name, Ct), HttpStatusCode.NotFound, "This functionality has been deprecated");
 	}
 
 	[Fact]
@@ -73,7 +73,7 @@ public class DeploymentIntegrationTests(SplunkFixture fixture)
 
 		(await config.GetDisabledStatusAsync(Ct)).Entries.Should().ContainSingle().Which.Name.Should().Be("default");
 		(await config.ListUnsupportedAttributesAsync(Ct)).Entries.Should().BeEmpty();
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(
 			() => config.PostAsync(new Dictionary<string, string?>(), Ct),
 			HttpStatusCode.BadRequest,
 			"Cannot perform action \"POST\" without a target name to act on.");
@@ -86,9 +86,9 @@ public class DeploymentIntegrationTests(SplunkFixture fixture)
 		var name = SplunkFixture.UniqueName("sc");
 
 		(await classes.ListAsync(null, Ct)).Entries.Should().BeEmpty();
-		await ShouldFailAsync(() => classes.GetAsync(name, null, Ct), HttpStatusCode.NotFound, $"Could not find object id={name}");
-		await ShouldFailAsync(() => classes.DeleteAsync(name, Ct), HttpStatusCode.InternalServerError, $"No config found: sc={name}");
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(() => classes.GetAsync(name, null, Ct), HttpStatusCode.NotFound, $"Could not find object id={name}");
+		await SplunkAssert.FailsAsync(() => classes.DeleteAsync(name, Ct), HttpStatusCode.InternalServerError, $"No config found: sc={name}");
+		await SplunkAssert.FailsAsync(
 			() => classes.RenameAsync(new DeploymentServerClassRenameRequest { OldName = name, NewName = name + "_2" }, Ct),
 			HttpStatusCode.InternalServerError,
 			$"serverclass={name} (\"from\") does not exist");
@@ -107,8 +107,8 @@ public class DeploymentIntegrationTests(SplunkFixture fixture)
 		(await bundles.ListCyclesAsync(true, Ct)).Entries.Should().BeEmpty();
 		(await bundles.ListCyclesAsync(null, Ct)).Entries.Should().BeEmpty();
 		(await bundles.ListFilesAsync(null, Ct)).Paging.Should().NotBeNull();
-		await ShouldFailAsync(() => bundles.GetFileAsync("x", null, Ct), HttpStatusCode.BadRequest, "Entity name must be a valid checksum number: x");
-		await ShouldFailAsync(() => bundles.GetFileAsync("123", true, Ct), HttpStatusCode.NotFound, "Could not find search head bundle with checksum=123");
+		await SplunkAssert.FailsAsync(() => bundles.GetFileAsync("x", null, Ct), HttpStatusCode.BadRequest, "Entity name must be a valid checksum number: x");
+		await SplunkAssert.FailsAsync(() => bundles.GetFileAsync("123", true, Ct), HttpStatusCode.NotFound, "Could not find search head bundle with checksum=123");
 	}
 
 	[Fact]
@@ -121,12 +121,5 @@ public class DeploymentIntegrationTests(SplunkFixture fixture)
 		config.Content!.DistributedSearchEnabled.Should().BeTrue();
 		config.Content.StatusTimeout.Should().BePositive();
 		peers.Entries.Should().BeEmpty();
-	}
-
-	private static async Task ShouldFailAsync(Func<Task> call, HttpStatusCode status, string message)
-	{
-		var error = (await call.Should().ThrowAsync<SplunkApiException>()).Which;
-		error.StatusCode.Should().Be(status);
-		error.Message.Should().Be(message);
 	}
 }

@@ -17,20 +17,12 @@ internal static class InputsTestKit
 		=> CaptureAsync(call, EmptyFeed);
 
 	/// <summary>Sends one call through a stubbed client answering <paramref name="response"/>, and returns the request it made.</summary>
-	public static async Task<RecordedCall> CaptureAsync(Func<SplunkClient, CancellationToken, Task> call, string response)
-	{
-		var stub = TestClient.Stub(response);
-		using var client = TestClient.Create(stub);
-		await call(client, TestContext.Current.CancellationToken);
-		return stub.Calls.Should().ContainSingle().Subject;
-	}
+	public static Task<RecordedCall> CaptureAsync(Func<SplunkClient, CancellationToken, Task> call, string response)
+		=> TestClient.CaptureAsync(call, response);
 
 	/// <summary>Sends one call through a stubbed client answering <paramref name="response"/>, and returns what it read.</summary>
-	public static async Task<T> MapAsync<T>(Func<SplunkClient, CancellationToken, Task<T>> call, string response)
-	{
-		using var client = TestClient.Create(TestClient.Stub(response));
-		return await call(client, TestContext.Current.CancellationToken);
-	}
+	public static Task<T> MapAsync<T>(Func<SplunkClient, CancellationToken, Task<T>> call, string response)
+		=> TestClient.ReadAsync(call, response);
 
 	/// <summary>Reads the single entry of a feed.</summary>
 	public static async Task<Models.SplunkEntry<T>> MapEntryAsync<T>(Func<SplunkClient, CancellationToken, Task<Models.SplunkFeed<T>>> call, string response)
@@ -41,16 +33,8 @@ internal static class InputsTestKit
 	}
 
 	/// <summary>Asserts that a call raises <see cref="SplunkApiException"/> with Splunk's message when Splunk answers 404.</summary>
-	public static async Task ShouldRaiseNotFoundAsync(Func<SplunkClient, CancellationToken, Task> call)
-	{
-		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"ERROR","text":"Not Found"}]}""", HttpStatusCode.NotFound));
-
-		var act = () => call(client, TestContext.Current.CancellationToken);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
-		thrown.Which.Message.Should().Be("Not Found");
-	}
+	public static Task ShouldRaiseNotFoundAsync(Func<SplunkClient, CancellationToken, Task> call)
+		=> TestClient.ShouldFailAsync(call, HttpStatusCode.NotFound, """{"messages":[{"type":"ERROR","text":"Not Found"}]}""", "Not Found");
 
 	/// <summary>Asserts a GET with no parameters and no body.</summary>
 	public static void ShouldBeGet(this RecordedCall call, string path) => call.ShouldBe(HttpMethod.Get, path, JsonQuery, null);

@@ -9,11 +9,7 @@ internal static class SearchRequestAssert
 	/// <summary>Asserts that the stub received exactly one request, and that it matches.</summary>
 	public static void Sent(StubHandler stub, HttpMethod method, string path, string query, string? body = null)
 	{
-		var call = stub.Calls.Should().ContainSingle().Subject;
-		call.Method.Should().Be(method);
-		call.Uri.AbsolutePath.Should().Be(path);
-		call.Uri.Query.Should().Be(query);
-		call.Body.Should().Be(body);
+		stub.Calls.Should().ContainSingle().Subject.ShouldMatch(method, path, query, body);
 	}
 
 	/// <summary>A stub answering one request with a plain-text or other non-JSON body.</summary>
@@ -33,12 +29,8 @@ internal static class SearchRequestAssert
 	}
 
 	/// <summary>Asserts that the call raises <see cref="SplunkApiException"/> with the status and message.</summary>
-	public static async Task FailsWith(Func<Task> act, HttpStatusCode status, string message)
-	{
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(status);
-		thrown.Which.Message.Should().Be(message);
-	}
+	public static Task FailsWith(Func<Task> act, HttpStatusCode status, string message)
+		=> TestClient.ShouldFailWithAsync(act, status, message);
 
 	/// <summary>The feed envelope around one entry's content, as Splunk returns it.</summary>
 	public static string Feed(string name, string content, string author = "admin")

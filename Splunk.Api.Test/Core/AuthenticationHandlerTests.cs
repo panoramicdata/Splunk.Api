@@ -32,27 +32,25 @@ public partial class AuthenticationHandlerTests
 
 	private static string Login(string key) => TestClient.LoginJson(key);
 
-	[Fact]
-	public async Task Token_IsSentAsBearer()
+	/// <summary>Sends one GET through a handler configured by <paramref name="configure"/>; returns the Authorization header sent.</summary>
+	private static async Task<string> AuthorizationSentAsync(Action<SplunkClientOptions> configure)
 	{
-		using var harness = new HandlerHarness(Handler(o => o.Token = "the-token"));
+		using var harness = new HandlerHarness(Handler(configure));
 		harness.Stub.Enqueue(HttpStatusCode.OK);
 
 		using var response = await harness.SendAsync(HttpMethod.Get, Info);
 
-		harness.Stub.Calls.Single().Headers.Authorization!.ToString().Should().Be("Bearer the-token");
+		return harness.Stub.Calls.Single().Headers.Authorization!.ToString();
 	}
+
+	[Fact]
+	public async Task Token_IsSentAsBearer()
+		=> (await AuthorizationSentAsync(o => o.Token = "the-token")).Should().Be("Bearer the-token");
 
 	[Fact]
 	public async Task Basic_IsSentOnEveryRequest()
-	{
-		using var harness = new HandlerHarness(Handler(o => (o.UseBasicAuthentication, o.Password) = (true, "pä:ss")));
-		harness.Stub.Enqueue(HttpStatusCode.OK);
-
-		using var response = await harness.SendAsync(HttpMethod.Get, Info);
-
-		harness.Stub.Calls.Single().Headers.Authorization!.ToString().Should().Be("Basic " + Convert.ToBase64String("admin:pä:ss"u8.ToArray()));
-	}
+		=> (await AuthorizationSentAsync(o => (o.UseBasicAuthentication, o.Password) = (true, "pä:ss")))
+			.Should().Be("Basic " + Convert.ToBase64String("admin:pä:ss"u8.ToArray()));
 
 	[Fact]
 	public async Task Session_LogsInOnce_ThenSendsTheKey()
@@ -112,12 +110,9 @@ public partial class AuthenticationHandlerTests
 	public async Task Session_FailedLogin_IsReturnedForTheCallersRequest()
 	{
 		using var harness = Session("401 {\"messages\":[{\"type\":\"WARN\",\"text\":\"Login failed\"}]}");
-		using var request = new HttpRequestMessage(HttpMethod.Get, Info);
 
-		using var response = await harness.SendAsync(request);
+		using var response = await UnauthorizedForTheCallersRequestAsync(harness);
 
-		response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-		response.RequestMessage.Should().BeSameAs(request);
 		(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().Contain("Login failed");
 	}
 
@@ -125,13 +120,20 @@ public partial class AuthenticationHandlerTests
 	public async Task Session_FailedLoginAfter401_IsReturnedForTheCallersRequest()
 	{
 		using var harness = Session(Login("key-1"), "401 {}", "401 {}");
+
+		using var response = await UnauthorizedForTheCallersRequestAsync(harness);
+
+		harness.Stub.Calls.Should().HaveCount(3);
+	}
+
+	/// <summary>Sends a GET and checks that the 401 that comes back is answered for the caller's own request.</summary>
+	private static async Task<HttpResponseMessage> UnauthorizedForTheCallersRequestAsync(HandlerHarness harness)
+	{
 		using var request = new HttpRequestMessage(HttpMethod.Get, Info);
-
-		using var response = await harness.SendAsync(request);
-
+		var response = await harness.SendAsync(request);
 		response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 		response.RequestMessage.Should().BeSameAs(request);
-		harness.Stub.Calls.Should().HaveCount(3);
+		return response;
 	}
 
 	[Fact]

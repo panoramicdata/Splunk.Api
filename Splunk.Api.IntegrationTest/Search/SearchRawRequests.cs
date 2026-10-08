@@ -9,22 +9,13 @@ namespace Splunk.Api.IntegrationTest.Search;
 /// </summary>
 internal static class SearchRawRequests
 {
-	public static async Task SendAsync(SplunkFixture fixture, HttpMethod method, string path, IDictionary<string, string>? form)
-	{
-		// The shared instance occasionally resets a connection during the TLS handshake, before the request is sent.
-		for (var attempt = 1; ; attempt++)
-		{
-			try
-			{
-				await SendOnceAsync(fixture, method, path, form);
-				return;
-			}
-			catch (HttpRequestException exception) when (exception.StatusCode is null && attempt < 4)
-			{
-				await Task.Delay(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken);
-			}
-		}
-	}
+	// The shared instance occasionally resets a connection during the TLS handshake, before the request is sent.
+	public static Task SendAsync(SplunkFixture fixture, HttpMethod method, string path, IDictionary<string, string>? form)
+		=> Poll.RetryAsync<HttpRequestException>(
+			() => SendOnceAsync(fixture, method, path, form),
+			exception => exception.StatusCode is null,
+			4,
+			TimeSpan.FromSeconds(2));
 
 	private static async Task SendOnceAsync(SplunkFixture fixture, HttpMethod method, string path, IDictionary<string, string>? form)
 	{

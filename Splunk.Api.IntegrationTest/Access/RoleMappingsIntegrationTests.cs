@@ -63,9 +63,9 @@ public class RoleMappingsIntegrationTests(SplunkFixture fixture)
 		var name = SplunkFixture.UniqueName("proxy_user");
 
 		(await fixture.Client.ProxySsoUserRoleMaps.ListAsync(null, ct)).Entries.Should().BeEmpty();
-		await ShouldFailAsync(() => fixture.Client.ProxySsoUserRoleMaps.CreateAsync(new RoleMappingCreateRequest { Name = name, Roles = ["user"] }, ct), HttpStatusCode.BadRequest, "Proxy SSO Manager not configured.");
-		await ShouldFailAsync(() => fixture.Client.ProxySsoUserRoleMaps.GetAsync(name, ct), HttpStatusCode.BadRequest, $"Unable to find a role mapping for user={name}");
-		await ShouldFailAsync(() => fixture.Client.ProxySsoUserRoleMaps.DeleteAsync(name, ct), HttpStatusCode.BadRequest, "Proxy SSO Manager not configured.");
+		await SplunkAssert.FailsAsync(() => fixture.Client.ProxySsoUserRoleMaps.CreateAsync(new RoleMappingCreateRequest { Name = name, Roles = ["user"] }, ct), HttpStatusCode.BadRequest, "Proxy SSO Manager not configured.");
+		await SplunkAssert.FailsAsync(() => fixture.Client.ProxySsoUserRoleMaps.GetAsync(name, ct), HttpStatusCode.BadRequest, $"Unable to find a role mapping for user={name}");
+		await SplunkAssert.FailsAsync(() => fixture.Client.ProxySsoUserRoleMaps.DeleteAsync(name, ct), HttpStatusCode.BadRequest, "Proxy SSO Manager not configured.");
 	}
 
 	[Fact]
@@ -75,9 +75,9 @@ public class RoleMappingsIntegrationTests(SplunkFixture fixture)
 		var name = SplunkFixture.UniqueName("saml_user");
 
 		(await fixture.Client.SamlUserRoleMaps.ListAsync(null, ct)).Entries.Should().BeEmpty();
-		await ShouldFailAsync(() => fixture.Client.SamlUserRoleMaps.CreateAsync(new RoleMappingCreateRequest { Name = name, Roles = ["user"] }, ct), HttpStatusCode.BadRequest, $"Failed to get cachedUserInfo for user={name}");
-		await ShouldFailAsync(() => fixture.Client.SamlUserRoleMaps.DeleteAsync(name, ct), HttpStatusCode.NotFound, $"Delete failed, User={name} does not exist in SAML userToRoleMap.");
-		await ShouldFailAsync(() => fixture.Client.SamlUserRoleMaps.DeleteAllAsync(ct), HttpStatusCode.BadRequest, "Cannot perform action \"DELETE\" without a target name to act on.");
+		await SplunkAssert.FailsAsync(() => fixture.Client.SamlUserRoleMaps.CreateAsync(new RoleMappingCreateRequest { Name = name, Roles = ["user"] }, ct), HttpStatusCode.BadRequest, $"Failed to get cachedUserInfo for user={name}");
+		await SplunkAssert.FailsAsync(() => fixture.Client.SamlUserRoleMaps.DeleteAsync(name, ct), HttpStatusCode.NotFound, $"Delete failed, User={name} does not exist in SAML userToRoleMap.");
+		await SplunkAssert.FailsAsync(() => fixture.Client.SamlUserRoleMaps.DeleteAllAsync(ct), HttpStatusCode.BadRequest, "Cannot perform action \"DELETE\" without a target name to act on.");
 	}
 
 	[Fact]
@@ -100,12 +100,5 @@ public class RoleMappingsIntegrationTests(SplunkFixture fixture)
 		var act = () => fixture.Client.SamlMetadata.ReplicateCertificatesAsync(TestContext.Current.CancellationToken);
 
 		(await act.Should().ThrowAsync<SplunkApiException>()).Which.StatusCode.Should().NotBe(HttpStatusCode.OK);
-	}
-
-	private static async Task ShouldFailAsync(Func<Task> act, HttpStatusCode status, string message)
-	{
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(status);
-		thrown.Which.Message.Should().Be(message);
 	}
 }

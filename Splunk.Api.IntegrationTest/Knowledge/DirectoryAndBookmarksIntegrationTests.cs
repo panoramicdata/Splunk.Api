@@ -18,9 +18,7 @@ public sealed class DirectoryAndBookmarksIntegrationTests(SplunkFixture fixture)
 		listed.Entries.Should().HaveCount(5).And.OnlyContain(e => e.Content!.Type != null && e.Content.Location != null);
 
 		var entry = (await system.DirectoryEntries.GetAsync("access-extractions", Token)).Entries.Should().ContainSingle().Subject;
-		entry.Content!.Type.Should().Be("transforms-extract");
-		entry.Content.Location.Should().Be("/data/transforms/extractions");
-		entry.Content.Orphaned.Should().BeFalse();
+		entry.Content.Should().BeEquivalentTo(new { Type = "transforms-extract", Location = "/data/transforms/extractions", Orphaned = false });
 	}
 
 	[Fact]

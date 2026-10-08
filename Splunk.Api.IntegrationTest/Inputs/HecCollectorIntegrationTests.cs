@@ -132,20 +132,12 @@ public class HecCollectorIntegrationTests(SplunkHecFixture fixture)
 	}
 
 	/// <summary>A new token is live once the collector has reloaded; retry briefly until then.</summary>
-	private static async Task<HecResponse> SendWhenTokenIsLiveAsync(SplunkHecClient client)
-	{
-		for (var attempt = 1; ; attempt++)
-		{
-			try
-			{
-				return await client.SendAsync(Events("ack"), Ct);
-			}
-			catch (SplunkHecException e) when (e.Code == 4 && attempt < 20)
-			{
-				await Task.Delay(TimeSpan.FromMilliseconds(500), Ct);
-			}
-		}
-	}
+	private static Task<HecResponse> SendWhenTokenIsLiveAsync(SplunkHecClient client)
+		=> Poll.RetryAsync<HecResponse, SplunkHecException>(
+			() => client.SendAsync(Events("ack"), Ct),
+			e => e.Code == 4,
+			20,
+			TimeSpan.FromMilliseconds(500));
 
 	private static async Task<bool> WaitForAckAsync(SplunkHecClient client, long ackId)
 	{

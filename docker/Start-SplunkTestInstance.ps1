@@ -34,7 +34,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $containerName = 'splunk-api-test'
-$project = Join-Path $PSScriptRoot '..' 'Splunk.Api.IntegrationTest'
+$project = Join-Path -Path $PSScriptRoot -ChildPath '..' -AdditionalChildPath 'Splunk.Api.IntegrationTest'
 
 $existing = docker ps -a --filter "name=^$containerName$" --format '{{.Names}}'
 if ($existing) {
@@ -57,7 +57,7 @@ if ($LASTEXITCODE -ne 0) {
 	throw "docker run failed (exit code $LASTEXITCODE)."
 }
 
-Write-Host "Waiting for Splunk to become healthy (this takes a few minutes)..."
+Write-Information -MessageData "Waiting for Splunk to become healthy (this takes a few minutes)..." -InformationAction Continue
 $deadline = (Get-Date).AddMinutes(10)
 do {
 	Start-Sleep -Seconds 10
@@ -84,4 +84,4 @@ dotnet user-secrets set 'Splunk:Username' 'admin' --project $project | Out-Null
 dotnet user-secrets set 'Splunk:Password' $password --project $project | Out-Null
 dotnet user-secrets set 'Splunk:TrustedServerCertificateThumbprint' $thumbprint --project $project | Out-Null
 
-Write-Host "Splunk is running at https://localhost:$Port and the integration test user secrets are set."
+Write-Information -MessageData "Splunk is running at https://localhost:$Port and the integration test user secrets are set." -InformationAction Continue

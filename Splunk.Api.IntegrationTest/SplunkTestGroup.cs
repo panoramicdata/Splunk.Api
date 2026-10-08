@@ -4,5 +4,5 @@ namespace Splunk.Api.IntegrationTest;
 [CollectionDefinition(Name)]
 public sealed class SplunkTestGroup : ICollectionFixture<SplunkFixture>
 {
-	public const string Name = "Splunk";
+	internal const string Name = "Splunk";
 }

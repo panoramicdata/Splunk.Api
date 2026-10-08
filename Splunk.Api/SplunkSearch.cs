@@ -100,7 +100,7 @@ public sealed partial class SplunkSearch
 		{
 			var feed = await _client.SearchJobs.GetAsync(searchId, cancellationToken).ConfigureAwait(false);
 			var job = feed.Entries[0].Content!;
-			if (job.IsFailed || job.IsZombie || job.DispatchState == SearchDispatchState.Failed)
+			if (HasFailed(job))
 			{
 				throw new SplunkSearchException(job.Messages, job);
 			}
@@ -110,14 +110,22 @@ public sealed partial class SplunkSearch
 				return job;
 			}
 
-			if (options.Timeout is { } timeout && TimeProvider.GetElapsedTime(started) >= timeout)
+			if (HasTimedOut(options.Timeout, started))
 			{
-				throw new TimeoutException($"Search job '{searchId}' did not finish within {timeout}.");
+				throw new TimeoutException($"Search job '{searchId}' did not finish within {options.Timeout}.");
 			}
 
 			await Delay(options.PollInterval, cancellationToken).ConfigureAwait(false);
 		}
 	}
+
+	/// <summary>Whether a job failed or its search process died.</summary>
+	private static bool HasFailed(SearchJob job)
+		=> job.IsFailed || job.IsZombie || job.DispatchState == SearchDispatchState.Failed;
+
+	/// <summary>Whether a wait that began at <paramref name="started"/> has run past <paramref name="timeout"/>.</summary>
+	private bool HasTimedOut(TimeSpan? timeout, long started)
+		=> timeout is { } limit && TimeProvider.GetElapsedTime(started) >= limit;
 
 	/// <summary>Reads every result of a finished job, a page at a time, as they are needed.</summary>
 	/// <param name="searchId">The search ID.</param>

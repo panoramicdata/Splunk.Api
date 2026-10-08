@@ -9,6 +9,8 @@ public class DeploymentServerClientsTests
 	private const string Path = "/services/deployment/server/clients";
 	private const string FilterQuery = "application=app1&hasDeploymentError=false&maxPhonehome_latency_to_avgInterval_ratio=2.5"
 		+ "&minLatestPhonehomeTime=1375375291&minPhonehome_latency_to_avgInterval_ratio=0.5&serverclasses=sc1%2Csc2";
+	private const string ClientFilterQuery = "serverclasses=sc1%2Csc2&application=app1&hasDeploymentError=false"
+		+ "&minLatestPhonehomeTime=1375375291&minPhonehome_latency_to_avgInterval_ratio=0.5&maxPhonehome_latency_to_avgInterval_ratio=2.5";
 
 	// From the reference's example (a 10.6 standalone has no deployment clients); host names and addresses replaced.
 	private const string ClientContent = """
@@ -92,7 +94,7 @@ public class DeploymentServerClientsTests
 				ServerClasses = "sc1,sc2"
 			},
 			ct)))
-			.ShouldBeProbed(HttpMethod.Get, $"{Path}/dc95537d", $"?{FilterQuery}&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/dc95537d", $"?{ClientFilterQuery}&output_mode=json");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()

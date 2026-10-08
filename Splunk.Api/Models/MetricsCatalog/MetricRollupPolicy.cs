@@ -11,17 +11,13 @@ public sealed class MetricRollupPolicy : SplunkContent
 {
 	private const string OverridePrefix = "aggregation.";
 
+	/// <summary>The app the policy is stored in.</summary>
+	[JsonPropertyName("appName")]
+	public string? AppName { get; init; }
+
 	/// <summary>The default aggregation functions, separated by <c>#</c>, for example <c>avg#max</c>.</summary>
 	[JsonPropertyName("defaultAggregation")]
 	public string? DefaultAggregation { get; init; }
-
-	/// <summary>The metrics filtered by <see cref="MetricListType"/>, comma-separated.</summary>
-	[JsonPropertyName("metricList")]
-	public string? MetricList { get; init; }
-
-	/// <summary>Whether <see cref="MetricList"/> lists the metrics <c>included</c> or <c>excluded</c>.</summary>
-	[JsonPropertyName("metricListType")]
-	public string? MetricListType { get; init; }
 
 	/// <summary>The dimensions filtered by <see cref="DimensionListType"/>, comma-separated.</summary>
 	[JsonPropertyName("dimensionList")]
@@ -31,13 +27,17 @@ public sealed class MetricRollupPolicy : SplunkContent
 	[JsonPropertyName("dimensionListType")]
 	public string? DimensionListType { get; init; }
 
+	/// <summary>The metrics filtered by <see cref="MetricListType"/>, comma-separated.</summary>
+	[JsonPropertyName("metricList")]
+	public string? MetricList { get; init; }
+
+	/// <summary>Whether <see cref="MetricList"/> lists the metrics <c>included</c> or <c>excluded</c>.</summary>
+	[JsonPropertyName("metricListType")]
+	public string? MetricListType { get; init; }
+
 	/// <summary>The smallest span a summary may use, in seconds.</summary>
 	[JsonPropertyName("minSpanAllowed")]
 	public int MinSpanAllowed { get; init; }
-
-	/// <summary>The app the policy is stored in.</summary>
-	[JsonPropertyName("appName")]
-	public string? AppName { get; init; }
 
 	/// <summary>
 	/// The rollup summaries, keyed by position (<c>"0"</c>, <c>"1"</c>, ...). Splunk 10.6 returns an object, not the
