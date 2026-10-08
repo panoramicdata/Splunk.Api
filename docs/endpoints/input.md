@@ -6,108 +6,108 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 
 | Method | Path | Client method | Test |
 |---|---|---|---|
-| GET | `data/ingest/rfsdestinations` |  |  |
-| POST | `data/ingest/rfsdestinations` |  |  |
-| DELETE | `data/ingest/rfsdestinations` |  |  |
-| GET | `data/ingest/rulesets` |  |  |
-| POST | `data/ingest/rulesets` |  |  |
-| GET | `data/ingest/rulesets/{name}` |  |  |
-| POST | `data/ingest/rulesets/{name}` |  |  |
-| POST | `data/ingest/rulesets/publish` |  |  |
-| GET | `data/inputs/ad` |  |  |
-| POST | `data/inputs/ad` |  |  |
-| GET | `data/inputs/ad/{name}` |  |  |
-| POST | `data/inputs/ad/{name}` |  |  |
-| DELETE | `data/inputs/ad/{name}` |  |  |
-| GET | `data/inputs/all` |  |  |
-| GET | `data/inputs/all/{name}` |  |  |
-| GET | `data/inputs/http` |  |  |
-| POST | `data/inputs/http` |  |  |
-| GET | `data/inputs/http/{name}` |  |  |
-| POST | `data/inputs/http/{name}` |  |  |
-| DELETE | `data/inputs/http/{name}` |  |  |
-| POST | `data/inputs/http/{name}/disable` |  |  |
-| POST | `data/inputs/http/{name}/enable` |  |  |
-| POST | `data/inputs/http/{name}/rotate` |  |  |
-| GET | `data/inputs/http/connections` |  |  |
-| GET | `data/inputs/http/connections/{ip_address}` |  |  |
-| GET | `data/inputs/monitor` |  |  |
-| POST | `data/inputs/monitor` |  |  |
-| GET | `data/inputs/monitor/{name}` |  |  |
-| POST | `data/inputs/monitor/{name}` |  |  |
-| DELETE | `data/inputs/monitor/{name}` |  |  |
-| GET | `data/inputs/monitor/{name}/members` |  |  |
-| GET | `data/inputs/oneshot` |  |  |
-| POST | `data/inputs/oneshot` |  |  |
-| GET | `data/inputs/oneshot/{name}` |  |  |
-| GET | `data/inputs/registry` |  |  |
-| POST | `data/inputs/registry` |  |  |
-| GET | `data/inputs/registry/{name}` |  |  |
-| POST | `data/inputs/registry/{name}` |  |  |
-| DELETE | `data/inputs/registry/{name}` |  |  |
-| GET | `data/inputs/script` |  |  |
-| POST | `data/inputs/script` |  |  |
-| POST | `data/inputs/script/restart` |  |  |
-| GET | `data/inputs/script/{name}` |  |  |
-| POST | `data/inputs/script/{name}` |  |  |
-| DELETE | `data/inputs/script/{name}` |  |  |
-| GET | `data/inputs/tcp/cooked` |  |  |
-| POST | `data/inputs/tcp/cooked` |  |  |
-| GET | `data/inputs/tcp/cooked/{name}` |  |  |
-| POST | `data/inputs/tcp/cooked/{name}` |  |  |
-| DELETE | `data/inputs/tcp/cooked/{name}` |  |  |
-| GET | `data/inputs/tcp/cooked/{name}/connections` |  |  |
-| GET | `data/inputs/tcp/raw` |  |  |
-| POST | `data/inputs/tcp/raw` |  |  |
-| GET | `data/inputs/tcp/raw/{name}` |  |  |
-| POST | `data/inputs/tcp/raw/{name}` |  |  |
-| DELETE | `data/inputs/tcp/raw/{name}` |  |  |
-| GET | `data/inputs/tcp/raw/{name}/connections` |  |  |
-| GET | `data/inputs/tcp/splunktcptoken` |  |  |
-| POST | `data/inputs/tcp/splunktcptoken` |  |  |
-| GET | `data/inputs/tcp/splunktcptoken/{name}` |  |  |
-| POST | `data/inputs/tcp/splunktcptoken/{name}` |  |  |
-| DELETE | `data/inputs/tcp/splunktcptoken/{name}` |  |  |
-| GET | `data/inputs/tcp/ssl` |  |  |
-| GET | `data/inputs/tcp/ssl/{name}` |  |  |
-| POST | `data/inputs/tcp/ssl/{name}` |  |  |
-| GET | `data/inputs/udp` |  |  |
-| POST | `data/inputs/udp` |  |  |
-| GET | `data/inputs/udp/{name}` |  |  |
-| POST | `data/inputs/udp/{name}` |  |  |
-| DELETE | `data/inputs/udp/{name}` |  |  |
-| GET | `data/inputs/udp/{name}/connections` |  |  |
-| GET | `data/inputs/win-event-log-collections` |  |  |
-| POST | `data/inputs/win-event-log-collections` |  |  |
-| GET | `data/inputs/win-event-log-collections/{name}` |  |  |
-| POST | `data/inputs/win-event-log-collections/{name}` |  |  |
-| DELETE | `data/inputs/win-event-log-collections/{name}` |  |  |
-| GET | `data/inputs/win-wmi-collections` |  |  |
-| POST | `data/inputs/win-wmi-collections` |  |  |
-| GET | `data/inputs/win-wmi-collections/{name}` |  |  |
-| POST | `data/inputs/win-wmi-collections/{name}` |  |  |
-| DELETE | `data/inputs/win-wmi-collections/{name}` |  |  |
-| GET | `data/inputs/win-perfmon` |  |  |
-| POST | `data/inputs/win-perfmon` |  |  |
-| GET | `data/inputs/win-perfmon/{name}` |  |  |
-| POST | `data/inputs/win-perfmon/{name}` |  |  |
-| DELETE | `data/inputs/win-perfmon/{name}` |  |  |
-| GET | `data/modular-inputs` |  |  |
-| GET | `data/modular-inputs/{name}` |  |  |
-| GET | `indexing/preview` |  |  |
-| POST | `indexing/preview` |  |  |
-| GET | `indexing/preview/{job_id}` |  |  |
-| POST | `receivers/simple` |  |  |
-| POST | `receivers/stream` |  |  |
-| GET | `server/pipelinesets` |  |  |
-| POST | `collector` |  |  |
-| GET | `collector/ack` |  |  |
-| POST | `collector/event` |  |  |
-| POST | `collector/event/1.0` |  |  |
-| GET | `collector/health` |  |  |
-| GET | `collector/health/1.0` |  |  |
-| POST | `collector/mint` |  |  |
-| POST | `collector/mint/1.0` |  |  |
-| POST | `collector/raw` |  |  |
-| POST | `collector/raw/1.0` |  |  |
-| POST | `collector/s2s` |  |  |
+| GET | `data/ingest/rfsdestinations` | IIngestDestinations.ListAsync | IngestDestinationsTests.ListAsync_SendsExactRequest |
+| POST | `data/ingest/rfsdestinations` | IIngestDestinations.CreateAsync | IngestDestinationsTests.CreateAsync_SendsExactRequest |
+| DELETE | `data/ingest/rfsdestinations/{name}` | IIngestDestinations.DeleteAsync | IngestDestinationsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/ingest/rulesets` | IIngestRulesets.ListAsync | IngestRulesetsTests.ListAsync_SendsExactRequest |
+| POST | `data/ingest/rulesets` | IIngestRulesets.CreateAsync | IngestRulesetsTests.CreateAsync_SendsExactRequest |
+| GET | `data/ingest/rulesets/{name}` | IIngestRulesets.GetAsync | IngestRulesetsTests.GetAsync_SendsExactRequest |
+| POST | `data/ingest/rulesets/{name}` | IIngestRulesets.UpdateAsync | IngestRulesetsTests.UpdateAsync_SendsExactRequest |
+| POST | `data/ingest/rulesets/publish` | IIngestRulesets.PublishAsync | IngestRulesetsTests.PublishAsync_SendsExactRequest |
+| GET | `data/inputs/ad` | IActiveDirectoryInputs.ListAsync | ActiveDirectoryInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/ad` | IActiveDirectoryInputs.CreateAsync | ActiveDirectoryInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/ad/{name}` | IActiveDirectoryInputs.GetAsync | ActiveDirectoryInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/ad/{name}` | IActiveDirectoryInputs.UpdateAsync | ActiveDirectoryInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/ad/{name}` | IActiveDirectoryInputs.DeleteAsync | ActiveDirectoryInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/all` | IAllInputs.ListAsync | AllInputsTests.ListAsync_SendsExactRequest |
+| GET | `data/inputs/all/{name}` | IAllInputs.GetAsync | AllInputsTests.GetAsync_SendsExactRequest |
+| GET | `data/inputs/http` | IHecTokens.ListAsync | HecTokensTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/http` | IHecTokens.CreateAsync | HecTokensTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/http/{name}` | IHecTokens.GetAsync, IHecTokens.GetSettingsAsync | HecTokensTests.GetAsync_SendsExactRequest, HecTokensTests.GetSettingsAsync_SendsExactRequest |
+| POST | `data/inputs/http/{name}` | IHecTokens.UpdateAsync, IHecTokens.UpdateSettingsAsync | HecTokensTests.UpdateAsync_SendsExactRequest, HecTokensTests.UpdateSettingsAsync_SendsExactRequest |
+| DELETE | `data/inputs/http/{name}` | IHecTokens.DeleteAsync | HecTokensTests.DeleteAsync_SendsExactRequest |
+| POST | `data/inputs/http/{name}/disable` | IHecTokens.DisableAsync | HecTokensTests.DisableAsync_SendsExactRequest |
+| POST | `data/inputs/http/{name}/enable` | IHecTokens.EnableAsync | HecTokensTests.EnableAsync_SendsExactRequest |
+| POST | `data/inputs/http/{name}/rotate` | IHecTokens.RotateAsync | HecTokensTests.RotateAsync_SendsExactRequest |
+| GET | `data/inputs/http/connections` | IHecConnections.ListAsync | HecConnectionsTests.ListAsync_SendsExactRequest |
+| GET | `data/inputs/http/connections/{ip_address}` | IHecConnections.GetAsync | HecConnectionsTests.GetAsync_SendsExactRequest |
+| GET | `data/inputs/monitor` | IMonitorInputs.ListAsync | MonitorInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/monitor` | IMonitorInputs.CreateAsync | MonitorInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/monitor/{name}` | IMonitorInputs.GetAsync | MonitorInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/monitor/{name}` | IMonitorInputs.UpdateAsync | MonitorInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/monitor/{name}` | IMonitorInputs.DeleteAsync | MonitorInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/monitor/{name}/members` | IMonitorInputs.ListMembersAsync | MonitorInputsTests.ListMembersAsync_SendsExactRequest |
+| GET | `data/inputs/oneshot` | IOneshotInputs.ListAsync | OneshotInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/oneshot` | IOneshotInputs.CreateAsync | OneshotInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/oneshot/{name}` | IOneshotInputs.GetAsync | OneshotInputsTests.GetAsync_SendsExactRequest |
+| GET | `data/inputs/registry` | IRegistryInputs.ListAsync | RegistryInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/registry` | IRegistryInputs.CreateAsync | RegistryInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/registry/{name}` | IRegistryInputs.GetAsync | RegistryInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/registry/{name}` | IRegistryInputs.UpdateAsync | RegistryInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/registry/{name}` | IRegistryInputs.DeleteAsync | RegistryInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/script` | IScriptedInputs.ListAsync | ScriptedInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/script` | IScriptedInputs.CreateAsync | ScriptedInputsTests.CreateAsync_SendsExactRequest |
+| POST | `data/inputs/script/restart` | IScriptedInputs.RestartAsync | ScriptedInputsTests.RestartAsync_SendsExactRequest |
+| GET | `data/inputs/script/{name}` | IScriptedInputs.GetAsync | ScriptedInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/script/{name}` | IScriptedInputs.UpdateAsync | ScriptedInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/script/{name}` | IScriptedInputs.DeleteAsync | ScriptedInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/cooked` | ICookedTcpInputs.ListAsync | CookedTcpInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/tcp/cooked` | ICookedTcpInputs.CreateAsync | CookedTcpInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/cooked/{name}` | ICookedTcpInputs.GetAsync | CookedTcpInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/tcp/cooked/{name}` | ICookedTcpInputs.UpdateAsync | CookedTcpInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/tcp/cooked/{name}` | ICookedTcpInputs.DeleteAsync | CookedTcpInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/cooked/{name}/connections` | ICookedTcpInputs.ListConnectionsAsync | CookedTcpInputsTests.ListConnectionsAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/raw` | IRawTcpInputs.ListAsync | RawTcpInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/tcp/raw` | IRawTcpInputs.CreateAsync | RawTcpInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/raw/{name}` | IRawTcpInputs.GetAsync | RawTcpInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/tcp/raw/{name}` | IRawTcpInputs.UpdateAsync | RawTcpInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/tcp/raw/{name}` | IRawTcpInputs.DeleteAsync | RawTcpInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/raw/{name}/connections` | IRawTcpInputs.ListConnectionsAsync | RawTcpInputsTests.ListConnectionsAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/splunktcptoken` | ISplunkTcpTokens.ListAsync | SplunkTcpTokensTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/tcp/splunktcptoken` | ISplunkTcpTokens.CreateAsync | SplunkTcpTokensTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/splunktcptoken/{name}` | ISplunkTcpTokens.GetAsync | SplunkTcpTokensTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/tcp/splunktcptoken/{name}` | ISplunkTcpTokens.UpdateAsync | SplunkTcpTokensTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/tcp/splunktcptoken/{name}` | ISplunkTcpTokens.DeleteAsync | SplunkTcpTokensTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/ssl` | ITcpSslSettings.ListAsync | TcpSslSettingsTests.ListAsync_SendsExactRequest |
+| GET | `data/inputs/tcp/ssl/{name}` | ITcpSslSettings.GetAsync | TcpSslSettingsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/tcp/ssl/{name}` | ITcpSslSettings.UpdateAsync | TcpSslSettingsTests.UpdateAsync_SendsExactRequest |
+| GET | `data/inputs/udp` | IUdpInputs.ListAsync | UdpInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/udp` | IUdpInputs.CreateAsync | UdpInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/udp/{name}` | IUdpInputs.GetAsync | UdpInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/udp/{name}` | IUdpInputs.UpdateAsync | UdpInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/udp/{name}` | IUdpInputs.DeleteAsync | UdpInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/udp/{name}/connections` | IUdpInputs.ListConnectionsAsync | UdpInputsTests.ListConnectionsAsync_SendsExactRequest |
+| GET | `data/inputs/win-event-log-collections` | IWindowsEventLogInputs.ListAsync | WindowsEventLogInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/win-event-log-collections` | IWindowsEventLogInputs.CreateAsync | WindowsEventLogInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/win-event-log-collections/{name}` | IWindowsEventLogInputs.GetAsync | WindowsEventLogInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/win-event-log-collections/{name}` | IWindowsEventLogInputs.UpdateAsync | WindowsEventLogInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/win-event-log-collections/{name}` | IWindowsEventLogInputs.DeleteAsync | WindowsEventLogInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/win-wmi-collections` | IWmiInputs.ListAsync | WmiInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/win-wmi-collections` | IWmiInputs.CreateAsync | WmiInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/win-wmi-collections/{name}` | IWmiInputs.GetAsync | WmiInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/win-wmi-collections/{name}` | IWmiInputs.UpdateAsync | WmiInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/win-wmi-collections/{name}` | IWmiInputs.DeleteAsync | WmiInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/inputs/win-perfmon` | IPerfmonInputs.ListAsync | PerfmonInputsTests.ListAsync_SendsExactRequest |
+| POST | `data/inputs/win-perfmon` | IPerfmonInputs.CreateAsync | PerfmonInputsTests.CreateAsync_SendsExactRequest |
+| GET | `data/inputs/win-perfmon/{name}` | IPerfmonInputs.GetAsync | PerfmonInputsTests.GetAsync_SendsExactRequest |
+| POST | `data/inputs/win-perfmon/{name}` | IPerfmonInputs.UpdateAsync | PerfmonInputsTests.UpdateAsync_SendsExactRequest |
+| DELETE | `data/inputs/win-perfmon/{name}` | IPerfmonInputs.DeleteAsync | PerfmonInputsTests.DeleteAsync_SendsExactRequest |
+| GET | `data/modular-inputs` | IModularInputs.ListAsync | ModularInputsTests.ListAsync_SendsExactRequest |
+| GET | `data/modular-inputs/{name}` | IModularInputs.GetAsync | ModularInputsTests.GetAsync_SendsExactRequest |
+| GET | `indexing/preview` | IIndexingPreviews.ListAsync | IndexingPreviewsTests.ListAsync_SendsExactRequest |
+| POST | `indexing/preview` | IIndexingPreviews.CreateAsync | IndexingPreviewsTests.CreateAsync_SendsExactRequest |
+| GET | `indexing/preview/{job_id}` | IIndexingPreviews.GetAsync | IndexingPreviewsTests.GetAsync_SendsExactRequest |
+| POST | `receivers/simple` | IReceivers.SendAsync | ReceiversTests.SendAsync_SendsExactRequest |
+| POST | `receivers/stream` | IReceivers.SendStreamAsync | ReceiversTests.SendStreamAsync_SendsExactRequest |
+| GET | `server/pipelinesets` | IPipelineSets.ListAsync | PipelineSetsTests.ListAsync_SendsExactRequest |
+| POST | `collector` | IHttpEventCollector.SendAsync | HttpEventCollectorTests.SendAsync_SendsExactRequest |
+| POST | `collector/ack` | IHttpEventCollector.QueryAcksAsync | HttpEventCollectorTests.QueryAcksAsync_SendsExactRequest |
+| POST | `collector/event` | IHttpEventCollector.SendEventsAsync | HttpEventCollectorTests.SendEventsAsync_SendsExactRequest |
+| POST | `collector/event/1.0` | IHttpEventCollector.SendEventsV1Async | HttpEventCollectorTests.SendEventsV1Async_SendsExactRequest |
+| GET | `collector/health` | IHttpEventCollector.GetHealthAsync | HttpEventCollectorTests.GetHealthAsync_SendsExactRequest |
+| GET | `collector/health/1.0` | IHttpEventCollector.GetHealthV1Async | HttpEventCollectorTests.GetHealthV1Async_SendsExactRequest |
+| POST | `collector/mint` | IHttpEventCollector.SendMintAsync | HttpEventCollectorTests.SendMintAsync_SendsExactRequest |
+| POST | `collector/mint/1.0` | IHttpEventCollector.SendMintV1Async | HttpEventCollectorTests.SendMintV1Async_SendsExactRequest |
+| POST | `collector/raw` | IHttpEventCollector.SendRawAsync | HttpEventCollectorTests.SendRawAsync_SendsExactRequest |
+| POST | `collector/raw/1.0` | IHttpEventCollector.SendRawV1Async | HttpEventCollectorTests.SendRawV1Async_SendsExactRequest |
+| POST | `collector/s2s` | IHttpEventCollector.SendS2SAsync | HttpEventCollectorTests.SendS2SAsync_SendsExactRequest |
