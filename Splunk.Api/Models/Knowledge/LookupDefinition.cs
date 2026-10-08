@@ -10,17 +10,17 @@ namespace Splunk.Api.Models.Knowledge;
 /// </remarks>
 public sealed class LookupDefinition : TransformsStanza
 {
-	/// <summary>The lookup kind: <c>file</c>, <c>external</c>, <c>kvstore</c> or <c>geo</c>.</summary>
-	[JsonPropertyName("type")]
-	public string? Type { get; init; }
-
-	/// <summary>The lookup table file name, for a file lookup.</summary>
-	[JsonPropertyName("filename")]
-	public string? FileName { get; init; }
+	/// <summary>Whether matching is case-sensitive.</summary>
+	[JsonPropertyName("case_sensitive_match")]
+	public bool? CaseSensitiveMatch { get; init; }
 
 	/// <summary>The KV store collection, for a KV store lookup.</summary>
 	[JsonPropertyName("collection")]
 	public string? Collection { get; init; }
+
+	/// <summary>The value returned when fewer than <see cref="MinMatches"/> entries match.</summary>
+	[JsonPropertyName("default_match")]
+	public string? DefaultMatch { get; init; }
 
 	/// <summary>The command and arguments of an external (scripted) lookup.</summary>
 	[JsonPropertyName("external_cmd")]
@@ -30,25 +30,45 @@ public sealed class LookupDefinition : TransformsStanza
 	[JsonPropertyName("external_type")]
 	public string? ExternalType { get; init; }
 
-	/// <summary>The fields the lookup supports, comma-separated (<c>fields_list</c>).</summary>
-	[JsonPropertyName("fields_list")]
-	public string? FieldsList { get; init; }
-
 	/// <summary>The fields the lookup supports, as a list (<c>fields_array</c>); empty when Splunk reports <c>null</c>, as it does for a file lookup whose file is missing.</summary>
 	[JsonPropertyName("fields_array")]
 	public IReadOnlyList<string> Fields { get; init; } = [];
 
-	/// <summary>The value returned when fewer than <see cref="MinMatches"/> entries match.</summary>
-	[JsonPropertyName("default_match")]
-	public string? DefaultMatch { get; init; }
+	/// <summary>The fields the lookup supports, comma-separated (<c>fields_list</c>).</summary>
+	[JsonPropertyName("fields_list")]
+	public string? FieldsList { get; init; }
+
+	/// <summary>The lookup table file name, for a file lookup.</summary>
+	[JsonPropertyName("filename")]
+	public string? FileName { get; init; }
+
+	/// <summary>Non-exact match rules, for example <c>WILDCARD(url)</c> or <c>CIDR(ip)</c>.</summary>
+	[JsonPropertyName("match_type")]
+	public string? MatchType { get; init; }
 
 	/// <summary>The maximum number of matches returned for each input value.</summary>
 	[JsonPropertyName("max_matches")]
 	public int? MaxMatches { get; init; }
 
+	/// <summary>For temporal lookups, the maximum number of seconds an event may be later than the lookup entry.</summary>
+	[JsonPropertyName("max_offset_secs")]
+	public long? MaxOffsetSeconds { get; init; }
+
 	/// <summary>The minimum number of matches returned for each input value.</summary>
 	[JsonPropertyName("min_matches")]
 	public int? MinMatches { get; init; }
+
+	/// <summary>For temporal lookups, the minimum number of seconds an event must be later than the lookup entry.</summary>
+	[JsonPropertyName("min_offset_secs")]
+	public long? MinOffsetSeconds { get; init; }
+
+	/// <summary>Whether only changes to a CSV lookup are replicated to search peers.</summary>
+	[JsonPropertyName("replicate_delta")]
+	public bool? ReplicateDelta { get; init; }
+
+	/// <summary>The size of the lookup table file in bytes, for file lookups listed with <c>getsize</c>.</summary>
+	[JsonPropertyName("size")]
+	public long? Size { get; init; }
 
 	/// <summary>For temporal lookups, the lookup table field holding the timestamp.</summary>
 	[JsonPropertyName("time_field")]
@@ -58,27 +78,7 @@ public sealed class LookupDefinition : TransformsStanza
 	[JsonPropertyName("time_format")]
 	public string? TimeFormat { get; init; }
 
-	/// <summary>For temporal lookups, the maximum number of seconds an event may be later than the lookup entry.</summary>
-	[JsonPropertyName("max_offset_secs")]
-	public long? MaxOffsetSeconds { get; init; }
-
-	/// <summary>For temporal lookups, the minimum number of seconds an event must be later than the lookup entry.</summary>
-	[JsonPropertyName("min_offset_secs")]
-	public long? MinOffsetSeconds { get; init; }
-
-	/// <summary>Whether matching is case-sensitive.</summary>
-	[JsonPropertyName("case_sensitive_match")]
-	public bool? CaseSensitiveMatch { get; init; }
-
-	/// <summary>Non-exact match rules, for example <c>WILDCARD(url)</c> or <c>CIDR(ip)</c>.</summary>
-	[JsonPropertyName("match_type")]
-	public string? MatchType { get; init; }
-
-	/// <summary>Whether only changes to a CSV lookup are replicated to search peers.</summary>
-	[JsonPropertyName("replicate_delta")]
-	public bool? ReplicateDelta { get; init; }
-
-	/// <summary>The size of the lookup table file in bytes, for file lookups listed with <c>getsize</c>.</summary>
-	[JsonPropertyName("size")]
-	public long? Size { get; init; }
+	/// <summary>The lookup kind: <c>file</c>, <c>external</c>, <c>kvstore</c> or <c>geo</c>.</summary>
+	[JsonPropertyName("type")]
+	public string? Type { get; init; }
 }

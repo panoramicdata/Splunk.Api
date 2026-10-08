@@ -6,10 +6,6 @@ namespace Splunk.Api.Models.FederatedSearch;
 /// <remarks>These settings do not apply to Federated Search for Amazon S3. <see cref="SplunkContent.Disabled"/> reports whether federated search is turned off.</remarks>
 public sealed class FederatedSearchSettings : SplunkContent
 {
-	/// <summary>Whether transparent mode federated search is turned on, so searches can run over transparent mode providers as well as standard mode ones. After changing it, reload <c>configs/conf-federated</c> for it to take effect.</summary>
-	[JsonPropertyName("transparent_mode")]
-	public bool? TransparentMode { get; init; }
-
 	/// <summary>Whether providers are filtered by the federated indexes a search names (with each provider's <c>fedSrchIndexesAllowed</c>). Change only when Splunk Support says so.</summary>
 	[JsonPropertyName("allowIndexBasedProviderFiltering")]
 	public bool? AllowIndexBasedProviderFiltering { get; init; }
@@ -49,6 +45,10 @@ public sealed class FederatedSearchSettings : SplunkContent
 	/// <summary>The interval, in milliseconds, between event download retries.</summary>
 	[JsonPropertyName("remoteEventsDownloadRetryTimeoutMs")]
 	public int? RemoteEventsDownloadRetryTimeoutMs { get; init; }
+
+	/// <summary>Whether transparent mode federated search is turned on, so searches can run over transparent mode providers as well as standard mode ones. After changing it, reload <c>configs/conf-federated</c> for it to take effect.</summary>
+	[JsonPropertyName("transparent_mode")]
+	public bool? TransparentMode { get; init; }
 
 	/// <summary>Whether federated searches can run in verbose mode.</summary>
 	[JsonPropertyName("verbose_mode")]
