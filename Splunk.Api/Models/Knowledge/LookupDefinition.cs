@@ -36,7 +36,7 @@ public sealed class LookupDefinition : TransformsStanza
 
 	/// <summary>The fields the lookup supports, as a list (<c>fields_array</c>); empty when Splunk reports <c>null</c>, as it does for a file lookup whose file is missing.</summary>
 	[JsonPropertyName("fields_array")]
-	public IReadOnlyList<string> Fields { get; init => field = value ?? []; } = [];
+	public IReadOnlyList<string> Fields { get; init; } = [];
 
 	/// <summary>The value returned when fewer than <see cref="MinMatches"/> entries match.</summary>
 	[JsonPropertyName("default_match")]

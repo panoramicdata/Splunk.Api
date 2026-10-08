@@ -23,5 +23,5 @@ public sealed class EventType : SplunkContent
 
 	/// <summary>The tags of the event type. Deprecated by Splunk: tag event types through <c>search/tags</c> instead.</summary>
 	[JsonPropertyName("tags")]
-	public IReadOnlyList<string> Tags { get; init => field = value ?? []; } = [];
+	public IReadOnlyList<string> Tags { get; init; } = [];
 }

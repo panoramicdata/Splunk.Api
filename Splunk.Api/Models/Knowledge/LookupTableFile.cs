@@ -12,7 +12,7 @@ public sealed class LookupTableFile : SplunkContent
 
 	/// <summary>The file's column names (<c>fields_array</c>); empty when Splunk reports <c>null</c>.</summary>
 	[JsonPropertyName("fields_array")]
-	public IReadOnlyList<string> Fields { get; init => field = value ?? []; } = [];
+	public IReadOnlyList<string> Fields { get; init; } = [];
 
 	/// <summary>The file's size in bytes.</summary>
 	[JsonPropertyName("size")]

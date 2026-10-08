@@ -82,7 +82,9 @@ public class SplunkClientOptions
 
 	/// <summary>
 	/// Maximum retries of a transient failure. Any verb is retried on 429 and 503; other 5xx responses are retried only for
-	/// idempotent verbs (GET, HEAD, PUT, DELETE), never POST. Requests with a stream body are never retried.
+	/// idempotent verbs (GET, HEAD, PUT, DELETE), never POST. A connection that could not be established (refused, reset
+	/// during the TLS handshake, or a name that did not resolve) is retried for any verb, since nothing was sent. Requests
+	/// with a stream body are never retried.
 	/// </summary>
 	public int MaxRetries { get; set; } = 3;
 

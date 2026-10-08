@@ -6,7 +6,8 @@ namespace Splunk.Api.Handlers;
 /// <summary>
 /// Applies the per-attempt timeout and retries transient failures. A request is retried (up to
 /// <see cref="SplunkClientOptions.MaxRetries"/> times, honouring <c>Retry-After</c>, else exponential back-off) only when its
-/// body is replayable and either the status is 429 or 503, or the status is another 5xx and the verb is idempotent.
+/// body is replayable and either the status is 429 or 503, the status is another 5xx and the verb is idempotent, or the
+/// connection could not be established (refused, reset during the TLS handshake, name not resolved), when nothing was sent.
 /// Only the method and path are logged, never the query string. The settings are copied at construction.
 /// </summary>
 /// <param name="logger">The logger, if any.</param>
@@ -43,25 +44,57 @@ internal sealed class RetryHandler(ILogger? logger, TimeSpan timeout, int maxRet
 		var path = request.RequestUri!.GetLeftPart(UriPartial.Path);
 		var replayable = IsReplayable(request.Content);
 		var backoff = _retryBaseDelay;
-		var attempt = 0;
-		var response = await SendAttemptAsync(request, path, attempt, cancellationToken).ConfigureAwait(false);
-		while (replayable && attempt < _maxRetries && IsRetryable(request.Method, response.StatusCode))
+		for (var attempt = 0; ; attempt++)
 		{
-			var wait = CapDelay(RetryAfter(response) ?? backoff);
-			if (_logger is not null)
+			var canRetry = replayable && attempt < _maxRetries;
+			TimeSpan wait;
+			try
 			{
-				Log.Retrying(_logger, (int)response.StatusCode, request.Method, path, wait);
+				var response = await SendAttemptAsync(request, path, attempt, cancellationToken).ConfigureAwait(false);
+				if (!canRetry || !IsRetryable(request.Method, response.StatusCode))
+				{
+					return response;
+				}
+
+				wait = CapDelay(RetryAfter(response) ?? backoff);
+				LogRetry(response.StatusCode, request.Method, path, wait);
+				response.Dispose();
+			}
+			catch (HttpRequestException exception) when (canRetry && IsConnectionFailure(exception))
+			{
+				wait = CapDelay(backoff);
+				LogConnectionRetry(exception.HttpRequestError, request.Method, path, wait);
 			}
 
-			response.Dispose();
 			await Delay(wait, cancellationToken).ConfigureAwait(false);
 			backoff = NextBackoff(backoff);
-			attempt++;
-			response = await SendAttemptAsync(request, path, attempt, cancellationToken).ConfigureAwait(false);
 		}
-
-		return response;
 	}
+
+	private void LogRetry(HttpStatusCode status, HttpMethod method, string path, TimeSpan wait)
+	{
+		if (_logger is not null)
+		{
+			Log.Retrying(_logger, (int)status, method, path, wait);
+		}
+	}
+
+	private void LogConnectionRetry(HttpRequestError error, HttpMethod method, string path, TimeSpan wait)
+	{
+		if (_logger is not null)
+		{
+			Log.RetryingConnection(_logger, error, method, path, wait);
+		}
+	}
+
+	/// <summary>
+	/// Whether the request failed while the connection was being established (including the TLS handshake and name
+	/// resolution), so nothing was sent and any verb can safely be retried. Failures after the request went out are not.
+	/// </summary>
+	internal static bool IsConnectionFailure(HttpRequestException exception)
+		=> exception.HttpRequestError is HttpRequestError.ConnectionError
+			or HttpRequestError.SecureConnectionError
+			or HttpRequestError.NameResolutionError;
 
 	private async Task<HttpResponseMessage> SendAttemptAsync(HttpRequestMessage request, string path, int attempt, CancellationToken cancellationToken)
 	{

@@ -10,4 +10,7 @@ internal static partial class Log
 
 	[LoggerMessage(EventId = 2, Level = LogLevel.Warning, Message = "Splunk returned {Status} for {Method} {Path}; retrying in {Delay}")]
 	public static partial void Retrying(ILogger logger, int status, HttpMethod method, string path, TimeSpan delay);
+
+	[LoggerMessage(EventId = 3, Level = LogLevel.Warning, Message = "Splunk connection failed ({Error}) for {Method} {Path}; retrying in {Delay}")]
+	public static partial void RetryingConnection(ILogger logger, HttpRequestError error, HttpMethod method, string path, TimeSpan delay);
 }
