@@ -16,7 +16,7 @@ namespace Splunk.Api;
 /// <para>
 /// <see cref="Collector"/> exposes every collector endpoint; <see cref="SendAsync(IEnumerable{HecEvent}, CancellationToken)"/>,
 /// <see cref="SendRawAsync(string, CancellationToken)"/> and <see cref="QueryAcksAsync(IEnumerable{long}, CancellationToken)"/>
-/// cover the common cases. Requests retry 429 and 503 ("server busy") as <see cref="SplunkHecClientOptions.MaxRetries"/>
+/// cover the common cases. Requests retry 429 and 503 ("server busy") as <see cref="SplunkConnectionOptions.MaxRetries"/>
 /// allows; rejections raise <see cref="SplunkHecException"/>.
 /// </para>
 /// <para>A client is thread-safe and intended to be long-lived. Dispose it when done.</para>

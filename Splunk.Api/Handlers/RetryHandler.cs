@@ -5,7 +5,7 @@ namespace Splunk.Api.Handlers;
 
 /// <summary>
 /// Applies the per-attempt timeout and retries transient failures. A request is retried (up to
-/// <see cref="SplunkClientOptions.MaxRetries"/> times, honouring <c>Retry-After</c>, else exponential back-off) only when its
+/// <see cref="SplunkConnectionOptions.MaxRetries"/> times, honouring <c>Retry-After</c>, else exponential back-off) only when its
 /// body is replayable and either the status is 429 or 503, the status is another 5xx and the verb is idempotent, or the
 /// connection could not be established (refused, reset during the TLS handshake, name not resolved), when nothing was sent.
 /// Only the method and path are logged, never the query string. The settings are copied at construction.
