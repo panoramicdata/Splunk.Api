@@ -94,6 +94,7 @@ public class ErrorMapperTests
 		protected override Task SerializeToStreamAsync(Stream stream, System.Net.TransportContext? context)
 		{
 			ArgumentNullException.ThrowIfNull(stream);
+			_ = context;
 			throw failure;
 		}
 
