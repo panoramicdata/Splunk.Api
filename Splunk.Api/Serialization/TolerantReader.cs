@@ -40,7 +40,7 @@ internal static class TolerantReader
 		}
 
 		return double.TryParse(trimmed, NumberStyles.Float, CultureInfo.InvariantCulture, out var number)
-			? number != 0
+			? number is not 0d
 			: throw new JsonException($"Cannot read a boolean from \"{text}\".");
 	}
 
