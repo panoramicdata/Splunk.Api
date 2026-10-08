@@ -26,10 +26,10 @@ public class CookedTcpInputsTests
 				ConnectionHost = ConnectionHost.Dns,
 				Disabled = true,
 				Host = "web01",
-				RestrictToHost = "10.0.0.5"
+				RestrictToHost = "forwarder.example.com"
 			},
 			ct)))
-			.ShouldBePost(Path, "name=9998&SSL=false&connection_host=dns&disabled=true&host=web01&restrictToHost=10.0.0.5");
+			.ShouldBePost(Path, "name=9998&SSL=false&connection_host=dns&disabled=true&host=web01&restrictToHost=forwarder.example.com");
 
 	[Fact]
 	public async Task GetAsync_SendsExactRequest()

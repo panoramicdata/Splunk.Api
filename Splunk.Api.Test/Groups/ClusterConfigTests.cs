@@ -92,8 +92,8 @@ public class ClusterConfigTests
 				NotifyScanPeriod = 10,
 				ReplicationPort = 9887,
 				ReplicationUseSsl = false,
-				RegisterReplicationAddress = "10.0.0.1",
-				RegisterSearchAddress = "10.0.0.2",
+				RegisterReplicationAddress = "peer1.example.com",
+				RegisterSearchAddress = "peer1-search.example.com",
 				SummaryReplication = true,
 				UseBatchMaskChanges = true,
 				ConnectionTimeout = 61,
@@ -111,7 +111,7 @@ public class ClusterConfigTests
 				+ "&multisite=true&replication_factor=3&search_factor=2&site_replication_factor=origin%3A2%2Ctotal%3A3"
 				+ "&site_search_factor=origin%3A1%2Ctotal%3A2&heartbeat_period=1&heartbeat_timeout=60&quiet_period=60&restart_timeout=600"
 				+ "&max_peer_build_load=5&max_peer_rep_load=5&notify_scan_period=10&replication_port=9887&replication_use_ssl=false"
-				+ "&register_replication_address=10.0.0.1&register_search_address=10.0.0.2&summary_replication=true&use_batch_mask_changes=true"
+				+ "&register_replication_address=peer1.example.com&register_search_address=peer1-search.example.com&summary_replication=true&use_batch_mask_changes=true"
 				+ "&cxn_timeout=61&send_timeout=62&rcv_timeout=63&rep_cxn_timeout=6&rep_send_timeout=7&rep_rcv_timeout=11"
 				+ "&rep_max_send_timeout=601&rep_max_rcv_timeout=602");
 

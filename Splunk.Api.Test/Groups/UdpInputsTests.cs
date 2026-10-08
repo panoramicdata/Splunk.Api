@@ -12,7 +12,7 @@ public class UdpInputsTests
 		{
 			"_rcvbuf": 1572864, "connection_host": "ip", "disabled": true, "eai:acl": null, "group": "listenerports",
 			"host": "$decideOnStartup", "host_resolved": "splunk01", "index": "main", "no_appending_timestamp": true,
-			"no_priority_stripping": true, "queue": "parsingQueue", "restrictToHost": "10.0.0.6", "sourcetype": "syslog"
+			"no_priority_stripping": true, "queue": "parsingQueue", "restrictToHost": "syslog.example.com", "sourcetype": "syslog"
 		}
 		""");
 
@@ -33,12 +33,12 @@ public class UdpInputsTests
 				NoAppendingTimestamp = true,
 				NoPriorityStripping = true,
 				Queue = "parsingQueue",
-				RestrictToHost = "10.0.0.6",
+				RestrictToHost = "syslog.example.com",
 				Source = "udp",
 				Sourcetype = "syslog"
 			},
 			ct)))
-			.ShouldBePost(Path, "name=47013&connection_host=ip&disabled=false&host=web01&index=main&no_appending_timestamp=true&no_priority_stripping=true&queue=parsingQueue&restrictToHost=10.0.0.6&source=udp&sourcetype=syslog");
+			.ShouldBePost(Path, "name=47013&connection_host=ip&disabled=false&host=web01&index=main&no_appending_timestamp=true&no_priority_stripping=true&queue=parsingQueue&restrictToHost=syslog.example.com&source=udp&sourcetype=syslog");
 
 	[Fact]
 	public async Task GetAsync_SendsExactRequest()
@@ -68,7 +68,7 @@ public class UdpInputsTests
 		input.NoAppendingTimestamp.Should().BeTrue();
 		input.NoPriorityStripping.Should().BeTrue();
 		input.Queue.Should().Be("parsingQueue");
-		input.RestrictToHost.Should().Be("10.0.0.6");
+		input.RestrictToHost.Should().Be("syslog.example.com");
 		input.Sourcetype.Should().Be("syslog");
 	}
 
