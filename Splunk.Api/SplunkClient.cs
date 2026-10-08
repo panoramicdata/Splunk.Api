@@ -78,6 +78,9 @@ public sealed partial class SplunkClient : IDisposable
 		// Interface paths are relative (no leading slash) so they append to a path-prefixed BaseUrl.
 		UrlResolution = UrlResolutionMode.Rfc3986,
 		UrlParameterFormatter = new SplunkUrlParameterFormatter(),
+		// Unbuffered, Refit sends a serialized body as a read-once push stream, which can be neither retried nor resent
+		// after a re-login.
+		Buffered = true,
 		ExceptionFactory = response => new ValueTask<Exception?>(SplunkErrorMapper.CreateAsync(response)),
 		// Refit would wrap every exception thrown while sending in its ApiRequestException; surface them as themselves
 		// (TimeoutException, HttpRequestException, ObjectDisposedException...), as documented.
