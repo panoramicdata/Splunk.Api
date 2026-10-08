@@ -6,18 +6,18 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 
 | Method | Path | Client method | Test |
 |---|---|---|---|
-| GET | `workloads/categories` |  |  |
-| POST | `workloads/categories` |  |  |
-| GET | `workloads/pools` |  |  |
-| POST | `workloads/pools` |  |  |
-| GET | `workloads/rules` |  |  |
-| POST | `workloads/rules` |  |  |
-| DELETE | `workloads/rules` |  |  |
-| POST | `workloads/config/enable` |  |  |
-| POST | `workloads/config/disable` |  |  |
-| GET | `workloads/config/get-base-dirname` |  |  |
-| GET | `workloads/config/preflight-checks` |  |  |
-| POST | `workloads/config/set-base-dirname` |  |  |
-| GET | `workloads/policy/search_admission_control` |  |  |
-| POST | `workloads/policy/search_admission_control` |  |  |
-| GET | `workloads/status` |  |  |
+| GET | `workloads/categories` | IWorkloadCategories.ListAsync | WorkloadCategoriesTests.ListAsync_SendsGet |
+| POST | `workloads/categories/{name}` | IWorkloadCategories.UpdateAsync | WorkloadCategoriesTests.UpdateAsync_PostsTheWeightsToTheCategory |
+| GET | `workloads/pools` | IWorkloadPools.ListAsync | WorkloadPoolsTests.ListAsync_SendsGet |
+| POST | `workloads/pools` | IWorkloadPools.CreateAsync | WorkloadPoolsTests.CreateAsync_PostsEveryField |
+| GET | `workloads/rules` | IWorkloadRules.ListAsync | WorkloadRulesTests.ListAsync_SendsTheRuleType |
+| POST | `workloads/rules` | IWorkloadRules.CreateAsync | WorkloadRulesTests.CreateAsync_PostsEveryField |
+| DELETE | `workloads/rules/{name}` | IWorkloadRules.DeleteAsync | WorkloadRulesTests.DeleteAsync_SendsDeleteForTheRule |
+| POST | `workloads/config/enable` | IWorkloadConfig.EnableAsync | WorkloadConfigTests.EnableAsync_PostsWithNoBody |
+| POST | `workloads/config/disable` | IWorkloadConfig.DisableAsync | WorkloadConfigTests.DisableAsync_PostsWithNoBody |
+| GET | `workloads/config/get-base-dirname` | IWorkloadConfig.GetBaseDirectoryAsync | WorkloadConfigTests.GetBaseDirectoryAsync_SendsGet |
+| GET | `workloads/config/preflight-checks` | IWorkloadConfig.GetPreflightChecksAsync | WorkloadConfigTests.GetPreflightChecksAsync_SendsGet |
+| POST | `workloads/config/set-base-dirname` | IWorkloadConfig.SetBaseDirectoryAsync | WorkloadConfigTests.SetBaseDirectoryAsync_PostsTheName |
+| GET | `workloads/policy/search_admission_control` | IWorkloadPolicy.GetSearchAdmissionControlAsync | WorkloadPolicyTests.GetSearchAdmissionControlAsync_SendsGet |
+| POST | `workloads/policy/search_admission_control` | IWorkloadPolicy.UpdateSearchAdmissionControlAsync | WorkloadPolicyTests.UpdateSearchAdmissionControlAsync_PostsTheFlag |
+| GET | `workloads/status` | IWorkloadStatus.GetAsync | WorkloadStatusTests.GetAsync_SendsAdvanced |
