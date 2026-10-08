@@ -43,12 +43,11 @@ public class ErrorMapperTests
 	[Fact]
 	public async Task Xml_MessagesAreRead_WithOrWithoutANamespace()
 	{
-		var exception = await MapAsync("""
-			<?xml version="1.0"?>
-			<response xmlns:s="http://dev.splunk.com/ns/rest"><messages><msg type="INFO">note</msg><s:msg type="ERROR">
-			  Unknown search command 'x'.
-			</s:msg><msg>untyped</msg></messages></response>
-			""", HttpStatusCode.BadRequest);
+		// An ordinary string, not a raw one: Lizard misreads the quotes of a raw literal that holds a URL.
+		var exception = await MapAsync(
+			"<?xml version=\"1.0\"?>\n<response xmlns:s=\"http://dev.splunk.com/ns/rest\"><messages><msg type=\"INFO\">note</msg>"
+				+ "<s:msg type=\"ERROR\">\n  Unknown search command 'x'.\n</s:msg><msg>untyped</msg></messages></response>",
+			HttpStatusCode.BadRequest);
 
 		exception.Message.Should().Be("Unknown search command 'x'.");
 		exception.Messages.Select(m => m.ToString()).Should().Equal("INFO: note", "ERROR: Unknown search command 'x'.", ": untyped");
@@ -66,7 +65,7 @@ public class ErrorMapperTests
 	[InlineData("""{"messages":[{"type":"ERROR"}]}""")]
 	[InlineData("<html><body>Bad gateway<br></body></html>")]
 	[InlineData("<response/>")]
-	[InlineData("""<?xml version="1.0"?><!DOCTYPE r [<!ENTITY x SYSTEM "file:///etc/passwd">]><r><msg>&x;</msg></r>""")]
+	[InlineData("<?xml version=\"1.0\"?><!DOCTYPE r [<!ENTITY x SYSTEM \"file:///etc/passwd\">]><r><msg>&x;</msg></r>")]
 	public async Task NoReadableMessage_FallsBackToTheStatus(string body)
 	{
 		var exception = await MapAsync(body, HttpStatusCode.BadGateway);
