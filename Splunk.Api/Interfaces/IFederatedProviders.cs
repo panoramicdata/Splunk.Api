@@ -22,7 +22,7 @@ public interface IFederatedProviders
 
 	/// <summary>Creates a federated provider (<c>POST data/federated/provider</c>).</summary>
 	/// <remarks>
-	/// Splunk tries to reach <see cref="FederatedProviderCreateRequest.HostPort"/> while creating a Splunk provider, so
+	/// Splunk tries to reach <see cref="FederatedProviderSettings.HostPort"/> while creating a Splunk provider, so
 	/// the call can take as long as a connection timeout (about 20 seconds for an unreachable host) and still succeed,
 	/// with <see cref="FederatedProvider.ConnectivityStatus"/> <c>unknown</c>.
 	/// </remarks>

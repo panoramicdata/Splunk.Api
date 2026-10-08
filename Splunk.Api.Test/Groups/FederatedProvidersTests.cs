@@ -66,8 +66,8 @@ public class FederatedProvidersTests
 			},
 			ct)))
 			.ShouldBeProbed(HttpMethod.Post, Path, body:
-				"name=remote1&type=splunk&mode=standard&hostPort=192.0.2.1%3A8089&serviceAccount=svc&password=p%26ss&appContext=search"
-				+ "&aws_account_id=123456789012&aws_glue_tables_allowlist=t1&aws_kms_keys_arn_allowlist=k1&aws_s3_paths_allowlist=s3%3A%2F%2Fb&database=db");
+				"name=remote1&type=splunk&mode=standard&database=db&hostPort=192.0.2.1%3A8089&serviceAccount=svc&password=p%26ss&appContext=search"
+				+ "&aws_account_id=123456789012&aws_glue_tables_allowlist=t1&aws_kms_keys_arn_allowlist=k1&aws_s3_paths_allowlist=s3%3A%2F%2Fb");
 
 	[Fact]
 	public async Task DisableAllAsync_SendsPostWithTheType()
@@ -103,8 +103,8 @@ public class FederatedProvidersTests
 			},
 			ct)))
 			.ShouldBeProbed(HttpMethod.Post, $"{Path}/remote1", body:
-				"appContext=search&hostPort=h%3A8089&serviceAccount=svc2&password=pw&fedSrchIndexesAllowed=idx%2A&useAppContextFromSearch=true"
-				+ "&aws_account_id=1&aws_glue_tables_allowlist=t&aws_kms_keys_arn_allowlist=k&aws_s3_paths_allowlist=p");
+				"hostPort=h%3A8089&serviceAccount=svc2&password=pw&appContext=search"
+				+ "&aws_account_id=1&aws_glue_tables_allowlist=t&aws_kms_keys_arn_allowlist=k&aws_s3_paths_allowlist=p&fedSrchIndexesAllowed=idx%2A&useAppContextFromSearch=true");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()

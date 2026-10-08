@@ -76,7 +76,7 @@ public class FederatedIndexesTests
 	[Fact]
 	public async Task UpdateAsync_SendsPostWithTheSetFields()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedIndexes.UpdateAsync(Name, TimeFields, ct)))
-			.ShouldBeProbed(HttpMethod.Post, $"{Path}/{EscapedName}", body: $"federated.dataset=index%3Aother{TimeFieldsBody}");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/{EscapedName}", body: $"{TimeFieldsBody[1..]}&federated.dataset=index%3Aother");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
