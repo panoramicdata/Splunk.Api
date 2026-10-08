@@ -48,30 +48,30 @@ public class ClusterIntegrationTests(SplunkFixture fixture)
 	{
 		var c = fixture.Client;
 
-		await ShouldFailAsync(() => c.ClusterManager.GetInfoAsync(Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManager.GetHealthAsync(Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManager.GetStatusAsync(Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManager.GetHaActiveStatusAsync(Ct), HttpStatusCode.ServiceUnavailable, "Cluster manager is not enabled.");
-		await ShouldFailAsync(() => c.ClusterManager.ListFixupsAsync(ClusterFixupLevel.Generation, null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManager.ListRedundancyAsync(Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled + ".");
-		await ShouldFailAsync(() => c.ClusterManagerBuckets.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManagerBuckets.GetAsync(FakeBucket, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManagerGenerations.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManagerGenerations.GetAsync("manager", Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManagerIndexes.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManagerIndexes.GetAsync("main", Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManagerPeers.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManagerPeers.GetAsync("x", null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManagerSites.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterManagerSites.GetAsync("site1", Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManager.GetInfoAsync(Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManager.GetHealthAsync(Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManager.GetStatusAsync(Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManager.GetHaActiveStatusAsync(Ct), HttpStatusCode.ServiceUnavailable, "Cluster manager is not enabled.");
+		await SplunkAssert.FailsAsync(() => c.ClusterManager.ListFixupsAsync(ClusterFixupLevel.Generation, null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManager.ListRedundancyAsync(Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled + ".");
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerBuckets.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerBuckets.GetAsync(FakeBucket, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerGenerations.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerGenerations.GetAsync("manager", Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerIndexes.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerIndexes.GetAsync("main", Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerPeers.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerPeers.GetAsync("x", null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerSites.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterManagerSites.GetAsync("site1", Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
 	}
 
 	[Fact]
 	public async Task ManagerBucketActions_OnAStandalone_AreRejected()
 	{
 		// Rejected before anything happens: this node is not a cluster manager, and the bucket does not exist.
-		await ShouldFailAsync(() => fixture.Client.ClusterManagerBuckets.FixAsync(FakeBucket, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(() => fixture.Client.ClusterManagerBuckets.FixAsync(FakeBucket, Ct), HttpStatusCode.ServiceUnavailable, ManagerNotEnabled);
+		await SplunkAssert.FailsAsync(
 			() => fixture.Client.ClusterManagerControl.RollHotBucketAsync(new ClusterRollHotBucketRequest { BucketId = FakeBucket }, Ct),
 			HttpStatusCode.ServiceUnavailable,
 			ManagerNotEnabled);
@@ -82,18 +82,18 @@ public class ClusterIntegrationTests(SplunkFixture fixture)
 	{
 		var c = fixture.Client;
 
-		await ShouldFailAsync(() => c.ClusterPeer.GetInfoAsync(Ct), HttpStatusCode.ServiceUnavailable, PeerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterPeerBuckets.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, PeerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterPeerBuckets.GetAsync(FakeBucket, null, Ct), HttpStatusCode.ServiceUnavailable, PeerNotEnabled);
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(() => c.ClusterPeer.GetInfoAsync(Ct), HttpStatusCode.ServiceUnavailable, PeerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterPeerBuckets.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, PeerNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ClusterPeerBuckets.GetAsync(FakeBucket, null, Ct), HttpStatusCode.ServiceUnavailable, PeerNotEnabled);
+		await SplunkAssert.FailsAsync(
 			() => c.ClusterPeerBuckets.DeleteAsync(FakeBucket, new ClusterPeerBucketRemoveRequest { BucketId = FakeBucket }, Ct),
 			HttpStatusCode.ServiceUnavailable,
 			PeerNotEnabled);
-		await ShouldFailAsync(() => c.ClusterSearchHeadGenerations.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, "Search head or cluster manager is not enabled on this node.");
-		await ShouldFailAsync(() => c.ClusterSearchHeadGenerations.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, "Search head or cluster manager is not enabled on this node.");
-		await ShouldFailAsync(() => c.ClusterSearchHeadConfigs.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, "Searchhead is not enabled on this node");
-		await ShouldFailAsync(() => c.ClusterSearchHeadConfigs.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, "Searchhead is not enabled on this node");
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(() => c.ClusterSearchHeadGenerations.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, "Search head or cluster manager is not enabled on this node.");
+		await SplunkAssert.FailsAsync(() => c.ClusterSearchHeadGenerations.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, "Search head or cluster manager is not enabled on this node.");
+		await SplunkAssert.FailsAsync(() => c.ClusterSearchHeadConfigs.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, "Searchhead is not enabled on this node");
+		await SplunkAssert.FailsAsync(() => c.ClusterSearchHeadConfigs.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, "Searchhead is not enabled on this node");
+		await SplunkAssert.FailsAsync(
 			() => c.ClusterSearchHeadConfigs.DeleteAsync(SplunkFixture.UniqueName("sh"), Ct),
 			HttpStatusCode.ServiceUnavailable,
 			"Searchhead is not enabled on this node");
@@ -104,39 +104,32 @@ public class ClusterIntegrationTests(SplunkFixture fixture)
 	{
 		var c = fixture.Client;
 
-		await ShouldFailAsync(() => c.ShClusterCaptain.GetInfoAsync(Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterCaptainArtifacts.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterCaptainArtifacts.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterCaptainJobs.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterCaptainJobs.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterCaptainMembers.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterCaptainMembers.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterMember.GetInfoAsync(Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterMember.ListArtifactsAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterMember.GetArtifactAsync("x", Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(() => c.ShClusterCaptain.GetInfoAsync(Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterCaptainArtifacts.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterCaptainArtifacts.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterCaptainJobs.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterCaptainJobs.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterCaptainMembers.ListAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterCaptainMembers.GetAsync("x", Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterMember.GetInfoAsync(Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterMember.ListArtifactsAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterMember.GetArtifactAsync("x", Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(
 			() => c.ShClusterMember.GetConsensusAsync(Ct),
 			HttpStatusCode.BadRequest,
 			"Search Head Clustering is not enabled on this node. Raft REST endpoints are not available!");
-		await ShouldFailAsync(() => c.ShClusterStatus.GetAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
-		await ShouldFailAsync(() => c.ShClusterUpgrades.GetStatusAsync(Ct), HttpStatusCode.BadRequest, "Configuration error: 'passAuth' does not exist");
+		await SplunkAssert.FailsAsync(() => c.ShClusterStatus.GetAsync(null, Ct), HttpStatusCode.ServiceUnavailable, ShcNotEnabled);
+		await SplunkAssert.FailsAsync(() => c.ShClusterUpgrades.GetStatusAsync(Ct), HttpStatusCode.BadRequest, "Configuration error: 'passAuth' does not exist");
 	}
 
 	[Fact]
 	public async Task ConfigurationReplication_OnAStandalone_Raises400()
 	{
-		await ShouldFailAsync(() => fixture.Client.ConfigurationReplication.GetHealthAsync(null, Ct), HttpStatusCode.BadRequest, "No local ConfRepo registered");
-		await ShouldFailAsync(
+		await SplunkAssert.FailsAsync(() => fixture.Client.ConfigurationReplication.GetHealthAsync(null, Ct), HttpStatusCode.BadRequest, "No local ConfRepo registered");
+		await SplunkAssert.FailsAsync(
 			() => fixture.Client.ConfigurationReplication.GetHealthAsync(new ConfigurationReplicationHealthOptions { CheckShareBaseline = true }, Ct),
 			HttpStatusCode.BadRequest,
 			"No local ConfRepo registered");
-		await ShouldFailAsync(() => fixture.Client.ConfigurationReplication.ListQuarantinedAssetsAsync(Ct), HttpStatusCode.BadRequest, "No local ConfRepo registered");
-	}
-
-	private static async Task ShouldFailAsync(Func<Task> call, HttpStatusCode status, string message)
-	{
-		var error = (await call.Should().ThrowAsync<SplunkApiException>()).Which;
-		error.StatusCode.Should().Be(status);
-		error.Message.Should().Be(message);
+		await SplunkAssert.FailsAsync(() => fixture.Client.ConfigurationReplication.ListQuarantinedAssetsAsync(Ct), HttpStatusCode.BadRequest, "No local ConfRepo registered");
 	}
 }

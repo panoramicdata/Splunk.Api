@@ -102,10 +102,6 @@ public class SearchJobsIntegrationTests(SplunkFixture fixture)
 	[Fact]
 	public async Task CreateAsync_BadSearch_RaisesBadRequest()
 	{
-		var act = () => Client.SearchJobs.CreateAsync(new SearchJobCreateRequest { Search = "| nosuchcommand" }, Ct);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-		thrown.Which.Message.Should().Be("Unknown search command 'nosuchcommand'.");
+		await SplunkAssert.FailsAsync(() => Client.SearchJobs.CreateAsync(new SearchJobCreateRequest { Search = "| nosuchcommand" }, Ct), HttpStatusCode.BadRequest, "Unknown search command 'nosuchcommand'.");
 	}
 }

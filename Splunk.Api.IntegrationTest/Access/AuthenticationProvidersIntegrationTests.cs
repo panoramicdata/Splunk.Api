@@ -32,10 +32,7 @@ public class AuthenticationProvidersIntegrationTests(SplunkFixture fixture)
 
 		(await fixture.Client.RsaMfa.ListAsync(null, ct)).Entries.Should().BeEmpty();
 
-		var act = () => fixture.Client.RsaMfa.VerifyAsync(Missing, new RsaMfaVerifyRequest { Username = "splunk_api_it", Passcode = "000000" }, ct);
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
-		thrown.Which.Message.Should().Be("No Rsa MFA configuration was found.");
+		await SplunkAssert.FailsAsync(() => fixture.Client.RsaMfa.VerifyAsync(Missing, new RsaMfaVerifyRequest { Username = "splunk_api_it", Passcode = "000000" }, ct), HttpStatusCode.NotFound, "No Rsa MFA configuration was found.");
 	}
 
 	[Fact]
@@ -106,8 +103,6 @@ public class AuthenticationProvidersIntegrationTests(SplunkFixture fixture)
 
 	private static async Task ShouldBeNotFoundAsync(Func<Task> act)
 	{
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
-		thrown.Which.Message.Should().Be($"Could not find object id={Missing}");
+		await SplunkAssert.FailsAsync(act, HttpStatusCode.NotFound, $"Could not find object id={Missing}");
 	}
 }

@@ -60,10 +60,6 @@ public class AuthenticationTokensIntegrationTests(SplunkFixture fixture)
 		var request = new AuthenticationTokenStatusRequest { Status = TokenStatus.Enabled, TokenId = "splunk_api_it_none" };
 		request.AdditionalParameters["audience"] = "x";
 
-		var act = () => fixture.Client.AuthenticationTokens.UpdateStatusAsync(fixture.CreateOptions().Username!, request, TestContext.Current.CancellationToken);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-		thrown.Which.Message.Should().Be("Argument \"audience\" is not supported by this handler.");
+		await SplunkAssert.FailsAsync(() => fixture.Client.AuthenticationTokens.UpdateStatusAsync(fixture.CreateOptions().Username!, request, TestContext.Current.CancellationToken), HttpStatusCode.BadRequest, "Argument \"audience\" is not supported by this handler.");
 	}
 }

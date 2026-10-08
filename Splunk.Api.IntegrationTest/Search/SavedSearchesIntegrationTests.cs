@@ -100,11 +100,7 @@ public class SavedSearchesIntegrationTests(SplunkFixture fixture)
 		await Client.SavedSearches.CreateAsync(new SavedSearchCreateRequest { Name = name, Search = "| makeresults", IsScheduled = true, CronSchedule = "0 0 1 1 *" }, Ct);
 		try
 		{
-			var act = () => Client.SavedSearches.RescheduleAsync(name, new RescheduleRequest { ScheduleTime = "2030-01-01T00:00:00.000+00:00" }, Ct);
-
-			var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-			thrown.Which.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-			thrown.Which.Message.Should().Be("Invalid schedule_time format");
+			await SplunkAssert.FailsAsync(() => Client.SavedSearches.RescheduleAsync(name, new RescheduleRequest { ScheduleTime = "2030-01-01T00:00:00.000+00:00" }, Ct), HttpStatusCode.BadRequest, "Invalid schedule_time format");
 		}
 		finally
 		{
