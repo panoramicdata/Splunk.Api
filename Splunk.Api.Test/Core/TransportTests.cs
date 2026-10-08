@@ -18,32 +18,50 @@ public sealed class TransportTests : IDisposable
 		_request.Dispose();
 	}
 
-	private static Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, bool> PinnedCallback(string thumbprint)
+	/// <summary>The transport's TLS validation, invoked as SocketsHttpHandler does: with the request as the sender.</summary>
+	private static Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, bool> ValidationOf(SplunkClientOptions options)
 	{
-		using var handler = SplunkClient.CreateTransport(new SplunkClientOptions { TrustedServerCertificateThumbprint = thumbprint });
-		return handler.ServerCertificateCustomValidationCallback!;
+		using var handler = SplunkClient.CreateTransport(options);
+		var validate = handler.SslOptions.RemoteCertificateValidationCallback!;
+		return (request, certificate, chain, errors) => validate(request, certificate, chain, errors);
 	}
+
+	private static Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, bool> PinnedCallback(string thumbprint)
+		=> ValidationOf(new SplunkClientOptions { TrustedServerCertificateThumbprint = thumbprint });
 
 	[Fact]
 	public void NoThumbprintOrCallback_LeavesDefaultValidation()
 	{
 		using var handler = SplunkClient.CreateTransport(new SplunkClientOptions());
 
-		handler.ServerCertificateCustomValidationCallback.Should().BeNull();
+		handler.SslOptions.RemoteCertificateValidationCallback.Should().BeNull();
 	}
 
 	[Fact]
-	public void CustomCallback_TakesPrecedenceOverThumbprint()
+	public void PooledConnections_AreDroppedBeforeSplunkdClosesThem()
 	{
-		Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, bool> callback = (_, _, _, _) => false;
+		using var handler = SplunkClient.CreateTransport(new SplunkClientOptions());
 
-		using var handler = SplunkClient.CreateTransport(new SplunkClientOptions
+		handler.PooledConnectionIdleTimeout.Should().BeLessThan(TimeSpan.FromSeconds(12), "splunkd's busyKeepAliveIdleTimeout defaults to 12 seconds");
+		handler.PooledConnectionLifetime.Should().Be(TimeSpan.FromMinutes(5));
+	}
+
+	[Fact]
+	public void CustomCallback_TakesPrecedenceOverThumbprint_AndReceivesTheRequest()
+	{
+		HttpRequestMessage? seen = null;
+		var validate = ValidationOf(new SplunkClientOptions
 		{
-			ServerCertificateValidationCallback = callback,
+			ServerCertificateValidationCallback = (request, _, _, _) =>
+			{
+				seen = request;
+				return false;
+			},
 			TrustedServerCertificateThumbprint = TestCertificates.Sha256(_pinned)
 		});
 
-		handler.ServerCertificateCustomValidationCallback.Should().BeSameAs(callback);
+		validate(_request, _pinned, null, SslPolicyErrors.RemoteCertificateChainErrors).Should().BeFalse("the custom callback rejects, although the thumbprint would trust it");
+		seen.Should().BeSameAs(_request);
 	}
 
 	[Theory]

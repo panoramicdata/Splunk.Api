@@ -118,7 +118,7 @@ public sealed partial class SplunkClient : IDisposable
 		}
 	}
 
-	// Validation comes before the transport is created, so invalid options do not leave an undisposed HttpClientHandler.
+	// Validation comes before the transport is created, so invalid options do not leave an undisposed network handler.
 	private static SplunkClientOptions Validated(SplunkClientOptions options)
 	{
 		ArgumentNullException.ThrowIfNull(options);
@@ -153,7 +153,17 @@ public sealed partial class SplunkClient : IDisposable
 		};
 	}
 
-	internal static HttpClientHandler CreateTransport(SplunkClientOptions options)
+	/// <summary>
+	/// How long an idle pooled connection is kept. splunkd closes idle keep-alive connections after
+	/// <c>busyKeepAliveIdleTimeout</c> (12 seconds by default) when it is busy; reusing one it has already closed fails
+	/// with "connection forcibly closed" mid-request, so connections are dropped well before that.
+	/// </summary>
+	internal static readonly TimeSpan PooledConnectionIdleTimeout = TimeSpan.FromSeconds(5);
+
+	/// <summary>How long any pooled connection is kept, so DNS changes (for example a load balancer move) are picked up.</summary>
+	internal static readonly TimeSpan PooledConnectionLifetime = TimeSpan.FromMinutes(5);
+
+	internal static SocketsHttpHandler CreateTransport(SplunkClientOptions options)
 	{
 		ArgumentNullException.ThrowIfNull(options);
 		return CreateTransport(options.ServerCertificateValidationCallback, options.TrustedServerCertificateThumbprint);
@@ -163,25 +173,32 @@ public sealed partial class SplunkClient : IDisposable
 	/// Creates the network handler: <paramref name="validationCallback"/> when set, else trust for the certificate with
 	/// <paramref name="trustedThumbprint"/> (SHA-256) on top of normal validation.
 	/// </summary>
-	internal static HttpClientHandler CreateTransport(
+	internal static SocketsHttpHandler CreateTransport(
 		Func<HttpRequestMessage, System.Security.Cryptography.X509Certificates.X509Certificate2?, System.Security.Cryptography.X509Certificates.X509Chain?, System.Net.Security.SslPolicyErrors, bool>? validationCallback,
 		string? trustedThumbprint)
 	{
-		var handler = new HttpClientHandler();
-		if (validationCallback is { } callback)
+		var handler = new SocketsHttpHandler
 		{
-			handler.ServerCertificateCustomValidationCallback = callback;
-		}
-		else if (NormalizeThumbprint(trustedThumbprint) is { } pinned)
+			PooledConnectionIdleTimeout = PooledConnectionIdleTimeout,
+			PooledConnectionLifetime = PooledConnectionLifetime
+		};
+		var callback = validationCallback ?? PinnedCallback(NormalizeThumbprint(trustedThumbprint));
+		if (callback is not null)
 		{
-			handler.ServerCertificateCustomValidationCallback = (_, certificate, _, errors)
-				=> errors == System.Net.Security.SslPolicyErrors.None
-					|| (certificate is not null
-						&& string.Equals(certificate.GetCertHashString(HashAlgorithmName.SHA256), pinned, StringComparison.OrdinalIgnoreCase));
+			// SocketsHttpHandler passes the request as the sender, as HttpClientHandler's equivalent callback relies on.
+			handler.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, errors)
+				=> callback((HttpRequestMessage)sender, certificate as System.Security.Cryptography.X509Certificates.X509Certificate2, chain, errors);
 		}
 
 		return handler;
 	}
+
+	private static Func<HttpRequestMessage, System.Security.Cryptography.X509Certificates.X509Certificate2?, System.Security.Cryptography.X509Certificates.X509Chain?, System.Net.Security.SslPolicyErrors, bool>? PinnedCallback(string? pinned)
+		=> pinned is null
+			? null
+			: (_, certificate, _, errors) => errors == System.Net.Security.SslPolicyErrors.None
+				|| (certificate is not null
+					&& string.Equals(certificate.GetCertHashString(HashAlgorithmName.SHA256), pinned, StringComparison.OrdinalIgnoreCase));
 
 	internal static string? NormalizeThumbprint(string? thumbprint)
 	{

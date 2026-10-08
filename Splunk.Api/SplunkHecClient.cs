@@ -103,7 +103,7 @@ public sealed class SplunkHecClient : IDisposable
 		return reply.Acks;
 	}
 
-	private static HttpClientHandler CreateTransport(SplunkHecClientOptions options)
+	private static SocketsHttpHandler CreateTransport(SplunkHecClientOptions options)
 	{
 		ArgumentNullException.ThrowIfNull(options);
 		return SplunkClient.CreateTransport(options.ServerCertificateValidationCallback, options.TrustedServerCertificateThumbprint);
