@@ -9,24 +9,24 @@ public sealed class TransportTests : IDisposable
 {
 	private readonly X509Certificate2 _pinned = TestCertificates.Create();
 	private readonly X509Certificate2 _other = TestCertificates.Create("CN=other.test");
-	private readonly HttpRequestMessage _request = new(HttpMethod.Get, "https://splunk.test:8089/");
+	// SocketsHttpHandler passes the SslStream as the sender; the callback must not depend on it.
+	private readonly object _sender = new();
 
 	public void Dispose()
 	{
 		_pinned.Dispose();
 		_other.Dispose();
-		_request.Dispose();
 	}
 
-	/// <summary>The transport's TLS validation, invoked as SocketsHttpHandler does: with the request as the sender.</summary>
-	private static Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, bool> ValidationOf(SplunkClientOptions options)
+	/// <summary>The transport's TLS validation, as SocketsHttpHandler invokes it.</summary>
+	private static Func<object, X509Certificate?, X509Chain?, SslPolicyErrors, bool> ValidationOf(SplunkClientOptions options)
 	{
 		using var handler = SplunkClient.CreateTransport(options);
 		var validate = handler.SslOptions.RemoteCertificateValidationCallback!;
-		return (request, certificate, chain, errors) => validate(request, certificate, chain, errors);
+		return (sender, certificate, chain, errors) => validate(sender, certificate, chain, errors);
 	}
 
-	private static Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, bool> PinnedCallback(string thumbprint)
+	private static Func<object, X509Certificate?, X509Chain?, SslPolicyErrors, bool> PinnedCallback(string thumbprint)
 		=> ValidationOf(new SplunkClientOptions { TrustedServerCertificateThumbprint = thumbprint });
 
 	[Fact]
@@ -47,28 +47,36 @@ public sealed class TransportTests : IDisposable
 	}
 
 	[Fact]
-	public void CustomCallback_TakesPrecedenceOverThumbprint_AndReceivesTheRequest()
+	public void CustomCallback_TakesPrecedenceOverThumbprint_AndReceivesTheCertificate()
 	{
-		HttpRequestMessage? seen = null;
+		X509Certificate2? seen = null;
 		var validate = ValidationOf(new SplunkClientOptions
 		{
-			ServerCertificateValidationCallback = (request, _, _, _) =>
+			ServerCertificateValidationCallback = (certificate, _, _) =>
 			{
-				seen = request;
+				seen = certificate;
 				return false;
 			},
 			TrustedServerCertificateThumbprint = TestCertificates.Sha256(_pinned)
 		});
 
-		validate(_request, _pinned, null, SslPolicyErrors.RemoteCertificateChainErrors).Should().BeFalse("the custom callback rejects, although the thumbprint would trust it");
-		seen.Should().BeSameAs(_request);
+		validate(_sender, _pinned, null, SslPolicyErrors.RemoteCertificateChainErrors).Should().BeFalse("the custom callback rejects, although the thumbprint would trust it");
+		seen.Should().BeSameAs(_pinned);
+	}
+
+	[Fact]
+	public void Pinned_TrustsThePinnedCertificate_HandedOverAsTheBaseType()
+	{
+		using var baseType = new X509Certificate(_pinned);
+
+		PinnedCallback(TestCertificates.Sha256(_pinned))(_sender, baseType, null, SslPolicyErrors.RemoteCertificateChainErrors).Should().BeTrue();
 	}
 
 	[Theory]
 	[InlineData(SslPolicyErrors.RemoteCertificateChainErrors)]
 	[InlineData(SslPolicyErrors.RemoteCertificateNameMismatch | SslPolicyErrors.RemoteCertificateChainErrors)]
 	public void Pinned_TrustsThePinnedCertificateDespiteErrors(SslPolicyErrors errors)
-		=> PinnedCallback(TestCertificates.Sha256(_pinned))(_request, _pinned, null, errors).Should().BeTrue();
+		=> PinnedCallback(TestCertificates.Sha256(_pinned))(_sender, _pinned, null, errors).Should().BeTrue();
 
 	[Fact]
 	public void Pinned_MatchesIgnoringCaseAndSeparators()
@@ -76,20 +84,20 @@ public sealed class TransportTests : IDisposable
 		var hex = TestCertificates.Sha256(_pinned).ToLowerInvariant();
 		var separated = string.Join(':', Enumerable.Range(0, 32).Select(i => hex.Substring(i * 2, 2)));
 
-		PinnedCallback(separated)(_request, _pinned, null, SslPolicyErrors.RemoteCertificateChainErrors).Should().BeTrue();
+		PinnedCallback(separated)(_sender, _pinned, null, SslPolicyErrors.RemoteCertificateChainErrors).Should().BeTrue();
 	}
 
 	[Fact]
 	public void Pinned_RejectsAnotherCertificateWithErrors()
-		=> PinnedCallback(TestCertificates.Sha256(_pinned))(_request, _other, null, SslPolicyErrors.RemoteCertificateChainErrors).Should().BeFalse();
+		=> PinnedCallback(TestCertificates.Sha256(_pinned))(_sender, _other, null, SslPolicyErrors.RemoteCertificateChainErrors).Should().BeFalse();
 
 	[Fact]
 	public void Pinned_RejectsAMissingCertificateWithErrors()
-		=> PinnedCallback(TestCertificates.Sha256(_pinned))(_request, null, null, SslPolicyErrors.RemoteCertificateNotAvailable).Should().BeFalse();
+		=> PinnedCallback(TestCertificates.Sha256(_pinned))(_sender, null, null, SslPolicyErrors.RemoteCertificateNotAvailable).Should().BeFalse();
 
 	[Fact]
 	public void Pinned_StillTrustsOtherCertificatesThatPassNormalValidation()
-		=> PinnedCallback(TestCertificates.Sha256(_pinned))(_request, _other, null, SslPolicyErrors.None).Should().BeTrue();
+		=> PinnedCallback(TestCertificates.Sha256(_pinned))(_sender, _other, null, SslPolicyErrors.None).Should().BeTrue();
 
 	[Fact]
 	public void CreateTransport_RequiresOptions()

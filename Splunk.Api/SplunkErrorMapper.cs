@@ -59,8 +59,13 @@ internal static class SplunkErrorMapper
 			using var document = JsonDocument.Parse(body);
 			if (!document.RootElement.TryGetProperty("messages", out var messages) || messages.ValueKind != JsonValueKind.Array)
 			{
-				return ReadString(document.RootElement, "error") is { Length: > 0 } error
-					? [new SplunkMessage { Type = "ERROR", Text = error }]
+				// Sidecar services use their own shapes: the topology service (stack-explainer) answers {"error":"..."},
+				// the SPL2 orchestrator the OpenAPI {"code":"...","message":"..."}.
+				var text = ReadString(document.RootElement, "error") is { Length: > 0 } error
+					? error
+					: ReadString(document.RootElement, "message");
+				return text.Length > 0
+					? [new SplunkMessage { Type = "ERROR", Text = text }]
 					: [];
 			}
 

@@ -174,7 +174,7 @@ public sealed partial class SplunkClient : IDisposable
 	/// <paramref name="trustedThumbprint"/> (SHA-256) on top of normal validation.
 	/// </summary>
 	internal static SocketsHttpHandler CreateTransport(
-		Func<HttpRequestMessage, System.Security.Cryptography.X509Certificates.X509Certificate2?, System.Security.Cryptography.X509Certificates.X509Chain?, System.Net.Security.SslPolicyErrors, bool>? validationCallback,
+		Func<System.Security.Cryptography.X509Certificates.X509Certificate2?, System.Security.Cryptography.X509Certificates.X509Chain?, System.Net.Security.SslPolicyErrors, bool>? validationCallback,
 		string? trustedThumbprint)
 	{
 		var handler = new SocketsHttpHandler
@@ -185,18 +185,27 @@ public sealed partial class SplunkClient : IDisposable
 		var callback = validationCallback ?? PinnedCallback(NormalizeThumbprint(trustedThumbprint));
 		if (callback is not null)
 		{
-			// SocketsHttpHandler passes the request as the sender, as HttpClientHandler's equivalent callback relies on.
-			handler.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, errors)
-				=> callback((HttpRequestMessage)sender, certificate as System.Security.Cryptography.X509Certificates.X509Certificate2, chain, errors);
+			// The sender is the SslStream, not the request, so the callback is not given one.
+			handler.SslOptions.RemoteCertificateValidationCallback = (_, certificate, chain, errors)
+				=> callback(AsCertificate2(certificate), chain, errors);
 		}
 
 		return handler;
 	}
 
-	private static Func<HttpRequestMessage, System.Security.Cryptography.X509Certificates.X509Certificate2?, System.Security.Cryptography.X509Certificates.X509Chain?, System.Net.Security.SslPolicyErrors, bool>? PinnedCallback(string? pinned)
+	/// <summary>TLS hands over an <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2"/>; anything else is loaded as one.</summary>
+	internal static System.Security.Cryptography.X509Certificates.X509Certificate2? AsCertificate2(System.Security.Cryptography.X509Certificates.X509Certificate? certificate)
+		=> certificate switch
+		{
+			null => null,
+			System.Security.Cryptography.X509Certificates.X509Certificate2 certificate2 => certificate2,
+			_ => System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadCertificate(certificate.GetRawCertData())
+		};
+
+	private static Func<System.Security.Cryptography.X509Certificates.X509Certificate2?, System.Security.Cryptography.X509Certificates.X509Chain?, System.Net.Security.SslPolicyErrors, bool>? PinnedCallback(string? pinned)
 		=> pinned is null
 			? null
-			: (_, certificate, _, errors) => errors == System.Net.Security.SslPolicyErrors.None
+			: (certificate, _, errors) => errors == System.Net.Security.SslPolicyErrors.None
 				|| (certificate is not null
 					&& string.Equals(certificate.GetCertHashString(HashAlgorithmName.SHA256), pinned, StringComparison.OrdinalIgnoreCase));
 

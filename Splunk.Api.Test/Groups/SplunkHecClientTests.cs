@@ -82,7 +82,7 @@ public class SplunkHecClientTests
 		{
 			BaseUrl = HecTestKit.BaseUrl,
 			Token = HecTestKit.Token,
-			ServerCertificateValidationCallback = (_, _, _, _) => true
+			ServerCertificateValidationCallback = (_, _, _) => true
 		});
 		using var plain = new SplunkHecClient(new SplunkHecClientOptions { BaseUrl = HecTestKit.BaseUrl, Token = HecTestKit.Token });
 

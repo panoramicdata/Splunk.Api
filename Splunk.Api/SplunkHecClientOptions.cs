@@ -34,7 +34,7 @@ public class SplunkHecClientOptions
 	public string? TrustedServerCertificateThumbprint { get; set; }
 
 	/// <summary>Full control over server certificate validation. Ignored when an inner handler is supplied.</summary>
-	public Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, bool>? ServerCertificateValidationCallback { get; set; }
+	public Func<X509Certificate2?, X509Chain?, SslPolicyErrors, bool>? ServerCertificateValidationCallback { get; set; }
 
 	/// <summary>HTTP timeout per attempt; see <see cref="SplunkClientOptions.Timeout"/>.</summary>
 	public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(100);

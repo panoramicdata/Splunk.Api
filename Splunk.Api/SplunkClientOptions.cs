@@ -70,7 +70,7 @@ public class SplunkClientOptions
 	/// Full control over server certificate validation. Takes precedence over <see cref="TrustedServerCertificateThumbprint"/>.
 	/// Ignored when an inner <see cref="HttpMessageHandler"/> is supplied to the client.
 	/// </summary>
-	public Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, bool>? ServerCertificateValidationCallback { get; set; }
+	public Func<X509Certificate2?, X509Chain?, SslPolicyErrors, bool>? ServerCertificateValidationCallback { get; set; }
 
 	/// <summary>
 	/// HTTP timeout per attempt, covering sending the request and receiving the response headers. It does not include

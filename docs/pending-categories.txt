@@ -1,5 +1,2 @@
 # Categories (docs/endpoints/<name>.md) still being implemented. InventoryTests requires every
 # non-deprecated row of any category NOT listed here to name a client method and a test.
-metrics-catalog
-search
-spl2-related

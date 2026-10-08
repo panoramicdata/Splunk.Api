@@ -44,6 +44,34 @@ foreach (var index in indexes.Entries)
 }
 ```
 
+## Searching
+
+`client.Search` runs searches end to end: it creates the job, waits for it, pages through every result and deletes the
+job afterwards (also when it fails, times out or is cancelled).
+
+```csharp
+var run = await client.Search.RunAsync("search index=_internal | stats count by sourcetype", cancellationToken);
+foreach (var row in run.Results)
+{
+	Console.WriteLine($"{row["sourcetype"]}: {row["count"]}");
+}
+
+// Small, quick searches in one round trip.
+var oneshot = await client.Search.OneshotAsync("| makeresults count=5 | eval n=random()", cancellationToken);
+
+// Stream a large result set as Splunk produces it.
+await foreach (var result in client.Search.ExportAsync("search index=main earliest=-1h", cancellationToken))
+{
+	Console.WriteLine(result.Raw);
+}
+```
+
+Multivalue fields are kept: `row.GetValues("field")` returns every value, `row.GetString("field")` the first. The raw
+endpoints (`client.SearchJobs`, `client.SearchJobResults`, `client.SearchExport`, `client.SavedSearches`...) are there
+when you need full control. A search that fails in Splunk raises `SplunkSearchException` with Splunk's messages.
+
+## Endpoint groups
+
 Each group of endpoints is a property of `SplunkClient` (`client.Users`, `client.Indexes`, `client.EventTypes`,
 `client.KvStoreData`...). Methods take a required `CancellationToken`; optional parameters travel in an options or
 request object, so pass `null` when you need none.
@@ -168,7 +196,7 @@ Deprecated operations, including the v1 search endpoints Splunk disables by defa
 | Configuration files and properties, server settings, messages, introspection, health | Complete |
 | KV store collections and data, workload management | Complete |
 | Indexer and search head clustering, deployment server, federated search, topology | Complete |
-| Search jobs, saved searches, alerts, SPL2, metrics catalog | In progress |
+| Search jobs and results (v2), export streaming, saved searches, scheduled views, alerts, SPL2, metrics catalog | Complete |
 
 Splunk's reference is wrong in places; where a live Splunk 10.6 behaves differently, the method follows Splunk and its
 documentation says so.
