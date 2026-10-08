@@ -30,7 +30,9 @@ public sealed class SplunkHecClient : IDisposable
 		// Buffered bodies stay replayable, so a request the collector answered "server busy" can be retried.
 		Buffered = true,
 		UrlParameterFormatter = new SplunkUrlParameterFormatter(),
-		ExceptionFactory = response => new ValueTask<Exception?>(HecErrorMapper.CreateAsync(response))
+		ExceptionFactory = response => new ValueTask<Exception?>(HecErrorMapper.CreateAsync(response)),
+		// Surface transport failures (TimeoutException, HttpRequestException...) as themselves, not wrapped by Refit.
+		TransportExceptionFactory = static (_, exception, _) => exception
 	};
 
 	private readonly HttpMessageHandler _pipeline;
