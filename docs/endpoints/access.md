@@ -1,0 +1,97 @@
+# access endpoints
+
+Source: https://help.splunk.com/en/splunk-enterprise/rest-api-reference/10.6/access-endpoints
+
+Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per operation. `Client method` is `IInterface.Method`; `Test` is `TestClass.TestMethod`. Deprecated operations are marked and not implemented.
+
+| Method | Path | Client method | Test |
+|---|---|---|---|
+| GET | `admin/Duo-MFA` |  |  |
+| POST | `admin/Duo-MFA` |  |  |
+| GET | `admin/Duo-MFA/{name}` |  |  |
+| POST | `admin/Duo-MFA/{name}` |  |  |
+| DELETE | `admin/Duo-MFA/{name}` |  |  |
+| GET | `admin/Rsa-MFA` |  |  |
+| POST | `admin/Rsa-MFA` |  |  |
+| DELETE | `admin/Rsa-MFA` |  |  |
+| POST | `admin/Rsa-MFA-config-verify/{rsa-stanza-name}` |  |  |
+| GET | `admin/LDAP-groups` |  |  |
+| POST | `admin/LDAP-groups` |  |  |
+| GET | `authentication/providers/LDAP` |  |  |
+| POST | `authentication/providers/LDAP` |  |  |
+| POST | `authentication/providers/LDAP/{LDAP_strategy_name}` |  |  |
+| DELETE | `authentication/providers/LDAP/{LDAP_strategy_name}` |  |  |
+| POST | `authentication/providers/LDAP/{LDAP_strategy_name}/enable` |  |  |
+| POST | `authentication/providers/LDAP/{LDAP_strategy_name}/disable` |  |  |
+| GET | `authentication/providers/oauth2` |  |  |
+| POST | `authentication/providers/oauth2` |  |  |
+| GET | `authentication/providers/oauth2/{name}` |  |  |
+| POST | `authentication/providers/oauth2/{name}` |  |  |
+| DELETE | `authentication/providers/oauth2/{name}` |  |  |
+| POST | `admin/metrics-reload/_reload` |  |  |
+| GET | `admin/oauth2-groups` |  |  |
+| POST | `admin/oauth2-groups` |  |  |
+| GET | `admin/ProxySSO-auth` |  |  |
+| POST | `admin/ProxySSO-auth` |  |  |
+| GET | `admin/ProxySSO-auth/{proxy_name}` |  |  |
+| POST | `admin/ProxySSO-auth/{proxy_name}` |  |  |
+| DELETE | `admin/ProxySSO-auth/{proxy_name}` |  |  |
+| GET | `admin/ProxySSO-auth/{proxy_name}/disable` |  |  |
+| GET | `admin/ProxySSO-auth/{proxy_name}/enable` |  |  |
+| GET | `admin/ProxySSO-groups` |  |  |
+| POST | `admin/ProxySSO-groups` |  |  |
+| GET | `admin/ProxySSO-groups/{group_name}` |  |  |
+| POST | `admin/ProxySSO-groups/{group_name}` |  |  |
+| DELETE | `admin/ProxySSO-groups/{group_name}` |  |  |
+| GET | `admin/ProxySSO-user-role-map` |  |  |
+| POST | `admin/ProxySSO-user-role-map` |  |  |
+| GET | `admin/ProxySSO-user-role-map/{user_name}` |  |  |
+| DELETE | `admin/ProxySSO-user-role-map/{user_name}` |  |  |
+| POST | `admin/replicate-SAML-certs` |  |  |
+| GET | `admin/SAML-groups` |  |  |
+| POST | `admin/SAML-groups` |  |  |
+| DELETE | `admin/SAML-groups/{group_name}` |  |  |
+| GET | `admin/SAML-idp-metadata` |  |  |
+| GET | `admin/SAML-sp-metadata` |  |  |
+| GET | `admin/SAML-user-role-map` |  |  |
+| POST | `admin/SAML-user-role-map` |  |  |
+| DELETE | `admin/SAML-user-role-map` |  |  |
+| DELETE | `admin/SAML-user-role-map/{name}` |  |  |
+| GET | `authentication/providers/SAML` |  |  |
+| POST | `authentication/providers/SAML` |  |  |
+| GET | `authentication/providers/SAML/{stanza_name}` |  |  |
+| POST | `authentication/providers/SAML/{stanza_name}` |  |  |
+| POST | `authentication/providers/SAML/{stanza_name}/enable` |  |  |
+| POST | `authentication/providers/SAML/{stanza_name}/disable` |  |  |
+| POST | `auth/login` |  |  |
+| GET | `authentication/current-context` |  |  |
+| GET | `authentication/httpauth-tokens` |  |  |
+| GET | `authentication/httpauth-tokens/{name}` |  |  |
+| DELETE | `authentication/httpauth-tokens/{name}` |  |  |
+| GET | `authentication/users` |  |  |
+| POST | `authentication/users` |  |  |
+| GET | `authentication/users/{name}` |  |  |
+| POST | `authentication/users/{name}` |  |  |
+| DELETE | `authentication/users/{name}` |  |  |
+| GET | `authorization/capabilities` |  |  |
+| GET | `authorization/fieldfilters` |  |  |
+| POST | `authorization/fieldfilters` |  |  |
+| GET | `authorization/fieldfilters/{name}` |  |  |
+| POST | `authorization/fieldfilters/{name}` |  |  |
+| DELETE | `authorization/fieldfilters/{name}` |  |  |
+| GET | `authorization/grantable_capabilities` |  |  |
+| GET | `authorization/roles` |  |  |
+| POST | `authorization/roles` |  |  |
+| GET | `authorization/roles/{name}` |  |  |
+| POST | `authorization/roles/{name}` |  |  |
+| DELETE | `authorization/roles/{name}` |  |  |
+| GET | `authorization/tokens` |  |  |
+| POST | `authorization/tokens` |  |  |
+| POST | `authorization/tokens/{name}` |  |  |
+| DELETE | `authorization/tokens/{name}` |  |  |
+| POST | `oauth2/v1/token` |  |  |
+| GET | `storage/passwords` |  |  |
+| POST | `storage/passwords` |  |  |
+| GET | `storage/passwords/{name}` |  |  |
+| POST | `storage/passwords/{name}` |  |  |
+| DELETE | `storage/passwords/{name}` |  |  |
