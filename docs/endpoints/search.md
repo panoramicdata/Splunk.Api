@@ -39,27 +39,27 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 | GET | `search/concurrency-settings` |  |  |
 | POST | `search/concurrency-settings/scheduler` |  |  |
 | POST | `search/concurrency-settings/search` |  |  |
-| GET | `search/jobs` |  |  |
-| POST | `search/jobs` |  |  |
-| POST | `search/v2/jobs/export` |  |  |
+| GET | `search/jobs` | ISearchJobs.ListAsync | SearchJobsTests.ListAsync_SendsGetWithPagingAndFilter |
+| POST | `search/jobs` | ISearchJobs.CreateAsync, ISearchJobs.RunOneshotAsync | SearchJobsTests.CreateAsync_SendsEveryTypedParameterAsForm, SearchJobsTests.RunOneshotAsync_SendsOneshotForm |
+| POST | `search/v2/jobs/export` | ISearchExport.ExportAsync, ISearchExport.ExportCsvAsync, ISearchExport.ExportRawAsync | SearchExportTests.ExportAsync_SendsPostAndStreamsJsonLines, SearchExportTests.ExportCsvAsync_SendsPostForCsv, SearchExportTests.ExportRawAsync_SendsPostForRawText |
 | GET | `search/jobs/export (deprecated)` |  |  |
 | POST | `search/jobs/export (deprecated)` |  |  |
-| GET | `search/jobs/{search_id}` |  |  |
-| POST | `search/jobs/{search_id}` |  |  |
-| DELETE | `search/jobs/{search_id}` |  |  |
-| POST | `search/jobs/{search_id}/control` |  |  |
-| GET | `search/v2/jobs/{search_id}/events` |  |  |
-| POST | `search/v2/jobs/{search_id}/events` |  |  |
+| GET | `search/jobs/{search_id}` | ISearchJobs.GetAsync | SearchJobsTests.GetAsync_SendsGetToTheEscapedSid |
+| POST | `search/jobs/{search_id}` | ISearchJobs.UpdateAsync | SearchJobsTests.UpdateAsync_SendsCustomProperties |
+| DELETE | `search/jobs/{search_id}` | ISearchJobs.DeleteAsync | SearchJobsTests.DeleteAsync_SendsDelete |
+| POST | `search/jobs/{search_id}/control` | ISearchJobs.ControlAsync | SearchJobsTests.ControlAsync_SendsArgumentsAndMapsTheMessages |
+| GET | `search/v2/jobs/{search_id}/events` | ISearchJobResults.GetEventsAsync, ISearchJobResults.GetEventsRawAsync | SearchJobResultsTests.GetEventsAsync_SendsGetWithEveryOption, SearchJobResultsTests.GetEventsRawAsync_SendsGetForRawText |
+| POST | `search/v2/jobs/{search_id}/events` | ISearchJobResults.PostProcessEventsAsync | SearchJobResultsTests.PostProcessEventsAsync_SendsEveryParameterAsForm |
 | GET | `search/jobs/{search_id}/events (deprecated)` |  |  |
-| GET | `search/v2/jobs/{search_id}/results` |  |  |
-| POST | `search/v2/jobs/{search_id}/results` |  |  |
+| GET | `search/v2/jobs/{search_id}/results` | ISearchJobResults.GetResultsAsync, ISearchJobResults.GetResultsCsvAsync | SearchJobResultsTests.GetResultsAsync_SendsGetWithPaging, SearchJobResultsTests.GetResultsCsvAsync_SendsGetForCsvAndStreamsIt |
+| POST | `search/v2/jobs/{search_id}/results` | ISearchJobResults.PostProcessResultsAsync | SearchJobResultsTests.PostProcessResultsAsync_SendsTheSearchAsForm |
 | GET | `search/jobs/{search_id}/results (deprecated)` |  |  |
-| GET | `search/v2/jobs/{search_id}/results_preview` |  |  |
-| POST | `search/v2/jobs/{search_id}/results_preview` |  |  |
+| GET | `search/v2/jobs/{search_id}/results_preview` | ISearchJobResults.GetPreviewAsync | SearchJobResultsTests.GetPreviewAsync_SendsGetWithPaging |
+| POST | `search/v2/jobs/{search_id}/results_preview` | ISearchJobResults.PostProcessPreviewAsync | SearchJobResultsTests.PostProcessPreviewAsync_SendsTheSearchAsForm |
 | GET | `search/jobs/{search_id}/results_preview (deprecated)` |  |  |
-| GET | `search/jobs/{search_id}/search.log` |  |  |
-| GET | `search/jobs/{search_id}/summary` |  |  |
-| GET | `search/jobs/{search_id}/timeline` |  |  |
+| GET | `search/jobs/{search_id}/search.log` | ISearchJobs.GetSearchLogAsync | SearchJobsTests.GetSearchLogAsync_SendsGetAndReturnsTheText |
+| GET | `search/jobs/{search_id}/summary` | ISearchJobs.GetSummaryAsync | SearchJobsTests.GetSummaryAsync_SendsGetWithEveryOption |
+| GET | `search/jobs/{search_id}/timeline` | ISearchJobs.GetTimelineAsync | SearchJobsTests.GetTimelineAsync_SendsGetWithTimeFormats |
 | POST | `search/v2/parser` |  |  |
 | GET | `search/parser (deprecated)` |  |  |
 | GET | `search/scheduler` |  |  |
