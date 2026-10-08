@@ -16,20 +16,11 @@ public class Spl2IntegrationTests(SplunkFixture fixture) : IAsyncLifetime
 	/// routes answer 404 <c>Not Found</c>. Wait (up to a minute) until it answers before each test.
 	/// </summary>
 	public async ValueTask InitializeAsync()
-	{
-		for (var attempt = 0; ; attempt++)
-		{
-			try
-			{
-				await Client.Spl2Modules.ListAsync(new Spl2ModuleListOptions { Count = 1 }, Ct);
-				return;
-			}
-			catch (SplunkApiException exception) when (exception.StatusCode == HttpStatusCode.NotFound && attempt < 30)
-			{
-				await Task.Delay(TimeSpan.FromSeconds(2), Ct);
-			}
-		}
-	}
+		=> await Poll.RetryAsync<SplunkApiException>(
+			() => Client.Spl2Modules.ListAsync(new Spl2ModuleListOptions { Count = 1 }, Ct),
+			exception => exception.StatusCode == HttpStatusCode.NotFound,
+			31,
+			TimeSpan.FromSeconds(2));
 
 	public ValueTask DisposeAsync()
 	{
