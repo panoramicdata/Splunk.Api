@@ -7,13 +7,13 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 | Method | Path | Client method | Test |
 |---|---|---|---|
 | POST | `apps/appinstall (deprecated)` |  |  |
-| GET | `apps/apptemplates` |  |  |
-| GET | `apps/apptemplates/{name}` |  |  |
-| GET | `apps/local` |  |  |
-| POST | `apps/local` |  |  |
-| GET | `apps/local/{name}` |  |  |
-| POST | `apps/local/{name}` |  |  |
-| DELETE | `apps/local/{name}` |  |  |
+| GET | `apps/apptemplates` | `IAppTemplates.ListAsync` | `AppTemplatesTests.ListAsync_SendsGet` |
+| GET | `apps/apptemplates/{name}` | `IAppTemplates.GetAsync` | `AppTemplatesTests.GetAsync_SendsGetForTheName` |
+| GET | `apps/local` | `IApps.ListAsync` | `AppsTests.ListAsync_SendsGet` |
+| POST | `apps/local` | `IApps.CreateAsync` | `AppsTests.CreateAsync_PostsTheApp` |
+| GET | `apps/local/{name}` | `IApps.GetAsync` | `AppsTests.GetAsync_SendsRefresh` |
+| POST | `apps/local/{name}` | `IApps.UpdateAsync` | `AppsTests.UpdateAsync_PostsTheChanges` |
+| DELETE | `apps/local/{name}` | `IApps.DeleteAsync` | `AppsTests.DeleteAsync_SendsDelete` |
 | GET | `apps/local/{name}/package (deprecated)` |  |  |
-| GET | `apps/local/{name}/setup` |  |  |
-| GET | `apps/local/{name}/update` |  |  |
+| GET | `apps/local/{name}/setup` | `IApps.GetSetupAsync` | `AppsTests.GetSetupAsync_SendsGet` |
+| GET | `apps/local/{name}/update` | `IApps.CheckForUpdateAsync` | `AppsTests.CheckForUpdateAsync_SendsGet` |
