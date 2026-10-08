@@ -6,23 +6,23 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 
 | Method | Path | Client method | Test |
 |---|---|---|---|
-| GET | `licenser/groups` |  |  |
-| GET | `licenser/groups/{name}` |  |  |
-| POST | `licenser/groups/{name}` |  |  |
-| GET | `licenser/licenses` |  |  |
-| POST | `licenser/licenses` |  |  |
-| GET | `licenser/licenses/{name}` |  |  |
-| DELETE | `licenser/licenses/{name}` |  |  |
-| GET | `licenser/localpeer` |  |  |
-| GET | `licenser/messages` |  |  |
-| GET | `licenser/messages/{name}` |  |  |
-| GET | `licenser/pools` |  |  |
-| POST | `licenser/pools` |  |  |
-| GET | `licenser/pools/{name}` |  |  |
-| POST | `licenser/pools/{name}` |  |  |
-| DELETE | `licenser/pools/{name}` |  |  |
-| GET | `licenser/peers` |  |  |
-| GET | `licenser/peers/{name}` |  |  |
-| GET | `licenser/stacks` |  |  |
-| GET | `licenser/stacks/{name}` |  |  |
-| GET | `licenser/usage` |  |  |
+| GET | `licenser/groups` | `ILicenseGroups.ListAsync` | `LicenseGroupsTests.ListAsync_SendsGet` |
+| GET | `licenser/groups/{name}` | `ILicenseGroups.GetAsync` | `LicenseGroupsTests.GetAsync_SendsGetForTheName` |
+| POST | `licenser/groups/{name}` | `ILicenseGroups.UpdateAsync` | `LicenseGroupsTests.UpdateAsync_PostsIsActive` |
+| GET | `licenser/licenses` | `ILicenses.ListAsync` | `LicensesTests.ListAsync_SendsGet` |
+| POST | `licenser/licenses` | `ILicenses.AddAsync` | `LicensesTests.AddAsync_PostsThePayload` |
+| GET | `licenser/licenses/{name}` | `ILicenses.GetAsync` | `LicensesTests.GetAsync_SendsGetForTheHash` |
+| DELETE | `licenser/licenses/{name}` | `ILicenses.DeleteAsync` | `LicensesTests.DeleteAsync_SendsDelete` |
+| GET | `licenser/localpeer` | `ILicenseLocalPeer.GetAsync` | `LicenseLocalPeerTests.GetAsync_SendsGet` |
+| GET | `licenser/messages` | `ILicenseMessages.ListAsync` | `LicenseMessagesTests.ListAsync_SendsGet` |
+| GET | `licenser/messages/{name}` | `ILicenseMessages.GetAsync` | `LicenseMessagesTests.GetAsync_SendsGetForTheId` |
+| GET | `licenser/pools` | `ILicensePools.ListAsync` | `LicensePoolsTests.ListAsync_SendsGet` |
+| POST | `licenser/pools` | `ILicensePools.CreateAsync` | `LicensePoolsTests.CreateAsync_PostsThePool` |
+| GET | `licenser/pools/{name}` | `ILicensePools.GetAsync` | `LicensePoolsTests.GetAsync_SendsGetForTheName` |
+| POST | `licenser/pools/{name}` | `ILicensePools.UpdateAsync` | `LicensePoolsTests.UpdateAsync_PostsTheChanges` |
+| DELETE | `licenser/pools/{name}` | `ILicensePools.DeleteAsync` | `LicensePoolsTests.DeleteAsync_SendsDelete` |
+| GET | `licenser/peers` | `ILicensePeers.ListAsync` | `LicensePeersTests.ListAsync_SendsGet` |
+| GET | `licenser/peers/{name}` | `ILicensePeers.GetAsync` | `LicensePeersTests.GetAsync_SendsGetForTheGuid` |
+| GET | `licenser/stacks` | `ILicenseStacks.ListAsync` | `LicenseStacksTests.ListAsync_SendsGet` |
+| GET | `licenser/stacks/{name}` | `ILicenseStacks.GetAsync` | `LicenseStacksTests.GetAsync_SendsGetForTheId` |
+| GET | `licenser/usage` | `ILicenseUsage.GetAsync` | `LicenseUsageTests.GetAsync_SendsGet` |
