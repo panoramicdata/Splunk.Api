@@ -58,7 +58,10 @@ internal static class SplunkErrorMapper
 			using var document = JsonDocument.Parse(body);
 			if (!document.RootElement.TryGetProperty("messages", out var messages) || messages.ValueKind != JsonValueKind.Array)
 			{
-				return [];
+				// The SPL2 orchestrator endpoints answer with the OpenAPI error shape {"code":"...","message":"..."}.
+				return ReadString(document.RootElement, "message") is { Length: > 0 } text
+					? [new SplunkMessage { Type = "ERROR", Text = text }]
+					: [];
 			}
 
 			return [.. messages.EnumerateArray()
