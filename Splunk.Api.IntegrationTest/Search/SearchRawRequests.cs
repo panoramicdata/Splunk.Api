@@ -11,6 +11,23 @@ internal static class SearchRawRequests
 {
 	public static async Task SendAsync(SplunkFixture fixture, HttpMethod method, string path, IDictionary<string, string>? form)
 	{
+		// The shared instance occasionally resets a connection during the TLS handshake, before the request is sent.
+		for (var attempt = 1; ; attempt++)
+		{
+			try
+			{
+				await SendOnceAsync(fixture, method, path, form);
+				return;
+			}
+			catch (HttpRequestException exception) when (exception.StatusCode is null && attempt < 4)
+			{
+				await Task.Delay(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken);
+			}
+		}
+	}
+
+	private static async Task SendOnceAsync(SplunkFixture fixture, HttpMethod method, string path, IDictionary<string, string>? form)
+	{
 		var options = fixture.CreateOptions();
 		using var handler = new HttpClientHandler();
 		var pinned = options.TrustedServerCertificateThumbprint?.Replace(":", string.Empty, StringComparison.Ordinal);

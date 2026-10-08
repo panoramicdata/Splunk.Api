@@ -6,11 +6,11 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 
 | Method | Path | Client method | Test |
 |---|---|---|---|
-| GET | `catalog/metricstore/metrics` |  |  |
-| GET | `catalog/metricstore/dimensions` |  |  |
-| GET | `catalog/metricstore/dimensions/{dimension-name}/values` |  |  |
-| GET | `catalog/metricstore/rollup` |  |  |
-| POST | `catalog/metricstore/rollup` |  |  |
-| GET | `catalog/metricstore/rollup/{index}` |  |  |
-| POST | `catalog/metricstore/rollup/{index}` |  |  |
-| DELETE | `catalog/metricstore/rollup/{index}` |  |  |
+| GET | `catalog/metricstore/metrics` | IMetricsCatalog.ListMetricsAsync | MetricsCatalogTests.ListMetricsAsync_SendsGetWithEveryOption |
+| GET | `catalog/metricstore/dimensions` | IMetricsCatalog.ListDimensionsAsync | MetricsCatalogTests.ListDimensionsAsync_SendsTheMetricName |
+| GET | `catalog/metricstore/dimensions/{dimension-name}/values` | IMetricsCatalog.ListDimensionValuesAsync | MetricsCatalogTests.ListDimensionValuesAsync_SendsTheDimensionAndMetric |
+| GET | `catalog/metricstore/rollup` | IMetricRollups.ListAsync | MetricRollupsTests.ListAsync_SendsGetWithPaging |
+| POST | `catalog/metricstore/rollup` | IMetricRollups.CreateAsync | MetricRollupsTests.CreateAsync_SendsEverySettingAsForm |
+| GET | `catalog/metricstore/rollup/{index}` | IMetricRollups.GetAsync | MetricRollupsTests.GetAsync_SendsGetAndMapsThePolicy |
+| POST | `catalog/metricstore/rollup/{index}` | IMetricRollups.UpdateAsync | MetricRollupsTests.UpdateAsync_SendsOnlyWhatIsSet |
+| DELETE | `catalog/metricstore/rollup/{index}` | IMetricRollups.DeleteAsync | MetricRollupsTests.DeleteAsync_SendsDelete |
