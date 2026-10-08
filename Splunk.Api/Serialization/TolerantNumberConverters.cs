@@ -80,7 +80,25 @@ internal sealed class TolerantInt64Converter() : TolerantNumberConverter<long>(T
 internal sealed class TolerantNullableInt64Converter() : TolerantNullableNumberConverter<long>(TolerantReader.ParseInt64, static (w, v) => w.WriteNumberValue(v));
 
 /// <summary>Tolerant <see cref="double"/> reading.</summary>
-internal sealed class TolerantDoubleConverter() : TolerantNumberConverter<double>(TolerantReader.ParseDouble, static (w, v) => w.WriteNumberValue(v));
+internal sealed class TolerantDoubleConverter() : TolerantNumberConverter<double>(TolerantReader.ParseDouble, WriteDouble)
+{
+	/// <summary>
+	/// Writes a JSON number, or NaN and the infinities as the strings <c>"NaN"</c>, <c>"Infinity"</c> and
+	/// <c>"-Infinity"</c> (as <see cref="JsonNumberHandling.AllowNamedFloatingPointLiterals"/> does), which
+	/// <see cref="Utf8JsonWriter.WriteNumberValue(double)"/> would reject.
+	/// </summary>
+	internal static void WriteDouble(Utf8JsonWriter writer, double value)
+	{
+		if (double.IsFinite(value))
+		{
+			writer.WriteNumberValue(value);
+		}
+		else
+		{
+			writer.WriteStringValue(value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+		}
+	}
+}
 
 /// <summary>Tolerant nullable <see cref="double"/> reading.</summary>
-internal sealed class TolerantNullableDoubleConverter() : TolerantNullableNumberConverter<double>(TolerantReader.ParseDouble, static (w, v) => w.WriteNumberValue(v));
+internal sealed class TolerantNullableDoubleConverter() : TolerantNullableNumberConverter<double>(TolerantReader.ParseDouble, TolerantDoubleConverter.WriteDouble);
