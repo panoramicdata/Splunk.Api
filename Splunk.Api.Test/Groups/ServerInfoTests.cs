@@ -120,14 +120,10 @@ public class ServerInfoTests
 	}
 
 	[Fact]
-	public async Task GetAsync_Error_RaisesSplunkApiException()
-	{
-		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"ERROR","text":"Unauthorized"}]}""", HttpStatusCode.Unauthorized));
-
-		var act = () => client.ServerInfo.GetAsync(TestContext.Current.CancellationToken);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-		thrown.Which.Message.Should().Be("Unauthorized");
-	}
+	public Task GetAsync_Error_RaisesSplunkApiException()
+		=> TestClient.ShouldFailAsync(
+			(client, ct) => client.ServerInfo.GetAsync(ct),
+			HttpStatusCode.Unauthorized,
+			"""{"messages":[{"type":"ERROR","text":"Unauthorized"}]}""",
+			"Unauthorized");
 }

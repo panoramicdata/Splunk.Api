@@ -94,12 +94,12 @@ public class ShClusterConfigTests
 		config.PingFlag.Should().BeTrue();
 		config.Secret.Should().BeEmpty();
 		config.ConnectionTimeout.Should().Be(60);
-		config.SendTimeout.Should().Be(60);
-		config.ReceiveTimeout.Should().Be(60);
 		config.ReplicationConnectionTimeout.Should().Be(5);
+		config.SendTimeout.Should().Be(60);
 		config.ReplicationSendTimeout.Should().Be(5);
-		config.ReplicationReceiveTimeout.Should().Be(10);
 		config.ReplicationMaxSendTimeout.Should().Be(600);
+		config.ReceiveTimeout.Should().Be(60);
+		config.ReplicationReceiveTimeout.Should().Be(10);
 		config.ReplicationMaxReceiveTimeout.Should().Be(600);
 	}
 

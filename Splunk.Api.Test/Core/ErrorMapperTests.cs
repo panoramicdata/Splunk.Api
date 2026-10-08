@@ -126,16 +126,12 @@ public class ErrorMapperTests
 	}
 
 	[Fact]
-	public async Task Client_RaisesTheMappedException()
-	{
-		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"ERROR","text":"Not found"}]}""", HttpStatusCode.NotFound));
-
-		var act = () => client.ServerInfo.GetAsync(TestContext.Current.CancellationToken);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
-		thrown.Which.Messages.Should().ContainSingle().Which.Text.Should().Be("Not found");
-	}
+	public Task Client_RaisesTheMappedException()
+		=> TestClient.ShouldFailAsync(
+			(client, ct) => client.ServerInfo.GetAsync(ct),
+			HttpStatusCode.NotFound,
+			"""{"messages":[{"type":"ERROR","text":"Not found"}]}""",
+			"Not found");
 
 	[Fact]
 	public async Task Client_FailedSessionLogin_RaisesTheLoginsError()
@@ -144,11 +140,7 @@ public class ErrorMapperTests
 			TestClient.Stub("""{"messages":[{"type":"WARN","text":"Login failed"}]}""", HttpStatusCode.Unauthorized),
 			TestClient.UseSession);
 
-		var act = () => client.ServerInfo.GetAsync(TestContext.Current.CancellationToken);
-
-		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-		thrown.Which.Message.Should().Be("Login failed");
-		thrown.Which.Message.Should().NotContain("secret");
+		// The login's own error, not one that could echo the credentials.
+		await TestClient.ShouldFailWithAsync(() => client.ServerInfo.GetAsync(TestContext.Current.CancellationToken), HttpStatusCode.Unauthorized, "Login failed");
 	}
 }
