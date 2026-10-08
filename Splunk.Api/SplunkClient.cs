@@ -12,7 +12,9 @@ namespace Splunk.Api;
 /// <remarks>
 /// <para>
 /// Every request asks for JSON (<c>output_mode=json</c>), authenticates as <see cref="SplunkClientOptions"/> describes,
-/// and retries transient failures. Non-success responses raise <see cref="SplunkApiException"/>.
+/// and retries transient failures. Non-success responses raise <see cref="SplunkApiException"/>; a failure to send raises
+/// the transport's own exception (such as <see cref="HttpRequestException"/>, or <see cref="TimeoutException"/> when an
+/// attempt exceeds <see cref="SplunkClientOptions.Timeout"/>).
 /// </para>
 /// <para>
 /// A client is thread-safe and intended to be long-lived: create one per Splunk instance and identity, and dispose it
@@ -28,7 +30,7 @@ public sealed partial class SplunkClient : IDisposable
 
 	/// <summary>Creates a client.</summary>
 	/// <param name="options">Connection options.</param>
-	public SplunkClient(SplunkClientOptions options) : this(options, CreateTransport(options))
+	public SplunkClient(SplunkClientOptions options) : this(options, CreateTransport(Validated(options)))
 	{
 	}
 
@@ -43,9 +45,8 @@ public sealed partial class SplunkClient : IDisposable
 	/// <param name="innerHandler">The handler that sends requests to the network.</param>
 	public SplunkClient(SplunkClientOptions options, HttpMessageHandler innerHandler)
 	{
-		ArgumentNullException.ThrowIfNull(options);
 		ArgumentNullException.ThrowIfNull(innerHandler);
-		options.Validate();
+		Validated(options);
 		BaseAddress = CreateBaseAddress(options.BaseUrl);
 		_pipeline = CreatePipeline(options, BaseAddress, innerHandler);
 		_ownsPipeline = true;
@@ -77,7 +78,13 @@ public sealed partial class SplunkClient : IDisposable
 		// Interface paths are relative (no leading slash) so they append to a path-prefixed BaseUrl.
 		UrlResolution = UrlResolutionMode.Rfc3986,
 		UrlParameterFormatter = new SplunkUrlParameterFormatter(),
-		ExceptionFactory = response => new ValueTask<Exception?>(SplunkErrorMapper.CreateAsync(response))
+		// Unbuffered, Refit sends a serialized body as a read-once push stream, which can be neither retried nor resent
+		// after a re-login.
+		Buffered = true,
+		ExceptionFactory = response => new ValueTask<Exception?>(SplunkErrorMapper.CreateAsync(response)),
+		// Refit would wrap every exception thrown while sending in its ApiRequestException; surface them as themselves
+		// (TimeoutException, HttpRequestException, ObjectDisposedException...), as documented.
+		TransportExceptionFactory = static (_, exception, _) => exception
 	};
 
 	/// <summary>
@@ -99,7 +106,7 @@ public sealed partial class SplunkClient : IDisposable
 	/// <returns>A client in that namespace.</returns>
 	public SplunkClient InNamespace(string owner, string app) => InNamespace(new SplunkNamespace(owner, app));
 
-	private T For<T>() => RestService.For<T>(_httpClient, Settings);
+	internal T For<T>() => RestService.For<T>(_httpClient, Settings);
 
 	/// <inheritdoc />
 	public void Dispose()
@@ -109,6 +116,14 @@ public sealed partial class SplunkClient : IDisposable
 		{
 			_pipeline.Dispose();
 		}
+	}
+
+	// Validation comes before the transport is created, so invalid options do not leave an undisposed HttpClientHandler.
+	private static SplunkClientOptions Validated(SplunkClientOptions options)
+	{
+		ArgumentNullException.ThrowIfNull(options);
+		options.Validate();
+		return options;
 	}
 
 	private static Uri CreateBaseAddress(string baseUrl) => new(baseUrl.EndsWith('/') ? baseUrl : baseUrl + "/");

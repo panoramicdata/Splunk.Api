@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -5,7 +6,8 @@ namespace Splunk.Api.Serialization;
 
 /// <summary>
 /// Reads enums case-insensitively by their wire name (see <see cref="WireNames"/>), mapping unrecognised names to the
-/// enum's default value (by convention an <c>Unknown = 0</c> member). Writes the wire name.
+/// enum's default value (by convention an <c>Unknown = 0</c> member). A JSON number reads as the member with that value, or
+/// the default when no member has it; JSON <c>null</c> reads as the default. Writes the wire name.
 /// </summary>
 internal sealed class TolerantEnumConverterFactory : JsonConverterFactory
 {
@@ -22,10 +24,26 @@ internal sealed class TolerantEnumConverterFactory : JsonConverterFactory
 			=> reader.TokenType switch
 			{
 				JsonTokenType.String => WireNames.Parse<T>(reader.GetString()!),
-				JsonTokenType.Number when reader.TryGetInt32(out var number) && Enum.IsDefined(typeof(T), number) => (T)Enum.ToObject(typeof(T), number),
-				JsonTokenType.Number => default,
-				_ => throw new JsonException("Expected an enum name string.")
+				JsonTokenType.Number => reader.TryGetInt64(out var number) ? FromNumber(number) : default,
+				JsonTokenType.Null => default,
+				_ => throw new JsonException($"Cannot read {typeof(T).Name} from a JSON {reader.TokenType}.")
 			};
+
+		// A checked conversion to the underlying type first, so a byte- or long-backed enum works and an out-of-range number
+		// is not truncated into a defined member.
+		private static T FromNumber(long number)
+		{
+			try
+			{
+				var underlying = Convert.ChangeType(number, Enum.GetUnderlyingType(typeof(T)), CultureInfo.InvariantCulture);
+				var value = (T)Enum.ToObject(typeof(T), underlying);
+				return Enum.IsDefined(value) ? value : default;
+			}
+			catch (OverflowException)
+			{
+				return default;
+			}
+		}
 
 		public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
 			=> writer.WriteStringValue(WireNames.Of(value));

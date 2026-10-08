@@ -15,16 +15,19 @@ internal static class WireNames
 	/// <summary>The wire name of an enum value; an undefined value is written as its number.</summary>
 	public static string Of(Enum value)
 	{
-		var names = Cache.GetOrAdd(value.GetType(), Build);
+		var names = Names(value.GetType());
 		return names.ByValue.TryGetValue(value, out var name) ? name : Convert.ToInt64(value, System.Globalization.CultureInfo.InvariantCulture).ToString(System.Globalization.CultureInfo.InvariantCulture);
 	}
 
 	/// <summary>Parses a wire name case-insensitively, returning the default value for an unrecognised name.</summary>
 	public static T Parse<T>(string wireName) where T : struct, Enum
 	{
-		var names = Cache.GetOrAdd(typeof(T), Build);
+		var names = Names(typeof(T));
 		return names.ByName.TryGetValue(wireName, out var value) ? (T)value : default;
 	}
+
+	// Non-generic, so the cached Build delegate is shared rather than created per enum type.
+	private static EnumNames Names(Type enumType) => Cache.GetOrAdd(enumType, Build);
 
 	private static EnumNames Build(Type enumType)
 	{

@@ -56,7 +56,7 @@ internal sealed class AuthenticationHandler : DelegatingHandler
 		var session = await GetSessionAsync(null, cancellationToken).ConfigureAwait(false);
 		if (session.Failure is { } loginFailure)
 		{
-			return loginFailure;
+			return InPlaceOf(loginFailure, request);
 		}
 
 		var response = await SendWithSessionAsync(request, session.Key!, cancellationToken).ConfigureAwait(false);
@@ -68,7 +68,19 @@ internal sealed class AuthenticationHandler : DelegatingHandler
 		// The session expired or was revoked: log in again once, then resend.
 		response.Dispose();
 		session = await GetSessionAsync(session.Key, cancellationToken).ConfigureAwait(false);
-		return session.Failure ?? await SendWithSessionAsync(request, session.Key!, cancellationToken).ConfigureAwait(false);
+		return session.Failure is { } reloginFailure
+			? InPlaceOf(reloginFailure, request)
+			: await SendWithSessionAsync(request, session.Key!, cancellationToken).ConfigureAwait(false);
+	}
+
+	/// <summary>
+	/// Attributes a failed login's response to the caller's request. The transport set its request to the login, whose
+	/// (disposed, but still referenced) form content holds the password.
+	/// </summary>
+	private static HttpResponseMessage InPlaceOf(HttpResponseMessage loginFailure, HttpRequestMessage request)
+	{
+		loginFailure.RequestMessage = request;
+		return loginFailure;
 	}
 
 	private bool IsLoginRequest(HttpRequestMessage request)
@@ -143,9 +155,9 @@ internal sealed class AuthenticationHandler : DelegatingHandler
 			if (document.RootElement.ValueKind == JsonValueKind.Object
 				&& document.RootElement.TryGetProperty("sessionKey", out var key)
 				&& key.ValueKind == JsonValueKind.String
-				&& key.GetString() is { Length: > 0 } sessionKey)
+				&& key.GetString()!.Length > 0)
 			{
-				return sessionKey;
+				return key.GetString()!;
 			}
 		}
 		catch (JsonException)

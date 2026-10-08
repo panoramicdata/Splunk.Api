@@ -17,9 +17,11 @@ namespace Splunk.Api;
 /// </remarks>
 public class SplunkClientOptions
 {
+	private static readonly TimeSpan MaxTimerDuration = TimeSpan.FromMilliseconds(int.MaxValue);
+
 	/// <summary>
 	/// Absolute URL of the Splunk management port, e.g. <c>https://splunk.example.com:8089</c>. A path prefix (for a
-	/// reverse proxy) is kept: every endpoint is appended to it.
+	/// reverse proxy) is kept: every endpoint is appended to it. It must not contain credentials (<c>user:password@</c>).
 	/// </summary>
 	public string BaseUrl { get; set; } = string.Empty;
 
@@ -73,7 +75,8 @@ public class SplunkClientOptions
 	/// <summary>
 	/// HTTP timeout per attempt, covering sending the request and receiving the response headers. It does not include
 	/// retry back-off, nor reading a streamed body after the headers arrive. An attempt that exceeds it raises a
-	/// <see cref="TimeoutException"/>; caller cancellation still raises <see cref="OperationCanceledException"/>.
+	/// <see cref="TimeoutException"/>; caller cancellation still raises <see cref="OperationCanceledException"/>. Must be
+	/// greater than zero and at most <see cref="int.MaxValue"/> milliseconds (about 24.8 days).
 	/// </summary>
 	public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(100);
 
@@ -86,7 +89,10 @@ public class SplunkClientOptions
 	/// <summary>Initial back-off, doubled on each retry (up to <see cref="MaxRetryDelay"/>). Must not be negative.</summary>
 	public TimeSpan RetryBaseDelay { get; set; } = TimeSpan.FromSeconds(1);
 
-	/// <summary>The longest single wait before a retry, also capping a server-supplied <c>Retry-After</c>. Must be greater than zero.</summary>
+	/// <summary>
+	/// The longest single wait before a retry, also capping a server-supplied <c>Retry-After</c>. Must be greater than zero
+	/// and at most <see cref="int.MaxValue"/> milliseconds.
+	/// </summary>
 	public TimeSpan MaxRetryDelay { get; set; } = TimeSpan.FromSeconds(30);
 
 	/// <summary>
@@ -109,12 +115,29 @@ public class SplunkClientOptions
 			throw new ArgumentException("BaseUrl must be an absolute http or https URL.", nameof(BaseUrl));
 		}
 
+		// HttpClient never sends user info, and it would appear in logs and exception messages that show the URL.
+		if (baseUri.UserInfo.Length > 0)
+		{
+			throw new ArgumentException("BaseUrl must not contain credentials: set Token, or Username and Password.", nameof(BaseUrl));
+		}
+
+		// Endpoint paths are appended to BaseUrl, which a query string or fragment would swallow.
+		if (baseUri.Query.Length > 0 || baseUri.Fragment.Length > 0)
+		{
+			throw new ArgumentException("BaseUrl must not have a query string or fragment.", nameof(BaseUrl));
+		}
+
 		ValidateCredentials();
 		_ = SplunkClient.NormalizeThumbprint(TrustedServerCertificateThumbprint);
+		_ = Namespace?.PathPrefix;
 		ArgumentOutOfRangeException.ThrowIfNegative(MaxRetries);
+		// The upper bounds are those of CancellationTokenSource.CancelAfter and Task.Delay, which would otherwise throw on
+		// the first request rather than here.
 		ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(Timeout, TimeSpan.Zero);
+		ArgumentOutOfRangeException.ThrowIfGreaterThan(Timeout, MaxTimerDuration);
 		ArgumentOutOfRangeException.ThrowIfLessThan(RetryBaseDelay, TimeSpan.Zero);
 		ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(MaxRetryDelay, TimeSpan.Zero);
+		ArgumentOutOfRangeException.ThrowIfGreaterThan(MaxRetryDelay, MaxTimerDuration);
 	}
 
 	private void ValidateCredentials()
@@ -134,7 +157,26 @@ public class SplunkClientOptions
 
 	/// <inheritdoc />
 	public override string ToString()
-		=> $"SplunkClientOptions {{ BaseUrl = {BaseUrl}, Token = {Mask(Token)}, Username = {Username}, Password = {Mask(Password)}, Namespace = {Namespace}, ReadOnly = {ReadOnly} }}";
+		=> $"SplunkClientOptions {{ BaseUrl = {MaskUserInfo(BaseUrl)}, Token = {Mask(Token)}, Username = {Username}, Password = {Mask(Password)}, Namespace = {Namespace}, ReadOnly = {ReadOnly} }}";
 
 	private static string Mask(string? secret) => string.IsNullOrEmpty(secret) ? "(none)" : "***";
+
+	/// <summary>
+	/// Masks any <c>user:password@</c> in a URL. Done on the text rather than a parsed <see cref="Uri"/>, since this must
+	/// also redact a URL that fails to parse (such as one whose password contains an unescaped <c>@</c>).
+	/// </summary>
+	private static string MaskUserInfo(string url)
+	{
+		var start = url.IndexOf("://", StringComparison.Ordinal);
+		if (start < 0)
+		{
+			return url;
+		}
+
+		start += 3;
+		var end = url.IndexOfAny(['/', '?', '#'], start);
+		var authority = end < 0 ? url[start..] : url[start..end];
+		var at = authority.LastIndexOf('@');
+		return at < 0 ? url : $"{url[..start]}***{url[(start + at)..]}";
+	}
 }
