@@ -95,68 +95,65 @@ public partial class SavedSearchesTests
 		saved.AlertTrack.Should().Be("true");
 	}
 
+	private static readonly SavedSearchCreateRequest EveryTypedSetting = new()
+	{
+		Name = "my alert",
+		Search = "search index=_internal error",
+		Description = "d",
+		IsScheduled = true,
+		CronSchedule = "*/5 * * * *",
+		Disabled = false,
+		IsVisible = true,
+		ScheduleWindow = "auto",
+		SchedulePriority = "higher",
+		RealtimeSchedule = false,
+		MaxConcurrent = 2,
+		RunOnStartup = false,
+		DispatchEarliestTime = "-15m",
+		DispatchLatestTime = "now",
+		DispatchTtl = "2p",
+		DispatchMaxCount = 1000,
+		DispatchMaxTime = 60,
+		DispatchAs = "owner",
+		RequestUiDispatchApp = "search",
+		RequestUiDispatchView = "search",
+		WorkloadPool = "pool",
+		Actions = "email,webhook",
+		ActionEmailTo = "ops@example.com",
+		ActionEmailSubject = "Alert",
+		AlertType = "number of events",
+		AlertComparator = "greater than",
+		AlertThreshold = "10",
+		AlertCondition = "search count > 10",
+		AlertSeverity = 5,
+		AlertDigestMode = true,
+		AlertExpires = "24h",
+		AlertSuppress = true,
+		AlertSuppressPeriod = "1h",
+		AlertSuppressFields = "host",
+		AlertTrack = true,
+		AdditionalParameters = { ["action.webhook.param.url"] = "https://example.com/hook" }
+	};
+
+	private const string EveryTypedSettingBody = "name=my+alert&search=search+index%3D_internal+error"
+		+ "&actions=email%2Cwebhook&action.email.to=ops%40example.com&action.email.subject=Alert&alert_type=number+of+events"
+		+ "&alert_comparator=greater+than&alert_threshold=10&alert_condition=search+count+%3E+10&alert.severity=5"
+		+ "&alert.digest_mode=true&alert.expires=24h&alert.suppress=true&alert.suppress.period=1h&alert.suppress.fields=host&alert.track=true"
+		+ "&description=d&is_scheduled=true&cron_schedule=%2A%2F5+%2A+%2A+%2A+%2A"
+		+ "&disabled=false&is_visible=true&schedule_window=auto&schedule_priority=higher&realtime_schedule=false&max_concurrent=2"
+		+ "&run_on_startup=false&dispatch.earliest_time=-15m&dispatch.latest_time=now&dispatch.ttl=2p&dispatch.max_count=1000"
+		+ "&dispatch.max_time=60&dispatchAs=owner&request.ui_dispatch_app=search&request.ui_dispatch_view=search&workload_pool=pool"
+		+ "&action.webhook.param.url=https%3A%2F%2Fexample.com%2Fhook";
+
 	[Fact]
 	public async Task CreateAsync_SendsEveryTypedSettingAsForm()
 	{
 		var stub = TestClient.Stub(SavedSearchFeed);
 		using var client = TestClient.Create(stub);
 
-		await client.SavedSearches.CreateAsync(
-			new SavedSearchCreateRequest
-			{
-				Name = "my alert",
-				Search = "search index=_internal error",
-				Description = "d",
-				IsScheduled = true,
-				CronSchedule = "*/5 * * * *",
-				Disabled = false,
-				IsVisible = true,
-				ScheduleWindow = "auto",
-				SchedulePriority = "higher",
-				RealtimeSchedule = false,
-				MaxConcurrent = 2,
-				RunOnStartup = false,
-				DispatchEarliestTime = "-15m",
-				DispatchLatestTime = "now",
-				DispatchTtl = "2p",
-				DispatchMaxCount = 1000,
-				DispatchMaxTime = 60,
-				DispatchAs = "owner",
-				RequestUiDispatchApp = "search",
-				RequestUiDispatchView = "search",
-				WorkloadPool = "pool",
-				Actions = "email,webhook",
-				ActionEmailTo = "ops@example.com",
-				ActionEmailSubject = "Alert",
-				AlertType = "number of events",
-				AlertComparator = "greater than",
-				AlertThreshold = "10",
-				AlertCondition = "search count > 10",
-				AlertSeverity = 5,
-				AlertDigestMode = true,
-				AlertExpires = "24h",
-				AlertSuppress = true,
-				AlertSuppressPeriod = "1h",
-				AlertSuppressFields = "host",
-				AlertTrack = true,
-				AdditionalParameters = { ["action.webhook.param.url"] = "https://example.com/hook" }
-			},
-			Ct);
+		await client.SavedSearches.CreateAsync(EveryTypedSetting, Ct);
 
-		SearchRequestAssert.Sent(
-			stub,
-			HttpMethod.Post,
-			"/services/saved/searches",
-			"?output_mode=json",
-			"name=my+alert&search=search+index%3D_internal+error"
-				+ "&actions=email%2Cwebhook&action.email.to=ops%40example.com&action.email.subject=Alert&alert_type=number+of+events"
-				+ "&alert_comparator=greater+than&alert_threshold=10&alert_condition=search+count+%3E+10&alert.severity=5"
-				+ "&alert.digest_mode=true&alert.expires=24h&alert.suppress=true&alert.suppress.period=1h&alert.suppress.fields=host&alert.track=true"
-				+ "&description=d&is_scheduled=true&cron_schedule=%2A%2F5+%2A+%2A+%2A+%2A"
-				+ "&disabled=false&is_visible=true&schedule_window=auto&schedule_priority=higher&realtime_schedule=false&max_concurrent=2"
-				+ "&run_on_startup=false&dispatch.earliest_time=-15m&dispatch.latest_time=now&dispatch.ttl=2p&dispatch.max_count=1000"
-				+ "&dispatch.max_time=60&dispatchAs=owner&request.ui_dispatch_app=search&request.ui_dispatch_view=search&workload_pool=pool"
-				+ "&action.webhook.param.url=https%3A%2F%2Fexample.com%2Fhook");
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, "/services/saved/searches", "?output_mode=json", EveryTypedSettingBody);
 	}
 
 	[Fact]
