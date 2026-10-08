@@ -52,15 +52,6 @@ internal static class InputsTestKit
 		thrown.Which.Message.Should().Be("Not Found");
 	}
 
-	/// <summary>Asserts the verb, escaped path, query and form body of a request.</summary>
-	public static void ShouldBe(this RecordedCall call, HttpMethod method, string path, string query, string? body)
-	{
-		call.Method.Should().Be(method);
-		call.Uri.AbsolutePath.Should().Be(path);
-		call.Uri.Query.Should().Be(query);
-		call.Body.Should().Be(body);
-	}
-
 	/// <summary>Asserts a GET with no parameters and no body.</summary>
 	public static void ShouldBeGet(this RecordedCall call, string path) => call.ShouldBe(HttpMethod.Get, path, JsonQuery, null);
 

@@ -39,19 +39,6 @@ internal static class KnowledgeTestKit
 		return feed.Entries.Should().ContainSingle().Subject;
 	}
 
-	/// <summary>Asserts the method, path, query and form body of a recorded request.</summary>
-	public static void ShouldBe(this RecordedCall call, HttpMethod method, string path, string query = JsonQuery, string? body = null)
-	{
-		call.Method.Should().Be(method);
-		call.Uri.AbsolutePath.Should().Be(path);
-		call.Uri.Query.Should().Be(query);
-		call.Body.Should().Be(body);
-		if (body is not null)
-		{
-			call.ContentType.Should().Be("application/x-www-form-urlencoded");
-		}
-	}
-
 	/// <summary>Asserts that a 404 response raises <see cref="SplunkApiException"/> carrying Splunk's message.</summary>
 	public static async Task ShouldRaiseNotFoundAsync(Func<SplunkClient, Task> act)
 	{
