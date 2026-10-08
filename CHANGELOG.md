@@ -1,6 +1,6 @@
 # Changelog
 
-## 10.6 (next)
+## 10.6.66
 
 - `HecSettingsUpdateRequest.SettingsName` and `GlobalBannerCreateRequest.SingletonName` are static read-only properties
   rather than constants. Source that uses them where a constant is required (a `switch` case, an attribute argument)
