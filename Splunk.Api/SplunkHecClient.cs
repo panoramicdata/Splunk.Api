@@ -84,7 +84,7 @@ public sealed class SplunkHecClient : IDisposable
 	/// <param name="data">The raw text.</param>
 	/// <param name="cancellationToken">A cancellation token.</param>
 	/// <returns>The collector's reply.</returns>
-	/// <remarks>The raw endpoint needs a channel: set <see cref="SplunkHecClientOptions.Channel"/>.</remarks>
+	/// <remarks>With a token that uses indexer acknowledgement, set <see cref="SplunkHecClientOptions.Channel"/>.</remarks>
 	public Task<HecResponse> SendRawAsync(string data, CancellationToken cancellationToken)
 		=> Collector.SendRawAsync(data, null, cancellationToken);
 

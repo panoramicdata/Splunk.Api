@@ -37,8 +37,8 @@ public interface IHttpEventCollector
 	Task<HecResponse> SendEventsV1Async([Body] IEnumerable<HecEvent> events, [Query] HecRequestOptions? options, CancellationToken cancellationToken);
 
 	/// <summary>
-	/// Sends raw text, broken into events by the sourcetype's rules (<c>POST services/collector/raw</c>). Requires a
-	/// channel, from the options or <see cref="SplunkHecClientOptions.Channel"/>.
+	/// Sends raw text, broken into events by the sourcetype's rules (<c>POST services/collector/raw</c>). A token with
+	/// indexer acknowledgement requires a channel, from the options or <see cref="SplunkHecClientOptions.Channel"/>.
 	/// </summary>
 	/// <param name="data">The raw text, sent as the whole body.</param>
 	/// <param name="options">The channel and default metadata, or <see langword="null"/>.</param>
@@ -56,8 +56,8 @@ public interface IHttpEventCollector
 	Task<HecResponse> SendRawV1Async([Body] string data, [Query] HecRequestOptions? options, CancellationToken cancellationToken);
 
 	/// <summary>
-	/// Sends data in the MINT format (<c>POST services/collector/mint</c>). Splunk 10.6 requires a channel here as on
-	/// the raw endpoint.
+	/// Sends data in the MINT format (<c>POST services/collector/mint</c>). Splunk answers a body that is not MINT
+	/// data with 400 "No data" (code 5).
 	/// </summary>
 	/// <param name="data">The MINT payload, sent as the whole body.</param>
 	/// <param name="options">The channel and default metadata, or <see langword="null"/>.</param>

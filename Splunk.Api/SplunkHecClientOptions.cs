@@ -21,7 +21,7 @@ public class SplunkHecClientOptions
 
 	/// <summary>
 	/// The default channel (a GUID) sent as <c>X-Splunk-Request-Channel</c> on every request. Tokens with indexer
-	/// acknowledgement (<c>useACK</c>) and the raw endpoint require a channel; a request whose options set a
+	/// acknowledgement (<c>useACK</c>) require a channel on every data request; a request whose options set a
 	/// <c>channel</c> query parameter uses that instead. Leave <see langword="null"/> to send no channel header.
 	/// </summary>
 	public string? Channel { get; set; }

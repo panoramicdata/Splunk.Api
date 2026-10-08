@@ -14,7 +14,7 @@ public interface IMonitorInputs
 	[Get("services/data/inputs/monitor")]
 	Task<SplunkFeed<MonitorInput>> ListAsync([Query] ListOptions? options, CancellationToken cancellationToken);
 
-	/// <summary>Creates a monitor input (<c>POST data/inputs/monitor</c>). The path need not exist unless <c>check-path</c> is set.</summary>
+	/// <summary>Creates a monitor input (<c>POST data/inputs/monitor</c>). The path must exist on the Splunk server: Splunk 10.6 answers "Path does not exist" otherwise.</summary>
 	/// <param name="request">The input.</param>
 	/// <param name="cancellationToken">A cancellation token.</param>
 	/// <returns>A feed with the input.</returns>
