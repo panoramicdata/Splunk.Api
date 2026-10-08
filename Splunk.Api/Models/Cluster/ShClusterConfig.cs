@@ -94,29 +94,29 @@ public sealed class ShClusterConfig : SplunkContent
 	[JsonPropertyName("cxn_timeout")]
 	public int? ConnectionTimeout { get; init; }
 
-	/// <summary>The timeout, in seconds, for sending data between members.</summary>
-	[JsonPropertyName("send_timeout")]
-	public int? SendTimeout { get; init; }
-
-	/// <summary>The timeout, in seconds, for receiving data between members.</summary>
-	[JsonPropertyName("rcv_timeout")]
-	public int? ReceiveTimeout { get; init; }
-
 	/// <summary>The timeout, in seconds, for connecting to replicate data.</summary>
 	[JsonPropertyName("rep_cxn_timeout")]
 	public int? ReplicationConnectionTimeout { get; init; }
+
+	/// <summary>The timeout, in seconds, for sending data between members.</summary>
+	[JsonPropertyName("send_timeout")]
+	public int? SendTimeout { get; init; }
 
 	/// <summary>The timeout, in seconds, for sending replication data.</summary>
 	[JsonPropertyName("rep_send_timeout")]
 	public int? ReplicationSendTimeout { get; init; }
 
-	/// <summary>The timeout, in seconds, for receiving replication data.</summary>
-	[JsonPropertyName("rep_rcv_timeout")]
-	public int? ReplicationReceiveTimeout { get; init; }
-
 	/// <summary>The maximum time, in seconds, for sending a replication slice.</summary>
 	[JsonPropertyName("rep_max_send_timeout")]
 	public int? ReplicationMaxSendTimeout { get; init; }
+
+	/// <summary>The timeout, in seconds, for receiving data between members.</summary>
+	[JsonPropertyName("rcv_timeout")]
+	public int? ReceiveTimeout { get; init; }
+
+	/// <summary>The timeout, in seconds, for receiving replication data.</summary>
+	[JsonPropertyName("rep_rcv_timeout")]
+	public int? ReplicationReceiveTimeout { get; init; }
 
 	/// <summary>The maximum cumulative time, in seconds, for receiving replication acknowledgements.</summary>
 	[JsonPropertyName("rep_max_rcv_timeout")]

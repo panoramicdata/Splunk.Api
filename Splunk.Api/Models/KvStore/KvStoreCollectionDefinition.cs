@@ -10,21 +10,9 @@ public sealed class KvStoreCollectionDefinition : SplunkContent
 	private const string FieldPrefix = "field.";
 	private const string AcceleratedFieldPrefix = "accelerated_fields.";
 
-	/// <summary>Whether field types are enforced on insert and update (<c>enforceTypes</c>).</summary>
-	[JsonPropertyName("enforceTypes")]
-	public bool? EnforceTypes { get; init; }
-
 	/// <summary>Whether the collection is replicated to indexers (<c>replicate</c>).</summary>
 	[JsonPropertyName("replicate")]
 	public bool? Replicate { get; init; }
-
-	/// <summary>Whether slow operations are profiled (<c>profilingEnabled</c>).</summary>
-	[JsonPropertyName("profilingEnabled")]
-	public bool? ProfilingEnabled { get; init; }
-
-	/// <summary>The profiling threshold in milliseconds (<c>profilingThresholdMs</c>).</summary>
-	[JsonPropertyName("profilingThresholdMs")]
-	public int? ProfilingThresholdMs { get; init; }
 
 	/// <summary>How replicated data is dumped, for example <c>auto</c> (<c>replication_dump_strategy</c>).</summary>
 	[JsonPropertyName("replication_dump_strategy")]
@@ -33,6 +21,18 @@ public sealed class KvStoreCollectionDefinition : SplunkContent
 	/// <summary>The maximum replication dump file size in kilobytes (<c>replication_dump_maximum_file_size</c>).</summary>
 	[JsonPropertyName("replication_dump_maximum_file_size")]
 	public long? ReplicationDumpMaximumFileSize { get; init; }
+
+	/// <summary>Whether field types are enforced on insert and update (<c>enforceTypes</c>).</summary>
+	[JsonPropertyName("enforceTypes")]
+	public bool? EnforceTypes { get; init; }
+
+	/// <summary>Whether slow operations are profiled (<c>profilingEnabled</c>).</summary>
+	[JsonPropertyName("profilingEnabled")]
+	public bool? ProfilingEnabled { get; init; }
+
+	/// <summary>The profiling threshold in milliseconds (<c>profilingThresholdMs</c>).</summary>
+	[JsonPropertyName("profilingThresholdMs")]
+	public int? ProfilingThresholdMs { get; init; }
 
 	/// <summary>The collection type, usually <c>undefined</c> (<c>type</c>).</summary>
 	[JsonPropertyName("type")]

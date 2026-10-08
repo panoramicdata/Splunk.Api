@@ -12,18 +12,6 @@ public sealed class SamlConfiguration : SplunkContent
 	[JsonPropertyName("assertionConsumerServiceUrl")]
 	public string? AssertionConsumerServiceUrl { get; init; }
 
-	/// <summary>The SAML attribute mapped to the email address.</summary>
-	[JsonPropertyName("attributeAliasMail")]
-	public string? AttributeAliasMail { get; init; }
-
-	/// <summary>The SAML attribute mapped to the real name.</summary>
-	[JsonPropertyName("attributeAliasRealName")]
-	public string? AttributeAliasRealName { get; init; }
-
-	/// <summary>The SAML attribute mapped to roles.</summary>
-	[JsonPropertyName("attributeAliasRole")]
-	public string? AttributeAliasRole { get; init; }
-
 	/// <summary>Whether attribute queries are signed.</summary>
 	[JsonPropertyName("attributeQueryRequestSigned")]
 	public bool? AttributeQueryRequestSigned { get; init; }
@@ -39,6 +27,18 @@ public sealed class SamlConfiguration : SplunkContent
 	/// <summary>How long, in seconds, attribute query results are cached.</summary>
 	[JsonPropertyName("attributeQueryTTL")]
 	public int? AttributeQueryTtl { get; init; }
+
+	/// <summary>The SAML attribute mapped to the email address.</summary>
+	[JsonPropertyName("attributeAliasMail")]
+	public string? AttributeAliasMail { get; init; }
+
+	/// <summary>The SAML attribute mapped to the real name.</summary>
+	[JsonPropertyName("attributeAliasRealName")]
+	public string? AttributeAliasRealName { get; init; }
+
+	/// <summary>The SAML attribute mapped to roles.</summary>
+	[JsonPropertyName("attributeAliasRole")]
+	public string? AttributeAliasRole { get; init; }
 
 	/// <summary>The path of the CA certificate.</summary>
 	[JsonPropertyName("caCertFile")]

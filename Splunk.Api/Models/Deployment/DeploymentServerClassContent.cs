@@ -1,4 +1,3 @@
-using Splunk.Api.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Splunk.Api.Models.Deployment;
