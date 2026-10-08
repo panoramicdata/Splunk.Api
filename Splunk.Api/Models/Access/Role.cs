@@ -9,7 +9,10 @@ namespace Splunk.Api.Models.Access;
 /// </summary>
 public sealed partial class Role : SplunkContent
 {
-	/// <summary>The capabilities granted directly to the role.</summary>
+	/// <summary>
+	/// The capabilities granted directly to the role. Splunk leaves out any the role already has through
+	/// <see cref="ImportedRoles"/> (those are in <see cref="ImportedCapabilities"/>), even when they were set explicitly.
+	/// </summary>
 	[JsonPropertyName("capabilities")]
 	public IReadOnlyList<string> Capabilities { get; init; } = [];
 
