@@ -14,6 +14,12 @@ internal sealed record RecordedCall(HttpMethod Method, Uri Uri, string? Body, Ht
 	/// <summary>The request Content-Type media type, or <see langword="null"/> without a body.</summary>
 	public string? ContentType { get; init; }
 
+	/// <summary>
+	/// The Authorization header as it was when the request arrived. <see cref="Headers"/> is the live collection, which a
+	/// handler that resends the same request (retry, re-login) changes afterwards.
+	/// </summary>
+	public string? Authorization { get; init; }
+
 	/// <summary>The raw bytes of a non-multipart body, or <see langword="null"/>.</summary>
 	public byte[]? BodyBytes { get; init; }
 
@@ -59,6 +65,7 @@ internal sealed class StubHandler : HttpMessageHandler
 		Calls.Add(new RecordedCall(request.Method, request.RequestUri!, body, request.Headers)
 		{
 			ContentType = content?.Headers.ContentType?.MediaType,
+			Authorization = request.Headers.Authorization?.ToString(),
 			BodyBytes = bytes,
 			Parts = parts
 		});
