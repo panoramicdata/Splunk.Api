@@ -13,7 +13,7 @@ public partial class SearchJobsTests
 
 		var feed = await client.SearchJobs.UpdateAsync("my_sid", new SearchJobUpdateRequest([new("ticket", "INC-1"), new("owner team", "ops")]), Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Post, "/services/search/jobs/my_sid", "?output_mode=json", "custom.ticket=INC-1&custom.owner+team=ops");
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, "/services/search/jobs/my_sid", "?output_mode=json", "custom.ticket=INC-1&custom.owner+team=ops");
 		feed.Entries.Should().ContainSingle().Which.Content!.Sid.Should().Be("splunk_api_probe_2");
 	}
 
@@ -33,7 +33,7 @@ public partial class SearchJobsTests
 
 		await client.SearchJobs.DeleteAsync("my_sid", Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Delete, "/services/search/jobs/my_sid", "?output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Delete, "/services/search/jobs/my_sid", "?output_mode=json");
 	}
 
 	[Theory]
@@ -51,7 +51,7 @@ public partial class SearchJobsTests
 
 		await client.SearchJobs.ControlAsync("my_sid", new SearchJobControlRequest { Action = action }, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Post, "/services/search/jobs/my_sid/control", "?output_mode=json", body);
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, "/services/search/jobs/my_sid/control", "?output_mode=json", body);
 	}
 
 	[Fact]
@@ -65,7 +65,7 @@ public partial class SearchJobsTests
 			new SearchJobControlRequest { Action = SearchJobAction.SetTtl, Ttl = 120, Priority = 3, WorkloadPool = "pool" },
 			Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Post, "/services/search/jobs/my_sid/control", "?output_mode=json", "action=setttl&ttl=120&priority=3&workload_pool=pool");
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, "/services/search/jobs/my_sid/control", "?output_mode=json", "action=setttl&ttl=120&priority=3&workload_pool=pool");
 		reply.Messages.Should().ContainSingle().Which.Text.Should().Be("The ttl of the search job was changed to 120.");
 	}
 
@@ -90,7 +90,7 @@ public partial class SearchJobsTests
 
 		var log = await client.SearchJobs.GetSearchLogAsync("my_sid", Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, "/services/search/jobs/my_sid/search.log", "?output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, "/services/search/jobs/my_sid/search.log", "?output_mode=json");
 		log.Should().StartWith("10-08-2026 13:47:15.569 INFO  dispatchRunner");
 	}
 }

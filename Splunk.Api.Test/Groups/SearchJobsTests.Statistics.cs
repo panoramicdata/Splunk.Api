@@ -27,7 +27,7 @@ public partial class SearchJobsTests
 			},
 			Ct);
 
-		stub.ShouldHaveSent(
+		SearchRequestAssert.Sent(stub,
 			HttpMethod.Get,
 			"/services/search/jobs/my_sid/summary",
 			"?f=host&f=linecount&earliest_time=-1h&latest_time=now&search=error&min_freq=0.5&top_count=3&histogram=true"
@@ -83,7 +83,7 @@ public partial class SearchJobsTests
 
 		await client.SearchJobs.GetTimelineAsync("my_sid", new SearchJobTimelineOptions { OutputTimeFormat = "%s", TimeFormat = "%FT%T" }, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, "/services/search/jobs/my_sid/timeline", "?output_time_format=%25s&time_format=%25FT%25T&output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, "/services/search/jobs/my_sid/timeline", "?output_time_format=%25s&time_format=%25FT%25T&output_mode=json");
 	}
 
 	[Fact]

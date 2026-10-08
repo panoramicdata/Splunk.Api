@@ -23,7 +23,7 @@ public class SearchJobResultsTests
 
 		await client.SearchJobResults.GetResultsAsync("my_sid", PageOptions, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, ResultsPath, "?add_summary_to_metadata=true&count=2&offset=4&f=host&f=x&output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, ResultsPath, "?add_summary_to_metadata=true&count=2&offset=4&f=host&f=x&output_mode=json");
 	}
 
 	[Fact]
@@ -57,7 +57,7 @@ public class SearchJobResultsTests
 
 		using var reader = new StreamReader(await client.SearchJobResults.GetResultsCsvAsync("my_sid", new SearchResultsOptions { Count = 2 }, Ct));
 
-		stub.ShouldHaveSent(HttpMethod.Get, ResultsPath, "?output_mode=csv&count=2");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, ResultsPath, "?output_mode=csv&count=2");
 		(await reader.ReadToEndAsync(Ct)).Should().Be("host\nsplunk01\n");
 	}
 
@@ -69,7 +69,7 @@ public class SearchJobResultsTests
 
 		var results = await client.SearchJobResults.PostProcessResultsAsync("my_sid", PostProcess, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Post, ResultsPath, "?output_mode=json", "search=stats+count+by+host&count=2&offset=4&f=host&add_summary_to_metadata=false");
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, ResultsPath, "?output_mode=json", "search=stats+count+by+host&count=2&offset=4&f=host&add_summary_to_metadata=false");
 		results.PostProcessCount.Should().Be(3);
 	}
 
@@ -81,7 +81,7 @@ public class SearchJobResultsTests
 
 		var results = await client.SearchJobResults.GetPreviewAsync("my_sid", PageOptions, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, PreviewPath, "?add_summary_to_metadata=true&count=2&offset=4&f=host&f=x&output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, PreviewPath, "?add_summary_to_metadata=true&count=2&offset=4&f=host&f=x&output_mode=json");
 		results.Results.Should().HaveCount(2);
 	}
 
@@ -93,7 +93,7 @@ public class SearchJobResultsTests
 
 		await client.SearchJobResults.PostProcessPreviewAsync("my_sid", PostProcess, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Post, PreviewPath, "?output_mode=json", "search=stats+count+by+host&count=2&offset=4&f=host&add_summary_to_metadata=false");
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, PreviewPath, "?output_mode=json", "search=stats+count+by+host&count=2&offset=4&f=host&add_summary_to_metadata=false");
 	}
 
 	[Fact]
@@ -119,7 +119,7 @@ public class SearchJobResultsTests
 			},
 			Ct);
 
-		stub.ShouldHaveSent(
+		SearchRequestAssert.Sent(stub,
 			HttpMethod.Get,
 			EventsPath,
 			"?earliest_time=-1h&latest_time=now&max_lines=5&truncation_mode=truncate&segmentation=full&output_time_format=%25s"
@@ -135,7 +135,7 @@ public class SearchJobResultsTests
 
 		using var reader = new StreamReader(await client.SearchJobResults.GetEventsRawAsync("my_sid", new SearchEventsOptions { TruncationMode = TruncationMode.Abstract }, Ct));
 
-		stub.ShouldHaveSent(HttpMethod.Get, EventsPath, "?output_mode=raw&truncation_mode=abstract");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, EventsPath, "?output_mode=raw&truncation_mode=abstract");
 		(await reader.ReadLineAsync(Ct)).Should().Contain("group=metadata_metrics");
 	}
 
@@ -163,7 +163,7 @@ public class SearchJobResultsTests
 			},
 			Ct);
 
-		stub.ShouldHaveSent(
+		SearchRequestAssert.Sent(stub,
 			HttpMethod.Post,
 			EventsPath,
 			"?output_mode=json",
@@ -178,8 +178,6 @@ public class SearchJobResultsTests
 		stub.Enqueue(HttpStatusCode.NotFound, """<?xml version="1.0"?><response><messages><msg type="FATAL">Unknown sid.</msg></messages></response>""");
 		using var client = TestClient.Create(stub);
 
-		var act = () => client.SearchJobResults.GetResultsCsvAsync("gone", null, Ct);
-
-		await act.ShouldFailWith(HttpStatusCode.NotFound, "Unknown sid.");
+		await SearchRequestAssert.FailsWith(() => client.SearchJobResults.GetResultsCsvAsync("gone", null, Ct), HttpStatusCode.NotFound, "Unknown sid.");
 	}
 }

@@ -33,4 +33,19 @@ public sealed partial class SplunkClient
 
 	/// <summary>Custom search commands (<c>data/commands</c>).</summary>
 	public ISearchCommands SearchCommands => field ??= For<ISearchCommands>();
+
+	/// <summary>Saved searches, reports and alerts (<c>saved/searches</c>).</summary>
+	public ISavedSearches SavedSearches => field ??= For<ISavedSearches>();
+
+	/// <summary>Dashboards scheduled for PDF delivery (<c>scheduled/views</c>).</summary>
+	public IScheduledViews ScheduledViews => field ??= For<IScheduledViews>();
+
+	/// <summary>Alert actions (<c>alerts/alert_actions</c>).</summary>
+	public IAlertActions AlertActions => field ??= For<IAlertActions>();
+
+	/// <summary>Triggered alerts (<c>alerts/fired_alerts</c>).</summary>
+	public IFiredAlerts FiredAlerts => field ??= For<IFiredAlerts>();
+
+	/// <summary>Streaming metric alerts (<c>alerts/metric_alerts</c>).</summary>
+	public IMetricAlerts MetricAlerts => field ??= For<IMetricAlerts>();
 }

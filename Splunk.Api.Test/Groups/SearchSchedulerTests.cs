@@ -18,7 +18,7 @@ public class SearchSchedulerTests
 
 		await client.SearchScheduler.GetStatusAsync(Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, "/services/search/scheduler", "?output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, "/services/search/scheduler", "?output_mode=json");
 	}
 
 	[Fact]
@@ -41,7 +41,7 @@ public class SearchSchedulerTests
 
 		var feed = await client.SearchScheduler.SetStatusAsync(new SearchSchedulerStatusRequest { Disabled = false }, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Post, "/services/search/scheduler/status", "?output_mode=json", "disabled=false");
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, "/services/search/scheduler/status", "?output_mode=json", "disabled=false");
 		feed.Entries.Should().BeEmpty();
 	}
 
@@ -50,8 +50,6 @@ public class SearchSchedulerTests
 	{
 		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"ERROR","text":"You do not have permission."}]}""", HttpStatusCode.Forbidden));
 
-		var act = () => client.SearchScheduler.SetStatusAsync(new SearchSchedulerStatusRequest { Disabled = true }, Ct);
-
-		await act.ShouldFailWith(HttpStatusCode.Forbidden, "You do not have permission.");
+		await SearchRequestAssert.FailsWith(() => client.SearchScheduler.SetStatusAsync(new SearchSchedulerStatusRequest { Disabled = true }, Ct), HttpStatusCode.Forbidden, "You do not have permission.");
 	}
 }

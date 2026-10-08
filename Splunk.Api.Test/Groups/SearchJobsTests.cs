@@ -19,7 +19,7 @@ public partial class SearchJobsTests
 
 		await client.SearchJobs.ListAsync(new ListOptions { Count = 2, Search = "isDone=1" }, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, "/services/search/jobs", "?count=2&search=isDone%3D1&output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, "/services/search/jobs", "?count=2&search=isDone%3D1&output_mode=json");
 	}
 
 	[Fact]
@@ -30,7 +30,7 @@ public partial class SearchJobsTests
 
 		await client.SearchJobs.GetAsync("scheduler__admin__search__RMD5_at_1791467606_3", Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, "/services/search/jobs/scheduler__admin__search__RMD5_at_1791467606_3", "?output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, "/services/search/jobs/scheduler__admin__search__RMD5_at_1791467606_3", "?output_mode=json");
 	}
 
 	[Fact]
@@ -144,7 +144,7 @@ public partial class SearchJobsTests
 			},
 			Ct);
 
-		stub.ShouldHaveSent(
+		SearchRequestAssert.Sent(stub,
 			HttpMethod.Post,
 			"/services/search/jobs",
 			"?output_mode=json",
@@ -175,7 +175,7 @@ public partial class SearchJobsTests
 			new SearchOneshotRequest { Search = "| makeresults count=2", Count = 0, Offset = 1, Fields = ["_time", "x"], EarliestTime = "-1d" },
 			Ct);
 
-		stub.ShouldHaveSent(
+		SearchRequestAssert.Sent(stub,
 			HttpMethod.Post,
 			"/services/search/jobs",
 			"?output_mode=json",
@@ -197,8 +197,6 @@ public partial class SearchJobsTests
 	{
 		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"FATAL","text":"Unknown search command 'nosuchcommand'."}]}""", HttpStatusCode.BadRequest));
 
-		var act = () => client.SearchJobs.CreateAsync(new SearchJobCreateRequest { Search = "| nosuchcommand" }, Ct);
-
-		await act.ShouldFailWith(HttpStatusCode.BadRequest, "Unknown search command 'nosuchcommand'.");
+		await SearchRequestAssert.FailsWith(() => client.SearchJobs.CreateAsync(new SearchJobCreateRequest { Search = "| nosuchcommand" }, Ct), HttpStatusCode.BadRequest, "Unknown search command 'nosuchcommand'.");
 	}
 }

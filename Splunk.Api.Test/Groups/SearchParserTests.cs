@@ -23,7 +23,7 @@ public class SearchParserTests
 			new SearchParserRequest { Query = "search index=_internal | stats count by host", ParseOnly = true, EnableLookups = false, ReloadMacros = true },
 			Ct);
 
-		stub.ShouldHaveSent(
+		SearchRequestAssert.Sent(stub,
 			HttpMethod.Post,
 			"/services/search/v2/parser",
 			"?output_mode=json",
@@ -63,8 +63,6 @@ public class SearchParserTests
 	{
 		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"FATAL","text":"Unknown search command 'nosuchcmd'."}]}""", HttpStatusCode.BadRequest));
 
-		var act = () => client.SearchParser.ParseAsync(new SearchParserRequest { Query = "| nosuchcmd" }, Ct);
-
-		await act.ShouldFailWith(HttpStatusCode.BadRequest, "Unknown search command 'nosuchcmd'.");
+		await SearchRequestAssert.FailsWith(() => client.SearchParser.ParseAsync(new SearchParserRequest { Query = "| nosuchcmd" }, Ct), HttpStatusCode.BadRequest, "Unknown search command 'nosuchcmd'.");
 	}
 }

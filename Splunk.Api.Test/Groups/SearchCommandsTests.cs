@@ -21,7 +21,7 @@ public class SearchCommandsTests
 
 		await client.SearchCommands.ListAsync(new ListOptions { Count = 1, Offset = 2 }, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, "/services/data/commands", "?count=1&offset=2&output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, "/services/data/commands", "?count=1&offset=2&output_mode=json");
 	}
 
 	[Fact]
@@ -32,7 +32,7 @@ public class SearchCommandsTests
 
 		await client.SearchCommands.GetAsync("bucketdir", Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, "/services/data/commands/bucketdir", "?output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, "/services/data/commands/bucketdir", "?output_mode=json");
 	}
 
 	[Fact]
@@ -65,8 +65,6 @@ public class SearchCommandsTests
 	{
 		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"ERROR","text":"Could not find object id=eval"}]}""", HttpStatusCode.NotFound));
 
-		var act = () => client.SearchCommands.GetAsync("eval", Ct);
-
-		await act.ShouldFailWith(HttpStatusCode.NotFound, "Could not find object id=eval");
+		await SearchRequestAssert.FailsWith(() => client.SearchCommands.GetAsync("eval", Ct), HttpStatusCode.NotFound, "Could not find object id=eval");
 	}
 }

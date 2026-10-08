@@ -17,7 +17,7 @@ public class SearchTypeaheadTests
 
 		await client.Typeahead.GetAsync("index=_", 3, 1, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, "/services/search/typeahead", "?prefix=index%3D_&count=3&max_servers=1&output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, "/services/search/typeahead", "?prefix=index%3D_&count=3&max_servers=1&output_mode=json");
 	}
 
 	[Fact]
@@ -41,8 +41,6 @@ public class SearchTypeaheadTests
 	{
 		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"ERROR","text":"Missing prefix."}]}""", HttpStatusCode.BadRequest));
 
-		var act = () => client.Typeahead.GetAsync(string.Empty, 3, null, Ct);
-
-		await act.ShouldFailWith(HttpStatusCode.BadRequest, "Missing prefix.");
+		await SearchRequestAssert.FailsWith(() => client.Typeahead.GetAsync(string.Empty, 3, null, Ct), HttpStatusCode.BadRequest, "Missing prefix.");
 	}
 }

@@ -27,7 +27,7 @@ public class SearchConcurrencySettingsTests
 
 		await client.SearchConcurrencySettings.ListAsync(Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Get, "/services/search/concurrency-settings", "?output_mode=json");
+		SearchRequestAssert.Sent(stub, HttpMethod.Get, "/services/search/concurrency-settings", "?output_mode=json");
 	}
 
 	[Fact]
@@ -58,7 +58,7 @@ public class SearchConcurrencySettingsTests
 
 		await client.SearchConcurrencySettings.UpdateSchedulerAsync(new SchedulerConcurrencyUpdateRequest { MaxSearchesPercent = 60, AutoSummaryPercent = 40 }, Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Post, "/services/search/concurrency-settings/scheduler", "?output_mode=json", "max_searches_perc=60&auto_summary_perc=40");
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, "/services/search/concurrency-settings/scheduler", "?output_mode=json", "max_searches_perc=60&auto_summary_perc=40");
 	}
 
 	[Fact]
@@ -69,7 +69,7 @@ public class SearchConcurrencySettingsTests
 
 		await client.SearchConcurrencySettings.UpdateSearchAsync(new SearchConcurrencyUpdateRequest { MaxSearchesPerCpu = 2, BaseMaxSearches = 8, MaxRealtimeSearchMultiplier = 1.5 }, Ct);
 
-		stub.ShouldHaveSent(
+		SearchRequestAssert.Sent(stub,
 			HttpMethod.Post,
 			"/services/search/concurrency-settings/search",
 			"?output_mode=json",
@@ -81,8 +81,6 @@ public class SearchConcurrencySettingsTests
 	{
 		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"ERROR","text":"Invalid value for base_max_searches."}]}""", HttpStatusCode.BadRequest));
 
-		var act = () => client.SearchConcurrencySettings.UpdateSearchAsync(new SearchConcurrencyUpdateRequest { BaseMaxSearches = -1 }, Ct);
-
-		await act.ShouldFailWith(HttpStatusCode.BadRequest, "Invalid value for base_max_searches.");
+		await SearchRequestAssert.FailsWith(() => client.SearchConcurrencySettings.UpdateSearchAsync(new SearchConcurrencyUpdateRequest { BaseMaxSearches = -1 }, Ct), HttpStatusCode.BadRequest, "Invalid value for base_max_searches.");
 	}
 }

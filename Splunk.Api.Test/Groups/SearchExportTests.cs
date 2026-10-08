@@ -22,7 +22,7 @@ public class SearchExportTests
 		await using var stream = await client.SearchExport.ExportAsync(Request, Ct);
 		var records = await SearchExportReader.ReadAsync(stream, Ct).ToListAsync(Ct);
 
-		stub.ShouldHaveSent(HttpMethod.Post, ExportPath, "?output_mode=json", ExportBody);
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, ExportPath, "?output_mode=json", ExportBody);
 		records.Should().HaveCount(4);
 		records[0].Preview.Should().BeTrue();
 		records[1].Offset.Should().Be(0);
@@ -44,7 +44,7 @@ public class SearchExportTests
 
 		using var reader = new StreamReader(await client.SearchExport.ExportCsvAsync(Request, Ct));
 
-		stub.ShouldHaveSent(HttpMethod.Post, ExportPath, "?output_mode=csv", ExportBody);
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, ExportPath, "?output_mode=csv", ExportBody);
 		(await reader.ReadLineAsync(Ct)).Should().Be("\"_time\",x");
 	}
 
@@ -56,7 +56,7 @@ public class SearchExportTests
 
 		using var reader = new StreamReader(await client.SearchExport.ExportRawAsync(Request, Ct));
 
-		stub.ShouldHaveSent(HttpMethod.Post, ExportPath, "?output_mode=raw", ExportBody);
+		SearchRequestAssert.Sent(stub, HttpMethod.Post, ExportPath, "?output_mode=raw", ExportBody);
 		(await reader.ReadLineAsync(Ct)).Should().Be("raw event one");
 	}
 
@@ -65,9 +65,7 @@ public class SearchExportTests
 	{
 		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"FATAL","text":"Unknown search command 'nosuchcommand'."}]}""", HttpStatusCode.BadRequest));
 
-		var act = () => client.SearchExport.ExportAsync(new SearchExportRequest { Search = "| nosuchcommand" }, Ct);
-
-		await act.ShouldFailWith(HttpStatusCode.BadRequest, "Unknown search command 'nosuchcommand'.");
+		await SearchRequestAssert.FailsWith(() => client.SearchExport.ExportAsync(new SearchExportRequest { Search = "| nosuchcommand" }, Ct), HttpStatusCode.BadRequest, "Unknown search command 'nosuchcommand'.");
 	}
 
 	[Fact]

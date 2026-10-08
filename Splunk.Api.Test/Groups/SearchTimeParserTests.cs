@@ -18,7 +18,7 @@ public class SearchTimeParserTests
 
 		await client.TimeParser.ParseAsync(["-1d", "now", "@d"], new TimeParserOptions { Now = "1791467358", OutputTimeFormat = "%s", TimeFormat = "%s" }, Ct);
 
-		stub.ShouldHaveSent(
+		SearchRequestAssert.Sent(stub,
 			HttpMethod.Get,
 			"/services/search/timeparser",
 			"?time=-1d&time=now&time=%40d&now=1791467358&output_time_format=%25s&time_format=%25s&output_mode=json");
@@ -41,8 +41,6 @@ public class SearchTimeParserTests
 	{
 		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"FATAL","text":"Invalid time."}]}""", HttpStatusCode.BadRequest));
 
-		var act = () => client.TimeParser.ParseAsync(["garbage"], null, Ct);
-
-		await act.ShouldFailWith(HttpStatusCode.BadRequest, "Invalid time.");
+		await SearchRequestAssert.FailsWith(() => client.TimeParser.ParseAsync(["garbage"], null, Ct), HttpStatusCode.BadRequest, "Invalid time.");
 	}
 }

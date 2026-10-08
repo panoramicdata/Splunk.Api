@@ -7,7 +7,7 @@ namespace Splunk.Api.Test.Groups;
 internal static class SearchRequestAssert
 {
 	/// <summary>Asserts that the stub received exactly one request, and that it matches.</summary>
-	public static void ShouldHaveSent(this StubHandler stub, HttpMethod method, string path, string query, string? body = null)
+	public static void Sent(StubHandler stub, HttpMethod method, string path, string query, string? body = null)
 	{
 		var call = stub.Calls.Should().ContainSingle().Subject;
 		call.Method.Should().Be(method);
@@ -33,7 +33,7 @@ internal static class SearchRequestAssert
 	}
 
 	/// <summary>Asserts that the call raises <see cref="SplunkApiException"/> with the status and message.</summary>
-	public static async Task ShouldFailWith(this Func<Task> act, HttpStatusCode status, string message)
+	public static async Task FailsWith(Func<Task> act, HttpStatusCode status, string message)
 	{
 		var thrown = await act.Should().ThrowAsync<SplunkApiException>();
 		thrown.Which.StatusCode.Should().Be(status);
