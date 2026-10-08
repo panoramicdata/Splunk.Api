@@ -42,16 +42,16 @@ internal sealed class RetryHandler(ILogger? logger, TimeSpan timeout, int maxRet
 	{
 		// Only the path is logged: query strings can carry search text.
 		var path = request.RequestUri!.GetLeftPart(UriPartial.Path);
-		var replayable = IsReplayable(request.Content);
+		var retries = IsReplayable(request.Content) ? _maxRetries : 0;
 		var backoff = _retryBaseDelay;
-		for (var attempt = 0; ; attempt++)
+		var attempt = 0;
+		for (; attempt < retries; attempt++)
 		{
-			var canRetry = replayable && attempt < _maxRetries;
 			TimeSpan wait;
 			try
 			{
 				var response = await SendAttemptAsync(request, path, attempt, cancellationToken).ConfigureAwait(false);
-				if (!canRetry || !IsRetryable(request.Method, response.StatusCode))
+				if (!IsRetryable(request.Method, response.StatusCode))
 				{
 					return response;
 				}
@@ -60,7 +60,7 @@ internal sealed class RetryHandler(ILogger? logger, TimeSpan timeout, int maxRet
 				LogRetry(response.StatusCode, request.Method, path, wait);
 				response.Dispose();
 			}
-			catch (HttpRequestException exception) when (canRetry && IsConnectionFailure(exception))
+			catch (HttpRequestException exception) when (IsConnectionFailure(exception))
 			{
 				wait = CapDelay(backoff);
 				LogConnectionRetry(exception.HttpRequestError, request.Method, path, wait);
@@ -69,6 +69,9 @@ internal sealed class RetryHandler(ILogger? logger, TimeSpan timeout, int maxRet
 			await Delay(wait, cancellationToken).ConfigureAwait(false);
 			backoff = NextBackoff(backoff);
 		}
+
+		// The last attempt (or the only one, for a body that cannot be replayed) returns or throws whatever happens.
+		return await SendAttemptAsync(request, path, attempt, cancellationToken).ConfigureAwait(false);
 	}
 
 	private void LogRetry(HttpStatusCode status, HttpMethod method, string path, TimeSpan wait)
