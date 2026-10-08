@@ -76,7 +76,7 @@ public interface ISavedSearches
 	/// <param name="earliestTime">The start of the range (<c>earliest_time</c>), for example <c>now</c>.</param>
 	/// <param name="latestTime">The end of the range (<c>latest_time</c>), for example <c>+1d</c>.</param>
 	/// <param name="cancellationToken">A cancellation token.</param>
-	/// <returns>A feed with the saved search, whose <see cref="SavedSearch.ScheduledTimes"/> lists the run times.</returns>
+	/// <returns>A feed with the saved search, whose <see cref="ScheduledContent.ScheduledTimes"/> lists the run times.</returns>
 	[Get("services/saved/searches/{name}/scheduled_times")]
 	Task<SplunkFeed<SavedSearch>> GetScheduledTimesAsync(
 		string name,

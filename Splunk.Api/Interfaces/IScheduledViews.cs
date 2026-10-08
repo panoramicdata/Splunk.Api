@@ -71,8 +71,8 @@ public interface IScheduledViews
 	/// <returns>A feed with the schedule.</returns>
 	/// <remarks>
 	/// Unlike <see cref="ISavedSearches.GetScheduledTimesAsync"/>, Splunk 10.6 returns the schedule here without a
-	/// <c>scheduled_times</c> list, so <see cref="ScheduledView.ScheduledTimes"/> is empty; work the times out from
-	/// <see cref="ScheduledView.CronSchedule"/>.
+	/// <c>scheduled_times</c> list, so <see cref="ScheduledContent.ScheduledTimes"/> is empty; work the times out from
+	/// <see cref="ScheduledContent.CronSchedule"/>.
 	/// </remarks>
 	[Get("services/scheduled/views/{name}/scheduled_times")]
 	Task<SplunkFeed<ScheduledView>> GetScheduledTimesAsync(
