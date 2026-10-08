@@ -21,10 +21,10 @@ public class SerializerTests
 	[Fact]
 	public async Task ToHttpContent_JsonBody_IsJson()
 	{
-		using var content = _serializer.ToHttpContent(new JsonBody<Named>(new Named { Renamed = "x" }));
+		using var content = _serializer.ToHttpContent(new JsonBody<Named>(new Named { Renamed = "x", Plain = "y" }));
 
 		content.Headers.ContentType!.ToString().Should().Be("application/json");
-		(await content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().Be("""{"wire_name":"x"}""");
+		(await content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Should().Be("""{"wire_name":"x","Plain":"y"}""");
 	}
 
 	[Fact]

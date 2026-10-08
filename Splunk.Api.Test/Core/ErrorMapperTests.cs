@@ -92,7 +92,11 @@ public class ErrorMapperTests
 
 	private sealed class FailingContent(Exception failure) : HttpContent
 	{
-		protected override Task SerializeToStreamAsync(Stream stream, System.Net.TransportContext? context) => throw failure;
+		protected override Task SerializeToStreamAsync(Stream stream, System.Net.TransportContext? context)
+		{
+			ArgumentNullException.ThrowIfNull(stream);
+			throw failure;
+		}
 
 		protected override bool TryComputeLength(out long length)
 		{

@@ -25,7 +25,7 @@ public class ClientTests
 		public bool Disposed { get; private set; }
 
 		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-			=> Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(Empty) });
+			=> Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(Empty), RequestMessage = request });
 
 		protected override void Dispose(bool disposing)
 		{
