@@ -13,42 +13,30 @@ internal static class KnowledgeTestKit
 	public const string EmptyFeed = """{"links":{},"origin":"https://splunk.test:8089/services/x","entry":[],"paging":{"total":0,"perPage":30,"offset":0},"messages":[]}""";
 
 	/// <summary>Sends one request through a stubbed client and returns what was sent.</summary>
-	public static async Task<RecordedCall> SendAsync(Func<SplunkClient, Task> act, string json = EmptyFeed)
-	{
-		var stub = TestClient.Stub(json);
-		using var client = TestClient.Create(stub);
-		await act(client);
-		return stub.Calls.Should().ContainSingle().Subject;
-	}
+	public static Task<RecordedCall> SendAsync(Func<SplunkClient, Task> act, string json = EmptyFeed)
+		=> TestClient.CaptureAsync((client, _) => act(client), json);
 
 	/// <summary>Sends one request through a stubbed client in the <c>nobody/search</c> namespace and returns what was sent.</summary>
-	public static async Task<RecordedCall> SendInSearchAppAsync(Func<SplunkClient, Task> act, string json = EmptyFeed)
-	{
-		var stub = TestClient.Stub(json);
-		using var client = TestClient.Create(stub);
-		using var app = client.InNamespace("nobody", "search");
-		await act(app);
-		return stub.Calls.Should().ContainSingle().Subject;
-	}
+	public static Task<RecordedCall> SendInSearchAppAsync(Func<SplunkClient, Task> act, string json = EmptyFeed)
+		=> TestClient.CaptureAsync(
+			async (client, _) =>
+			{
+				using var app = client.InNamespace("nobody", "search");
+				await act(app);
+			},
+			json);
 
 	/// <summary>Reads the single entry of a stubbed response.</summary>
 	public static async Task<SplunkEntry<T>> SingleEntryAsync<T>(Func<SplunkClient, Task<SplunkFeed<T>>> act, string json)
-	{
-		using var client = TestClient.Create(TestClient.Stub(json));
-		var feed = await act(client);
-		return feed.Entries.Should().ContainSingle().Subject;
-	}
+		=> (await TestClient.ReadAsync((client, _) => act(client), json)).Entries.Should().ContainSingle().Subject;
 
 	/// <summary>Asserts that a 404 response raises <see cref="SplunkApiException"/> carrying Splunk's message.</summary>
-	public static async Task ShouldRaiseNotFoundAsync(Func<SplunkClient, Task> act)
-	{
-		using var client = TestClient.Create(TestClient.Stub("""{"messages":[{"type":"ERROR","text":"Could not find object id=missing"}]}""", HttpStatusCode.NotFound));
-
-		var thrown = await FluentActions.Awaiting(() => act(client)).Should().ThrowAsync<SplunkApiException>();
-
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
-		thrown.Which.Message.Should().Be("Could not find object id=missing");
-	}
+	public static Task ShouldRaiseNotFoundAsync(Func<SplunkClient, Task> act)
+		=> TestClient.ShouldFailAsync(
+			(client, _) => act(client),
+			HttpStatusCode.NotFound,
+			"""{"messages":[{"type":"ERROR","text":"Could not find object id=missing"}]}""",
+			"Could not find object id=missing");
 
 	/// <summary>
 	/// Wraps one entry's content in the envelope Splunk 10.6 returns, with the links and ACL captured from the live
