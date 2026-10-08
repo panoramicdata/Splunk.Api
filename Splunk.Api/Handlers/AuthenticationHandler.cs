@@ -155,9 +155,9 @@ internal sealed class AuthenticationHandler : DelegatingHandler
 			if (document.RootElement.ValueKind == JsonValueKind.Object
 				&& document.RootElement.TryGetProperty("sessionKey", out var key)
 				&& key.ValueKind == JsonValueKind.String
-				&& key.GetString() is { Length: > 0 } sessionKey)
+				&& key.GetString()!.Length > 0)
 			{
-				return sessionKey;
+				return key.GetString()!;
 			}
 		}
 		catch (JsonException)

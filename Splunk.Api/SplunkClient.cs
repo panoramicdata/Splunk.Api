@@ -103,7 +103,7 @@ public sealed partial class SplunkClient : IDisposable
 	/// <returns>A client in that namespace.</returns>
 	public SplunkClient InNamespace(string owner, string app) => InNamespace(new SplunkNamespace(owner, app));
 
-	private T For<T>() => RestService.For<T>(_httpClient, Settings);
+	internal T For<T>() => RestService.For<T>(_httpClient, Settings);
 
 	/// <inheritdoc />
 	public void Dispose()

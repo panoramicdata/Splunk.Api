@@ -88,7 +88,7 @@ internal static class SplunkErrorMapper
 
 	private static string ReadString(JsonElement element, string name)
 		=> element.TryGetProperty(name, out var property) && property.ValueKind == JsonValueKind.String
-			? property.GetString() ?? string.Empty
+			? property.GetString()!
 			: string.Empty;
 
 	private static async Task<string> ReadBodyAsync(HttpResponseMessage response)

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,10 +22,7 @@ internal sealed class EpochSecondsConverter : JsonConverter<DateTimeOffset?>
 	/// <inheritdoc />
 	public override DateTimeOffset? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
-		if (reader.TokenType == JsonTokenType.String
-			&& reader.GetString() is { } text
-			&& DateTimeOffset.TryParse(text, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out var parsed)
-			&& !double.TryParse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _))
+		if (reader.TokenType == JsonTokenType.String && TryParseIso(reader.GetString()!, out var parsed))
 		{
 			return parsed;
 		}
@@ -46,6 +44,14 @@ internal sealed class EpochSecondsConverter : JsonConverter<DateTimeOffset?>
 		return milliseconds is >= MinMilliseconds and <= MaxMilliseconds
 			? DateTimeOffset.FromUnixTimeMilliseconds((long)milliseconds)
 			: throw new JsonException($"\"{number}\" is not a valid epoch time in seconds.");
+	}
+
+	/// <summary>Parses date text, but not numeric text, which DateTimeOffset would also accept (<c>"1.5"</c> as 5 January).</summary>
+	private static bool TryParseIso(string text, out DateTimeOffset parsed)
+	{
+		parsed = default;
+		return !double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out _)
+			&& DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out parsed);
 	}
 
 	/// <inheritdoc />
