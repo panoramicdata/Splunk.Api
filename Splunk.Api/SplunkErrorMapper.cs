@@ -8,7 +8,8 @@ namespace Splunk.Api;
 /// <summary>
 /// Turns a non-success response into a <see cref="SplunkApiException"/> carrying Splunk's messages. Splunk answers errors
 /// with <c>{"messages":[{"type":"ERROR","text":"..."}]}</c> in JSON mode, and with
-/// <c>&lt;response&gt;&lt;messages&gt;&lt;msg type="ERROR"&gt;...&lt;/msg&gt;</c> where it ignores the output mode.
+/// <c>&lt;response&gt;&lt;messages&gt;&lt;msg type="ERROR"&gt;...&lt;/msg&gt;</c> where it ignores the output mode. The
+/// Topology REST API (<c>stack-explainer/...</c>) answers <c>{"error":"..."}</c> instead, read as one <c>ERROR</c> message.
 /// </summary>
 internal static class SplunkErrorMapper
 {
@@ -58,7 +59,9 @@ internal static class SplunkErrorMapper
 			using var document = JsonDocument.Parse(body);
 			if (!document.RootElement.TryGetProperty("messages", out var messages) || messages.ValueKind != JsonValueKind.Array)
 			{
-				return [];
+				return ReadString(document.RootElement, "error") is { Length: > 0 } error
+					? [new SplunkMessage { Type = "ERROR", Text = error }]
+					: [];
 			}
 
 			return [.. messages.EnumerateArray()
