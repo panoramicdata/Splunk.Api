@@ -19,7 +19,7 @@ public class SplunkClientOptions
 {
 	/// <summary>
 	/// Absolute URL of the Splunk management port, e.g. <c>https://splunk.example.com:8089</c>. A path prefix (for a
-	/// reverse proxy) is kept: every endpoint is appended to it.
+	/// reverse proxy) is kept: every endpoint is appended to it. It must not contain credentials (<c>user:password@</c>).
 	/// </summary>
 	public string BaseUrl { get; set; } = string.Empty;
 
@@ -109,6 +109,12 @@ public class SplunkClientOptions
 			throw new ArgumentException("BaseUrl must be an absolute http or https URL.", nameof(BaseUrl));
 		}
 
+		// HttpClient never sends user info, and it would appear in logs and exception messages that show the URL.
+		if (baseUri.UserInfo.Length > 0)
+		{
+			throw new ArgumentException("BaseUrl must not contain credentials: set Token, or Username and Password.", nameof(BaseUrl));
+		}
+
 		ValidateCredentials();
 		_ = SplunkClient.NormalizeThumbprint(TrustedServerCertificateThumbprint);
 		ArgumentOutOfRangeException.ThrowIfNegative(MaxRetries);
@@ -134,7 +140,26 @@ public class SplunkClientOptions
 
 	/// <inheritdoc />
 	public override string ToString()
-		=> $"SplunkClientOptions {{ BaseUrl = {BaseUrl}, Token = {Mask(Token)}, Username = {Username}, Password = {Mask(Password)}, Namespace = {Namespace}, ReadOnly = {ReadOnly} }}";
+		=> $"SplunkClientOptions {{ BaseUrl = {MaskUserInfo(BaseUrl)}, Token = {Mask(Token)}, Username = {Username}, Password = {Mask(Password)}, Namespace = {Namespace}, ReadOnly = {ReadOnly} }}";
 
 	private static string Mask(string? secret) => string.IsNullOrEmpty(secret) ? "(none)" : "***";
+
+	/// <summary>
+	/// Masks any <c>user:password@</c> in a URL. Done on the text rather than a parsed <see cref="Uri"/>, since this must
+	/// also redact a URL that fails to parse (such as one whose password contains an unescaped <c>@</c>).
+	/// </summary>
+	private static string MaskUserInfo(string url)
+	{
+		var start = url.IndexOf("://", StringComparison.Ordinal);
+		if (start < 0)
+		{
+			return url;
+		}
+
+		start += 3;
+		var end = url.IndexOfAny(['/', '?', '#'], start);
+		var authority = end < 0 ? url[start..] : url[start..end];
+		var at = authority.LastIndexOf('@');
+		return at < 0 ? url : $"{url[..start]}***{url[(start + at)..]}";
+	}
 }
