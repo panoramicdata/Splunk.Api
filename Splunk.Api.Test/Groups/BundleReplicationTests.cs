@@ -56,27 +56,27 @@ public class BundleReplicationTests
 	[Fact]
 	public async Task GetConfigAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.BundleReplication.GetConfigAsync(ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/bundle/replication/config");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/bundle/replication/config");
 
 	[Fact]
 	public async Task ListCyclesAsync_SendsGetWithLatest()
 		=> (await RequestProbe.SendAsync((c, ct) => c.BundleReplication.ListCyclesAsync(true, ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/bundle/replication/cycles", "?latest=true&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/bundle/replication/cycles", "?latest=true&output_mode=json");
 
 	[Fact]
 	public async Task ListCyclesAsync_WithoutLatest_SendsNoParameter()
 		=> (await RequestProbe.SendAsync((c, ct) => c.BundleReplication.ListCyclesAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/bundle/replication/cycles");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/bundle/replication/cycles");
 
 	[Fact]
 	public async Task ListFilesAsync_SendsGetWithOptions()
 		=> (await RequestProbe.SendAsync((c, ct) => c.BundleReplication.ListFilesAsync(new ListOptions { Search = "x" }, ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/bundle-replication-files", "?search=x&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/bundle-replication-files", "?search=x&output_mode=json");
 
 	[Fact]
 	public async Task GetFileAsync_SendsGetWithForceListAll()
 		=> (await RequestProbe.SendAsync((c, ct) => c.BundleReplication.GetFileAsync("13134207368020721783", true, ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/bundle-replication-files/13134207368020721783", "?force_list_all=true&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/bundle-replication-files/13134207368020721783", "?force_list_all=true&output_mode=json");
 
 	[Fact]
 	public async Task GetConfigAsync_MapsEveryModelledField()

@@ -23,17 +23,17 @@ public class DeploymentServerConfigTests
 	[Fact]
 	public async Task PostAsync_SendsPostWithTheFields()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerConfig.PostAsync(new Dictionary<string, string?> { ["count"] = "1" }, ct)))
-			.ShouldBe(HttpMethod.Post, Path, body: "count=1");
+			.ShouldBeProbed(HttpMethod.Post, Path, body: "count=1");
 
 	[Fact]
 	public async Task ListUnsupportedAttributesAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerConfig.ListUnsupportedAttributesAsync(ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/attributesUnsupportedInUI");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/attributesUnsupportedInUI");
 
 	[Fact]
 	public async Task GetDisabledStatusAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerConfig.GetDisabledStatusAsync(ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/listIsDisabled");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/listIsDisabled");
 
 	[Fact]
 	public async Task PostAsync_MapsTheConfiguration()

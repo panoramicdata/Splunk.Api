@@ -44,7 +44,7 @@ public class FederatedProvidersTests
 	[Fact]
 	public async Task ListAsync_SendsGetWithOptions()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedProviders.ListAsync(new ListOptions { Count = 0 }, ct)))
-			.ShouldBe(HttpMethod.Get, Path, "?count=0&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, Path, "?count=0&output_mode=json");
 
 	[Fact]
 	public async Task CreateAsync_SendsPostWithTheProvider()
@@ -65,24 +65,24 @@ public class FederatedProvidersTests
 				Database = "db"
 			},
 			ct)))
-			.ShouldBe(HttpMethod.Post, Path, body:
+			.ShouldBeProbed(HttpMethod.Post, Path, body:
 				"name=remote1&type=splunk&mode=standard&hostPort=192.0.2.1%3A8089&serviceAccount=svc&password=p%26ss&appContext=search"
 				+ "&aws_account_id=123456789012&aws_glue_tables_allowlist=t1&aws_kms_keys_arn_allowlist=k1&aws_s3_paths_allowlist=s3%3A%2F%2Fb&database=db");
 
 	[Fact]
 	public async Task DisableAllAsync_SendsPostWithTheType()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedProviders.DisableAllAsync(new FederatedProviderBatchDisableRequest { Type = FederatedProviderType.AwsS3 }, ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/turnOffProvidersInBatch", body: "type=aws_s3");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/turnOffProvidersInBatch", body: "type=aws_s3");
 
 	[Fact]
 	public async Task DisableAllAsync_WithoutType_SendsAnEmptyForm()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedProviders.DisableAllAsync(new FederatedProviderBatchDisableRequest(), ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/turnOffProvidersInBatch", body: string.Empty);
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/turnOffProvidersInBatch", body: string.Empty);
 
 	[Fact]
 	public async Task GetAsync_SendsGetWithTheName()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedProviders.GetAsync("remote 1", ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/remote%201");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/remote%201");
 
 	[Fact]
 	public async Task UpdateAsync_SendsPostWithTheSetFields()
@@ -102,24 +102,24 @@ public class FederatedProvidersTests
 				AwsS3PathsAllowlist = "p"
 			},
 			ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/remote1", body:
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/remote1", body:
 				"appContext=search&hostPort=h%3A8089&serviceAccount=svc2&password=pw&fedSrchIndexesAllowed=idx%2A&useAppContextFromSearch=true"
 				+ "&aws_account_id=1&aws_glue_tables_allowlist=t&aws_kms_keys_arn_allowlist=k&aws_s3_paths_allowlist=p");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedProviders.DeleteAsync("remote1", ct)))
-			.ShouldBe(HttpMethod.Delete, $"{Path}/remote1");
+			.ShouldBeProbed(HttpMethod.Delete, $"{Path}/remote1");
 
 	[Fact]
 	public async Task DisableAsync_SendsPost()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedProviders.DisableAsync("remote1", ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/remote1/disable");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/remote1/disable");
 
 	[Fact]
 	public async Task EnableAsync_SendsPost()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedProviders.EnableAsync("remote1", ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/remote1/enable");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/remote1/enable");
 
 	[Fact]
 	public async Task GetAsync_MapsASplunkProvider()

@@ -40,7 +40,7 @@ internal static class RequestProbe
 	}
 
 	/// <summary>Asserts the request's method, path, query and form body.</summary>
-	public static void ShouldBe(this RecordedCall call, HttpMethod method, string path, string query = Json, string? body = null)
+	public static void ShouldBeProbed(this RecordedCall call, HttpMethod method, string path, string query = Json, string? body = null)
 	{
 		call.Method.Should().Be(method);
 		call.Uri.AbsolutePath.Should().Be(path);

@@ -93,32 +93,32 @@ public class TopologyTests
 	[Fact]
 	public async Task GetAsync_SendsGetWithoutOutputMode()
 		=> (await RequestProbe.SendAsync((c, ct) => c.Topology.GetAsync(ct), TopologyJson))
-			.ShouldBe(HttpMethod.Get, "/services/stack-explainer/v1/topology", string.Empty);
+			.ShouldBeProbed(HttpMethod.Get, "/services/stack-explainer/v1/topology", string.Empty);
 
 	[Fact]
 	public async Task GetWithUnmanagedActorsAsync_SendsTheFlagWithoutAValue()
 		=> (await RequestProbe.SendAsync((c, ct) => c.Topology.GetWithUnmanagedActorsAsync(ct), TopologyJson))
-			.ShouldBe(HttpMethod.Get, "/services/stack-explainer/v1/topology", "?include_unmanaged_actors");
+			.ShouldBeProbed(HttpMethod.Get, "/services/stack-explainer/v1/topology", "?include_unmanaged_actors");
 
 	[Fact]
 	public async Task GetNodeIdentityAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.Topology.GetNodeIdentityAsync(ct), NodeIdentityJson))
-			.ShouldBe(HttpMethod.Get, "/services/stack-explainer/v1/node-identity", string.Empty);
+			.ShouldBeProbed(HttpMethod.Get, "/services/stack-explainer/v1/node-identity", string.Empty);
 
 	[Fact]
 	public async Task GetRemoteNodeIdentityAsync_SendsGetWithTheGuid()
 		=> (await RequestProbe.SendAsync((c, ct) => c.Topology.GetRemoteNodeIdentityAsync(Guid1, ct), NodeIdentityJson))
-			.ShouldBe(HttpMethod.Get, $"/services/stack-explainer/v1/node-identity/{Guid1}", string.Empty);
+			.ShouldBeProbed(HttpMethod.Get, $"/services/stack-explainer/v1/node-identity/{Guid1}", string.Empty);
 
 	[Fact]
 	public async Task GetTrustedConnectionsAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.Topology.GetTrustedConnectionsAsync(ct), TrustedConnectionsJson))
-			.ShouldBe(HttpMethod.Get, "/services/stack-explainer/v1/trusted-connections", string.Empty);
+			.ShouldBeProbed(HttpMethod.Get, "/services/stack-explainer/v1/trusted-connections", string.Empty);
 
 	[Fact]
 	public async Task GetRemoteTrustedConnectionsAsync_SendsGetWithTheGuid()
 		=> (await RequestProbe.SendAsync((c, ct) => c.Topology.GetRemoteTrustedConnectionsAsync(Guid1, ct), TrustedConnectionsJson))
-			.ShouldBe(HttpMethod.Get, $"/services/stack-explainer/v1/trusted-connections/{Guid1}", string.Empty);
+			.ShouldBeProbed(HttpMethod.Get, $"/services/stack-explainer/v1/trusted-connections/{Guid1}", string.Empty);
 
 	[Fact]
 	public async Task GetAsync_MapsEveryModelledField()

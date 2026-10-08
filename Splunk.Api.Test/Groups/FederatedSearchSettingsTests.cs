@@ -32,7 +32,7 @@ public class FederatedSearchSettingsTests
 	[Fact]
 	public async Task GetAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedSearchSettings.GetAsync(ct)))
-			.ShouldBe(HttpMethod.Get, Path);
+			.ShouldBeProbed(HttpMethod.Get, Path);
 
 	[Fact]
 	public async Task UpdateAsync_SendsPostWithTheSetFields()
@@ -54,7 +54,7 @@ public class FederatedSearchSettingsTests
 				VerboseMode = true
 			},
 			ct)))
-			.ShouldBe(HttpMethod.Post, Path, body:
+			.ShouldBeProbed(HttpMethod.Post, Path, body:
 				"disabled=false&transparent_mode=false&allowIndexBasedProviderFiltering=true&controlCommandsFeatureEnabled=true"
 				+ "&controlCommandsMaxThreads=6&controlCommandsMaxTimeThreshold=7&heartbeatEnabled=true&max_preview_generation_duration=30"
 				+ "&needs_consent=false&proxyBundlesTTL=3600&remoteEventsDownloadRetryCountMax=10&remoteEventsDownloadRetryTimeoutMs=500"

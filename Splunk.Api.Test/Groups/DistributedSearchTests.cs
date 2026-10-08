@@ -50,19 +50,19 @@ public class DistributedSearchTests
 	[Fact]
 	public async Task GetConfigAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DistributedSearch.GetConfigAsync(ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/config");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/config");
 
 	[Fact]
 	public async Task ListPeersAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DistributedSearch.ListPeersAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/peers");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/peers");
 
 	[Fact]
 	public async Task AddPeerAsync_SendsPostWithThePeer()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DistributedSearch.AddPeerAsync(
 			new DistributedPeerCreateRequest { Name = "idx01:8089", RemoteUsername = "admin", RemotePassword = "p@ss" },
 			ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/peers", body: "name=idx01%3A8089&remoteUsername=admin&remotePassword=p%40ss");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/peers", body: "name=idx01%3A8089&remoteUsername=admin&remotePassword=p%40ss");
 
 	[Fact]
 	public async Task UpdatePeerAsync_SendsPostWithTheCredentials()
@@ -70,7 +70,7 @@ public class DistributedSearchTests
 			"idx01:8089",
 			new DistributedPeerUpdateRequest { RemoteUsername = "admin", RemotePassword = "pw" },
 			ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/peers/idx01%3A8089", body: "remoteUsername=admin&remotePassword=pw");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/peers/idx01%3A8089", body: "remoteUsername=admin&remotePassword=pw");
 
 	[Fact]
 	public async Task GetConfigAsync_MapsEveryModelledField()

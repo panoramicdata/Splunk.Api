@@ -66,17 +66,17 @@ public class DeploymentServerClientsTests
 				ServerClasses = "sc1,sc2"
 			},
 			ct)))
-			.ShouldBe(HttpMethod.Get, Path, $"?action=phonehome&{FilterQuery}&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, Path, $"?action=phonehome&{FilterQuery}&output_mode=json");
 
 	[Fact]
 	public async Task CountByMachineTypeAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerClients.CountByMachineTypeAsync(ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/countClients_by_machineType");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/countClients_by_machineType");
 
 	[Fact]
 	public async Task CountRecentDownloadsAsync_SendsGetWithMaxAgeSecs()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerClients.CountRecentDownloadsAsync(3600, ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/countRecentDownloads", "?maxAgeSecs=3600&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/countRecentDownloads", "?maxAgeSecs=3600&output_mode=json");
 
 	[Fact]
 	public async Task GetAsync_SendsGetWithTheFilters()
@@ -92,12 +92,12 @@ public class DeploymentServerClientsTests
 				ServerClasses = "sc1,sc2"
 			},
 			ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/dc95537d", $"?{FilterQuery}&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/dc95537d", $"?{FilterQuery}&output_mode=json");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerClients.DeleteAsync("dc95537d", ct)))
-			.ShouldBe(HttpMethod.Delete, $"{Path}/dc95537d");
+			.ShouldBeProbed(HttpMethod.Delete, $"{Path}/dc95537d");
 
 	[Fact]
 	public async Task GetAsync_MapsEveryModelledField()

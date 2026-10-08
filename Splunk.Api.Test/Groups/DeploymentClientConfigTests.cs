@@ -21,27 +21,27 @@ public class DeploymentClientConfigTests
 	[Fact]
 	public async Task ListAsync_SendsGetWithOptions()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentClientConfig.ListAsync(new ListOptions { Offset = 1 }, ct)))
-			.ShouldBe(HttpMethod.Get, Path, "?offset=1&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, Path, "?offset=1&output_mode=json");
 
 	[Fact]
 	public async Task GetAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentClientConfig.GetAsync(ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/config");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/config");
 
 	[Fact]
 	public async Task GetDisabledStatusAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentClientConfig.GetDisabledStatusAsync(ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/config/listIsDisabled");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/config/listIsDisabled");
 
 	[Fact]
 	public async Task ReloadConfigAsync_SendsPost()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentClientConfig.ReloadConfigAsync(ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/config/reload");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/config/reload");
 
 	[Fact]
 	public async Task ReloadAsync_SendsPostWithTheName()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentClientConfig.ReloadAsync("deployment-client", ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/deployment-client/reload");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/deployment-client/reload");
 
 	[Fact]
 	public async Task GetAsync_MapsEveryModelledField()

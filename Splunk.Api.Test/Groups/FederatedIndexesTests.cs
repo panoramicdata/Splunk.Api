@@ -47,7 +47,7 @@ public class FederatedIndexesTests
 	[Fact]
 	public async Task ListAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedIndexes.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, Path);
+			.ShouldBeProbed(HttpMethod.Get, Path);
 
 	[Fact]
 	public async Task CreateAsync_SendsPostWithTheIndex()
@@ -66,32 +66,32 @@ public class FederatedIndexesTests
 				PartitionTimeZone = TimeFields.PartitionTimeZone
 			},
 			ct)))
-			.ShouldBe(HttpMethod.Post, Path, body: $"name={EscapedName}&federated.provider=remote1&federated.dataset=index%3Amain{TimeFieldsBody}");
+			.ShouldBeProbed(HttpMethod.Post, Path, body: $"name={EscapedName}&federated.provider=remote1&federated.dataset=index%3Amain{TimeFieldsBody}");
 
 	[Fact]
 	public async Task GetAsync_SendsGetWithTheEscapedName()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedIndexes.GetAsync(Name, ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/{EscapedName}");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/{EscapedName}");
 
 	[Fact]
 	public async Task UpdateAsync_SendsPostWithTheSetFields()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedIndexes.UpdateAsync(Name, TimeFields, ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/{EscapedName}", body: $"federated.dataset=index%3Aother{TimeFieldsBody}");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/{EscapedName}", body: $"federated.dataset=index%3Aother{TimeFieldsBody}");
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedIndexes.DeleteAsync(Name, ct)))
-			.ShouldBe(HttpMethod.Delete, $"{Path}/{EscapedName}");
+			.ShouldBeProbed(HttpMethod.Delete, $"{Path}/{EscapedName}");
 
 	[Fact]
 	public async Task DisableAsync_SendsPost()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedIndexes.DisableAsync(Name, ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/{EscapedName}/disable");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/{EscapedName}/disable");
 
 	[Fact]
 	public async Task EnableAsync_SendsPost()
 		=> (await RequestProbe.SendAsync((c, ct) => c.FederatedIndexes.EnableAsync(Name, ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/{EscapedName}/enable");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/{EscapedName}/enable");
 
 	[Fact]
 	public async Task GetAsync_MapsEveryModelledField()

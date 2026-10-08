@@ -37,12 +37,12 @@ public class DeploymentServerApplicationsTests
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerApplications.ListAsync(
 			new DeploymentApplicationListOptions { ClientId = "abc", HasDeploymentError = true, Count = 5 },
 			ct)))
-			.ShouldBe(HttpMethod.Get, Path, "?clientId=abc&hasDeploymentError=true&count=5&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, Path, "?clientId=abc&hasDeploymentError=true&count=5&output_mode=json");
 
 	[Fact]
 	public async Task GetAsync_SendsGetWithTheName()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerApplications.GetAsync("app1", ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/app1");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/app1");
 
 	[Fact]
 	public async Task UpdateAsync_SendsPostWithTheSetFields()
@@ -65,7 +65,7 @@ public class DeploymentServerApplicationsTests
 				AdditionalParameters = { ["whitelist.0"] = "web*" }
 			},
 			ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/app1", body:
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/app1", body:
 				"serverclass=sc_new&deinstall=false&unmap=false&continueMatching=true&filterType=blacklist&machineTypesFilter=linux-%2A"
 				+ "&repositoryLocation=%2Frepo&restartSplunkWeb=false&restartSplunkd=true&stateOnClient=disabled&targetRepositoryLocation=%2Fapps"
 				+ "&tmpFolder=%2Ftmp&whitelist.0=web%2A");

@@ -52,7 +52,7 @@ public class DeploymentServerClassesTests
 	[Fact]
 	public async Task ListAsync_SendsGet()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerClasses.ListAsync(null, ct)))
-			.ShouldBe(HttpMethod.Get, Path);
+			.ShouldBeProbed(HttpMethod.Get, Path);
 
 	[Fact]
 	public async Task CreateAsync_SendsPostWithTheServerClass()
@@ -76,28 +76,28 @@ public class DeploymentServerClassesTests
 			},
 			ct));
 
-		call.ShouldBe(HttpMethod.Post, Path, body: $"name=sc_web&{SettingsBody}");
+		call.ShouldBeProbed(HttpMethod.Post, Path, body: $"name=sc_web&{SettingsBody}");
 	}
 
 	[Fact]
 	public async Task RenameAsync_SendsPostWithBothNames()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerClasses.RenameAsync(new DeploymentServerClassRenameRequest { OldName = "a", NewName = "b" }, ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/rename", body: "oldName=a&newName=b");
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/rename", body: "oldName=a&newName=b");
 
 	[Fact]
 	public async Task GetAsync_SendsGetWithTheFilter()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerClasses.GetAsync("sc_web", new DeploymentServerClassFilter { ClientId = "abc", HasDeploymentError = true }, ct)))
-			.ShouldBe(HttpMethod.Get, $"{Path}/sc_web", "?clientId=abc&hasDeploymentError=true&output_mode=json");
+			.ShouldBeProbed(HttpMethod.Get, $"{Path}/sc_web", "?clientId=abc&hasDeploymentError=true&output_mode=json");
 
 	[Fact]
 	public async Task UpdateAsync_SendsPostWithTheSetFields()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerClasses.UpdateAsync("sc_web", Settings, ct)))
-			.ShouldBe(HttpMethod.Post, $"{Path}/sc_web", body: SettingsBody);
+			.ShouldBeProbed(HttpMethod.Post, $"{Path}/sc_web", body: SettingsBody);
 
 	[Fact]
 	public async Task DeleteAsync_SendsDelete()
 		=> (await RequestProbe.SendAsync((c, ct) => c.DeploymentServerClasses.DeleteAsync("sc_web", ct)))
-			.ShouldBe(HttpMethod.Delete, $"{Path}/sc_web");
+			.ShouldBeProbed(HttpMethod.Delete, $"{Path}/sc_web");
 
 	[Fact]
 	public async Task GetAsync_MapsEveryModelledField()
