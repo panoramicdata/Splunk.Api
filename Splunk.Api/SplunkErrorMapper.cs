@@ -76,7 +76,8 @@ internal static class SplunkErrorMapper
 		try
 		{
 			var document = XDocument.Parse(body);
-			return [.. document.Descendants("msg")
+			// By local name: Atom-wrapped responses put the messages in the Splunk namespace (s:msg).
+			return [.. document.Descendants().Where(e => e.Name.LocalName == "msg")
 				.Select(m => new SplunkMessage { Type = (string?)m.Attribute("type") ?? string.Empty, Text = m.Value.Trim() })];
 		}
 		catch (XmlException)
@@ -96,9 +97,9 @@ internal static class SplunkErrorMapper
 		{
 			return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 		}
-		catch (InvalidOperationException)
+		catch (Exception exception) when (exception is InvalidOperationException or HttpRequestException or IOException)
 		{
-			// Unsupported charset in Content-Type: the body is unreadable, use the fallback message.
+			// An unsupported charset in Content-Type, or a connection lost while reading: report the status, not the read.
 			return string.Empty;
 		}
 	}
