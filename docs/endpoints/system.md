@@ -6,20 +6,20 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 
 | Method | Path | Client method | Test |
 |---|---|---|---|
-| GET | `messages` |  |  |
-| POST | `messages` |  |  |
-| GET | `messages/{name}` |  |  |
-| DELETE | `messages/{name}` |  |  |
-| GET | `server/control` |  |  |
-| POST | `server/control/restart` |  |  |
-| POST | `server/control/restart_webui` |  |  |
-| POST | `server/httpsettings/proxysettings` |  |  |
-| GET | `server/httpsettings/proxysettings/proxyConfig` |  |  |
-| POST | `server/httpsettings/proxysettings/proxyConfig` |  |  |
-| DELETE | `server/httpsettings/proxysettings/proxyConfig` |  |  |
-| GET | `server/logger` |  |  |
-| GET | `server/logger/{name}` |  |  |
-| POST | `server/logger/{name}` |  |  |
-| GET | `server/roles` |  |  |
-| POST | `server/security/rotate-splunk-secret` |  |  |
-| GET | `server/settings` |  |  |
+| GET | `messages` | IMessages.ListAsync | MessagesTests.ListAsync_SendsGet |
+| POST | `messages` | IMessages.CreateAsync | MessagesTests.CreateAsync_PostsEveryField |
+| GET | `messages/{name}` | IMessages.GetAsync | MessagesTests.GetAsync_SendsGet |
+| DELETE | `messages/{name}` | IMessages.DeleteAsync | MessagesTests.DeleteAsync_SendsDelete |
+| GET | `server/control` | IServerControl.ListAsync | ServerControlTests.ListAsync_SendsGet |
+| POST | `server/control/restart` | IServerControl.RestartAsync | ServerControlTests.RestartAsync_PostsWithNoBody |
+| POST | `server/control/restart_webui` | IServerControl.RestartWebUIAsync | ServerControlTests.RestartWebUIAsync_PostsWithNoBody |
+| POST | `server/httpsettings/proxysettings` | IProxySettings.CreateAsync | ProxySettingsTests.CreateAsync_PostsTheNameAndProxies |
+| GET | `server/httpsettings/proxysettings/proxyConfig` | IProxySettings.GetAsync | ProxySettingsTests.GetAsync_SendsGet |
+| POST | `server/httpsettings/proxysettings/proxyConfig` | IProxySettings.UpdateAsync | ProxySettingsTests.UpdateAsync_PostsTheProxies |
+| DELETE | `server/httpsettings/proxysettings/proxyConfig` | IProxySettings.DeleteAsync | ProxySettingsTests.DeleteAsync_SendsDelete |
+| GET | `server/logger` | ILoggers.ListAsync | LoggersTests.ListAsync_SendsGet |
+| GET | `server/logger/{name}` | ILoggers.GetAsync | LoggersTests.GetAsync_SendsGet |
+| POST | `server/logger/{name}` | ILoggers.UpdateAsync | LoggersTests.UpdateAsync_PostsTheLevel |
+| GET | `server/roles` | IServerRoles.GetAsync | ServerRolesTests.GetAsync_SendsGet |
+| POST | `server/security/rotate-splunk-secret` | IServerSecurity.RotateSplunkSecretAsync | ServerSecurityTests.RotateSplunkSecretAsync_PostsWithNoBody |
+| GET | `server/settings` | IServerSettings.GetAsync | ServerSettingsTests.GetAsync_SendsGet |
