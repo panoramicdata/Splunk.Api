@@ -7,19 +7,32 @@ namespace Splunk.Api.Handlers;
 /// Applies the per-attempt timeout and retries transient failures. A request is retried (up to
 /// <see cref="SplunkClientOptions.MaxRetries"/> times, honouring <c>Retry-After</c>, else exponential back-off) only when its
 /// body is replayable and either the status is 429 or 503, or the status is another 5xx and the verb is idempotent.
-/// Only the method and path are logged, never the query string. The options are copied at construction.
+/// Only the method and path are logged, never the query string. The settings are copied at construction.
 /// </summary>
-internal sealed class RetryHandler(SplunkClientOptions options) : DelegatingHandler
+/// <param name="logger">The logger, if any.</param>
+/// <param name="timeout">The per-attempt timeout.</param>
+/// <param name="maxRetries">The maximum number of retries.</param>
+/// <param name="retryBaseDelay">The initial back-off, doubled on each retry.</param>
+/// <param name="maxRetryDelay">The longest single wait before a retry.</param>
+internal sealed class RetryHandler(ILogger? logger, TimeSpan timeout, int maxRetries, TimeSpan retryBaseDelay, TimeSpan maxRetryDelay)
+	: DelegatingHandler
 {
 	private static readonly HashSet<HttpMethod> IdempotentMethods =
 		[HttpMethod.Get, HttpMethod.Head, HttpMethod.Put, HttpMethod.Delete, HttpMethod.Options, HttpMethod.Trace];
 
-	// The options are read once, here: changing the options object later does not affect a client that already exists.
-	private readonly ILogger? _logger = options.Logger;
-	private readonly TimeSpan _timeout = options.Timeout;
-	private readonly int _maxRetries = options.MaxRetries;
-	private readonly TimeSpan _retryBaseDelay = options.RetryBaseDelay;
-	private readonly TimeSpan _maxRetryDelay = options.MaxRetryDelay;
+	// The settings are read once, here: changing the options object later does not affect a client that already exists.
+	private readonly ILogger? _logger = logger;
+	private readonly TimeSpan _timeout = timeout;
+	private readonly int _maxRetries = maxRetries;
+	private readonly TimeSpan _retryBaseDelay = retryBaseDelay;
+	private readonly TimeSpan _maxRetryDelay = maxRetryDelay;
+
+	/// <summary>Creates a handler with the retry and timeout settings of <paramref name="options"/>.</summary>
+	/// <param name="options">The client options.</param>
+	public RetryHandler(SplunkClientOptions options)
+		: this(options.Logger, options.Timeout, options.MaxRetries, options.RetryBaseDelay, options.MaxRetryDelay)
+	{
+	}
 
 	internal Func<TimeSpan, CancellationToken, Task> Delay { get; set; } = Task.Delay;
 

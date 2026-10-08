@@ -141,12 +141,23 @@ public sealed partial class SplunkClient : IDisposable
 	internal static HttpClientHandler CreateTransport(SplunkClientOptions options)
 	{
 		ArgumentNullException.ThrowIfNull(options);
+		return CreateTransport(options.ServerCertificateValidationCallback, options.TrustedServerCertificateThumbprint);
+	}
+
+	/// <summary>
+	/// Creates the network handler: <paramref name="validationCallback"/> when set, else trust for the certificate with
+	/// <paramref name="trustedThumbprint"/> (SHA-256) on top of normal validation.
+	/// </summary>
+	internal static HttpClientHandler CreateTransport(
+		Func<HttpRequestMessage, System.Security.Cryptography.X509Certificates.X509Certificate2?, System.Security.Cryptography.X509Certificates.X509Chain?, System.Net.Security.SslPolicyErrors, bool>? validationCallback,
+		string? trustedThumbprint)
+	{
 		var handler = new HttpClientHandler();
-		if (options.ServerCertificateValidationCallback is { } callback)
+		if (validationCallback is { } callback)
 		{
 			handler.ServerCertificateCustomValidationCallback = callback;
 		}
-		else if (NormalizeThumbprint(options.TrustedServerCertificateThumbprint) is { } pinned)
+		else if (NormalizeThumbprint(trustedThumbprint) is { } pinned)
 		{
 			handler.ServerCertificateCustomValidationCallback = (_, certificate, _, errors)
 				=> errors == System.Net.Security.SslPolicyErrors.None
