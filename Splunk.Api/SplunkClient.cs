@@ -28,7 +28,7 @@ public sealed partial class SplunkClient : IDisposable
 
 	/// <summary>Creates a client.</summary>
 	/// <param name="options">Connection options.</param>
-	public SplunkClient(SplunkClientOptions options) : this(options, CreateTransport(options))
+	public SplunkClient(SplunkClientOptions options) : this(options, CreateTransport(Validated(options)))
 	{
 	}
 
@@ -43,9 +43,8 @@ public sealed partial class SplunkClient : IDisposable
 	/// <param name="innerHandler">The handler that sends requests to the network.</param>
 	public SplunkClient(SplunkClientOptions options, HttpMessageHandler innerHandler)
 	{
-		ArgumentNullException.ThrowIfNull(options);
 		ArgumentNullException.ThrowIfNull(innerHandler);
-		options.Validate();
+		Validated(options);
 		BaseAddress = CreateBaseAddress(options.BaseUrl);
 		_pipeline = CreatePipeline(options, BaseAddress, innerHandler);
 		_ownsPipeline = true;
@@ -109,6 +108,14 @@ public sealed partial class SplunkClient : IDisposable
 		{
 			_pipeline.Dispose();
 		}
+	}
+
+	// Validation comes before the transport is created, so invalid options do not leave an undisposed HttpClientHandler.
+	private static SplunkClientOptions Validated(SplunkClientOptions options)
+	{
+		ArgumentNullException.ThrowIfNull(options);
+		options.Validate();
+		return options;
 	}
 
 	private static Uri CreateBaseAddress(string baseUrl) => new(baseUrl.EndsWith('/') ? baseUrl : baseUrl + "/");
