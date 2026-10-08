@@ -23,7 +23,7 @@ public class FormEncoderTests
 		[JsonIgnore]
 		public string Ignored { get; init; } = "ignored";
 
-		public string WriteOnly { set => AdditionalParameters["write-only"] = value; }
+		public string NotPubliclyReadable { private get; init; } = "hidden";
 
 		public string this[int index] => "indexer";
 
