@@ -63,9 +63,9 @@ internal sealed class RetryHandler(SplunkClientOptions options) : DelegatingHand
 		{
 			return await base.SendAsync(request, attemptCts.Token).ConfigureAwait(false);
 		}
-		catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested && attemptCts.IsCancellationRequested)
+		catch (OperationCanceledException exception) when (!cancellationToken.IsCancellationRequested && attemptCts.IsCancellationRequested)
 		{
-			throw new TimeoutException($"Splunk did not respond within {_timeout}.");
+			throw new TimeoutException($"Splunk did not respond within {_timeout}.", exception);
 		}
 	}
 
