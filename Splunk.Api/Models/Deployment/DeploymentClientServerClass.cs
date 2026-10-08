@@ -11,19 +11,19 @@ public sealed class DeploymentClientServerClass
 	[JsonConverter(typeof(EpochSecondsConverter))]
 	public DateTimeOffset? LoadTime { get; init; }
 
+	/// <summary>The state apps get on the client.</summary>
+	[JsonPropertyName("stateOnClient")]
+	public DeploymentAppState? StateOnClient { get; init; }
+
 	/// <summary>Where the deployment server keeps the server class content.</summary>
 	[JsonPropertyName("repositoryLocation")]
 	public string? RepositoryLocation { get; init; }
-
-	/// <summary>Whether the client restarts Splunk Web when an app changes.</summary>
-	[JsonPropertyName("restartSplunkWeb")]
-	public bool? RestartSplunkWeb { get; init; }
 
 	/// <summary>Whether the client restarts splunkd when an app changes.</summary>
 	[JsonPropertyName("restartSplunkd")]
 	public bool? RestartSplunkd { get; init; }
 
-	/// <summary>The state apps get on the client.</summary>
-	[JsonPropertyName("stateOnClient")]
-	public DeploymentAppState? StateOnClient { get; init; }
+	/// <summary>Whether the client restarts Splunk Web when an app changes.</summary>
+	[JsonPropertyName("restartSplunkWeb")]
+	public bool? RestartSplunkWeb { get; init; }
 }
