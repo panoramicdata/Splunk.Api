@@ -6,92 +6,92 @@ Paths are relative to `services/` (or `servicesNS/{owner}/{app}/`). One row per 
 
 | Method | Path | Client method | Test |
 |---|---|---|---|
-| GET | `admin/Duo-MFA` |  |  |
-| POST | `admin/Duo-MFA` |  |  |
-| GET | `admin/Duo-MFA/{name}` |  |  |
-| POST | `admin/Duo-MFA/{name}` |  |  |
-| DELETE | `admin/Duo-MFA/{name}` |  |  |
-| GET | `admin/Rsa-MFA` |  |  |
-| POST | `admin/Rsa-MFA` |  |  |
-| DELETE | `admin/Rsa-MFA` |  |  |
-| POST | `admin/Rsa-MFA-config-verify/{rsa-stanza-name}` |  |  |
-| GET | `admin/LDAP-groups` |  |  |
-| POST | `admin/LDAP-groups` |  |  |
-| GET | `authentication/providers/LDAP` |  |  |
-| POST | `authentication/providers/LDAP` |  |  |
-| POST | `authentication/providers/LDAP/{LDAP_strategy_name}` |  |  |
-| DELETE | `authentication/providers/LDAP/{LDAP_strategy_name}` |  |  |
-| POST | `authentication/providers/LDAP/{LDAP_strategy_name}/enable` |  |  |
-| POST | `authentication/providers/LDAP/{LDAP_strategy_name}/disable` |  |  |
-| GET | `authentication/providers/oauth2` |  |  |
-| POST | `authentication/providers/oauth2` |  |  |
-| GET | `authentication/providers/oauth2/{name}` |  |  |
-| POST | `authentication/providers/oauth2/{name}` |  |  |
-| DELETE | `authentication/providers/oauth2/{name}` |  |  |
-| POST | `admin/metrics-reload/_reload` |  |  |
-| GET | `admin/oauth2-groups` |  |  |
-| POST | `admin/oauth2-groups` |  |  |
-| GET | `admin/ProxySSO-auth` |  |  |
-| POST | `admin/ProxySSO-auth` |  |  |
-| GET | `admin/ProxySSO-auth/{proxy_name}` |  |  |
-| POST | `admin/ProxySSO-auth/{proxy_name}` |  |  |
-| DELETE | `admin/ProxySSO-auth/{proxy_name}` |  |  |
-| GET | `admin/ProxySSO-auth/{proxy_name}/disable` |  |  |
-| GET | `admin/ProxySSO-auth/{proxy_name}/enable` |  |  |
-| GET | `admin/ProxySSO-groups` |  |  |
-| POST | `admin/ProxySSO-groups` |  |  |
-| GET | `admin/ProxySSO-groups/{group_name}` |  |  |
-| POST | `admin/ProxySSO-groups/{group_name}` |  |  |
-| DELETE | `admin/ProxySSO-groups/{group_name}` |  |  |
-| GET | `admin/ProxySSO-user-role-map` |  |  |
-| POST | `admin/ProxySSO-user-role-map` |  |  |
-| GET | `admin/ProxySSO-user-role-map/{user_name}` |  |  |
-| DELETE | `admin/ProxySSO-user-role-map/{user_name}` |  |  |
-| POST | `admin/replicate-SAML-certs` |  |  |
-| GET | `admin/SAML-groups` |  |  |
-| POST | `admin/SAML-groups` |  |  |
-| DELETE | `admin/SAML-groups/{group_name}` |  |  |
-| GET | `admin/SAML-idp-metadata` |  |  |
-| GET | `admin/SAML-sp-metadata` |  |  |
-| GET | `admin/SAML-user-role-map` |  |  |
-| POST | `admin/SAML-user-role-map` |  |  |
-| DELETE | `admin/SAML-user-role-map` |  |  |
-| DELETE | `admin/SAML-user-role-map/{name}` |  |  |
-| GET | `authentication/providers/SAML` |  |  |
-| POST | `authentication/providers/SAML` |  |  |
-| GET | `authentication/providers/SAML/{stanza_name}` |  |  |
-| POST | `authentication/providers/SAML/{stanza_name}` |  |  |
-| POST | `authentication/providers/SAML/{stanza_name}/enable` |  |  |
-| POST | `authentication/providers/SAML/{stanza_name}/disable` |  |  |
-| POST | `auth/login` |  |  |
-| GET | `authentication/current-context` |  |  |
-| GET | `authentication/httpauth-tokens` |  |  |
-| GET | `authentication/httpauth-tokens/{name}` |  |  |
-| DELETE | `authentication/httpauth-tokens/{name}` |  |  |
-| GET | `authentication/users` |  |  |
-| POST | `authentication/users` |  |  |
-| GET | `authentication/users/{name}` |  |  |
-| POST | `authentication/users/{name}` |  |  |
-| DELETE | `authentication/users/{name}` |  |  |
-| GET | `authorization/capabilities` |  |  |
-| GET | `authorization/fieldfilters` |  |  |
-| POST | `authorization/fieldfilters` |  |  |
-| GET | `authorization/fieldfilters/{name}` |  |  |
-| POST | `authorization/fieldfilters/{name}` |  |  |
-| DELETE | `authorization/fieldfilters/{name}` |  |  |
-| GET | `authorization/grantable_capabilities` |  |  |
-| GET | `authorization/roles` |  |  |
-| POST | `authorization/roles` |  |  |
-| GET | `authorization/roles/{name}` |  |  |
-| POST | `authorization/roles/{name}` |  |  |
-| DELETE | `authorization/roles/{name}` |  |  |
-| GET | `authorization/tokens` |  |  |
-| POST | `authorization/tokens` |  |  |
-| POST | `authorization/tokens/{name}` |  |  |
-| DELETE | `authorization/tokens/{name}` |  |  |
-| POST | `oauth2/v1/token` |  |  |
-| GET | `storage/passwords` |  |  |
-| POST | `storage/passwords` |  |  |
-| GET | `storage/passwords/{name}` |  |  |
-| POST | `storage/passwords/{name}` |  |  |
-| DELETE | `storage/passwords/{name}` |  |  |
+| GET | `admin/Duo-MFA` | `IDuoMfa.ListAsync` | `DuoMfaTests.ListAsync_SendsGet` |
+| POST | `admin/Duo-MFA` | `IDuoMfa.CreateAsync` | `DuoMfaTests.CreateAsync_PostsTheConfiguration` |
+| GET | `admin/Duo-MFA/{name}` | `IDuoMfa.GetAsync` | `DuoMfaTests.GetAsync_SendsGetForTheName` |
+| POST | `admin/Duo-MFA/{name}` | `IDuoMfa.UpdateAsync` | `DuoMfaTests.UpdateAsync_PostsTheChanges` |
+| DELETE | `admin/Duo-MFA/{name}` | `IDuoMfa.DeleteAsync` | `DuoMfaTests.DeleteAsync_SendsDelete` |
+| GET | `admin/Rsa-MFA` | `IRsaMfa.ListAsync` | `RsaMfaTests.ListAsync_SendsGet` |
+| POST | `admin/Rsa-MFA` | `IRsaMfa.SaveAsync` | `RsaMfaTests.SaveAsync_PostsTheConfiguration` |
+| DELETE | `admin/Rsa-MFA` | `IRsaMfa.DeleteAsync` | `RsaMfaTests.DeleteAsync_SendsDeleteToTheCollection` |
+| POST | `admin/Rsa-MFA-config-verify/{rsa-stanza-name}` | `IRsaMfa.VerifyAsync` | `RsaMfaTests.VerifyAsync_PostsTheUserAndPasscode` |
+| GET | `admin/LDAP-groups` | `ILdapGroups.ListAsync` | `LdapGroupsTests.ListAsync_SendsTheFilters` |
+| POST | `admin/LDAP-groups` | `ILdapGroups.UpdateAsync` | `LdapGroupsTests.UpdateAsync_PostsTheMapping` |
+| GET | `authentication/providers/LDAP` | `ILdapStrategies.ListAsync` | `LdapStrategiesTests.ListAsync_SendsTheStrategyFilter` |
+| POST | `authentication/providers/LDAP` | `ILdapStrategies.CreateAsync` | `LdapStrategiesTests.CreateAsync_PostsTheStrategy` |
+| POST | `authentication/providers/LDAP/{LDAP_strategy_name}` | `ILdapStrategies.UpdateAsync` | `LdapStrategiesTests.UpdateAsync_PostsTheChanges` |
+| DELETE | `authentication/providers/LDAP/{LDAP_strategy_name}` | `ILdapStrategies.DeleteAsync` | `LdapStrategiesTests.DeleteAsync_SendsDelete` |
+| POST | `authentication/providers/LDAP/{LDAP_strategy_name}/enable` | `ILdapStrategies.EnableAsync` | `LdapStrategiesTests.EnableAsync_PostsToEnable` |
+| POST | `authentication/providers/LDAP/{LDAP_strategy_name}/disable` | `ILdapStrategies.DisableAsync` | `LdapStrategiesTests.DisableAsync_PostsToDisable` |
+| GET | `authentication/providers/oauth2` | `IOAuth2Providers.ListAsync` | `OAuth2ProvidersTests.ListAsync_SendsGet` |
+| POST | `authentication/providers/oauth2` | `IOAuth2Providers.CreateAsync` | `OAuth2ProvidersTests.CreateAsync_PostsTheConfiguration` |
+| GET | `authentication/providers/oauth2/{name}` | `IOAuth2Providers.GetAsync` | `OAuth2ProvidersTests.GetAsync_SendsGetForTheName` |
+| POST | `authentication/providers/oauth2/{name}` | `IOAuth2Providers.UpdateAsync` | `OAuth2ProvidersTests.UpdateAsync_PostsTheChanges` |
+| DELETE | `authentication/providers/oauth2/{name}` | `IOAuth2Providers.DeleteAsync` | `OAuth2ProvidersTests.DeleteAsync_SendsDelete` |
+| POST | `admin/metrics-reload/_reload` | `IMetricsProcessor.ReloadAsync` | `MetricsProcessorTests.ReloadAsync_PostsToReload` |
+| GET | `admin/oauth2-groups` | `IOAuth2Groups.ListAsync` | `OAuth2GroupsTests.ListAsync_SendsTheConfigFilter` |
+| POST | `admin/oauth2-groups` | `IOAuth2Groups.CreateAsync` | `OAuth2GroupsTests.CreateAsync_PostsTheMapping` |
+| GET | `admin/ProxySSO-auth` | `IProxySsoConfigurations.ListAsync` | `ProxySsoConfigurationsTests.ListAsync_SendsGet` |
+| POST | `admin/ProxySSO-auth` | `IProxySsoConfigurations.CreateAsync` | `ProxySsoConfigurationsTests.CreateAsync_PostsTheConfiguration` |
+| GET | `admin/ProxySSO-auth/{proxy_name}` | `IProxySsoConfigurations.GetAsync` | `ProxySsoConfigurationsTests.GetAsync_SendsGetForTheName` |
+| POST | `admin/ProxySSO-auth/{proxy_name}` | `IProxySsoConfigurations.UpdateAsync` | `ProxySsoConfigurationsTests.UpdateAsync_PostsTheChanges` |
+| DELETE | `admin/ProxySSO-auth/{proxy_name}` | `IProxySsoConfigurations.DeleteAsync` | `ProxySsoConfigurationsTests.DeleteAsync_SendsDelete` |
+| GET | `admin/ProxySSO-auth/{proxy_name}/disable` | `IProxySsoConfigurations.DisableAsync` | `ProxySsoConfigurationsTests.DisableAsync_SendsGetToDisable` |
+| GET | `admin/ProxySSO-auth/{proxy_name}/enable` | `IProxySsoConfigurations.EnableAsync` | `ProxySsoConfigurationsTests.EnableAsync_SendsGetToEnable` |
+| GET | `admin/ProxySSO-groups` | `IProxySsoGroups.ListAsync` | `ProxySsoGroupsTests.ListAsync_SendsGet` |
+| POST | `admin/ProxySSO-groups` | `IProxySsoGroups.CreateAsync` | `ProxySsoGroupsTests.CreateAsync_PostsTheMapping` |
+| GET | `admin/ProxySSO-groups/{group_name}` | `IProxySsoGroups.GetAsync` | `ProxySsoGroupsTests.GetAsync_SendsGetForTheName` |
+| POST | `admin/ProxySSO-groups/{group_name}` | `IProxySsoGroups.UpdateAsync` | `ProxySsoGroupsTests.UpdateAsync_PostsTheRoles` |
+| DELETE | `admin/ProxySSO-groups/{group_name}` | `IProxySsoGroups.DeleteAsync` | `ProxySsoGroupsTests.DeleteAsync_SendsDelete` |
+| GET | `admin/ProxySSO-user-role-map` | `IProxySsoUserRoleMaps.ListAsync` | `ProxySsoUserRoleMapsTests.ListAsync_SendsGet` |
+| POST | `admin/ProxySSO-user-role-map` | `IProxySsoUserRoleMaps.CreateAsync` | `ProxySsoUserRoleMapsTests.CreateAsync_PostsTheMapping` |
+| GET | `admin/ProxySSO-user-role-map/{user_name}` | `IProxySsoUserRoleMaps.GetAsync` | `ProxySsoUserRoleMapsTests.GetAsync_SendsGetForTheName` |
+| DELETE | `admin/ProxySSO-user-role-map/{user_name}` | `IProxySsoUserRoleMaps.DeleteAsync` | `ProxySsoUserRoleMapsTests.DeleteAsync_SendsDelete` |
+| POST | `admin/replicate-SAML-certs` | `ISamlMetadata.ReplicateCertificatesAsync` | `SamlMetadataTests.ReplicateCertificatesAsync_Posts` |
+| GET | `admin/SAML-groups` | `ISamlGroups.ListAsync` | `SamlGroupsTests.ListAsync_SendsGet` |
+| POST | `admin/SAML-groups` | `ISamlGroups.CreateAsync` | `SamlGroupsTests.CreateAsync_PostsTheMapping` |
+| DELETE | `admin/SAML-groups/{group_name}` | `ISamlGroups.DeleteAsync` | `SamlGroupsTests.DeleteAsync_SendsDeleteWithTheNameAsOneSegment` |
+| GET | `admin/SAML-idp-metadata` | `ISamlMetadata.GetIdentityProviderMetadataAsync` | `SamlMetadataTests.GetIdentityProviderMetadataAsync_SendsTheFile` |
+| GET | `admin/SAML-sp-metadata` | `ISamlMetadata.GetServiceProviderMetadataAsync` | `SamlMetadataTests.GetServiceProviderMetadataAsync_SendsGet` |
+| GET | `admin/SAML-user-role-map` | `ISamlUserRoleMaps.ListAsync` | `SamlUserRoleMapsTests.ListAsync_SendsGet` |
+| POST | `admin/SAML-user-role-map` | `ISamlUserRoleMaps.CreateAsync` | `SamlUserRoleMapsTests.CreateAsync_PostsTheUser` |
+| DELETE | `admin/SAML-user-role-map` | `ISamlUserRoleMaps.DeleteAllAsync` | `SamlUserRoleMapsTests.DeleteAllAsync_SendsDeleteToTheCollection` |
+| DELETE | `admin/SAML-user-role-map/{name}` | `ISamlUserRoleMaps.DeleteAsync` | `SamlUserRoleMapsTests.DeleteAsync_SendsDeleteForTheName` |
+| GET | `authentication/providers/SAML` | `ISamlProviders.ListAsync` | `SamlProvidersTests.ListAsync_SendsGet` |
+| POST | `authentication/providers/SAML` | `ISamlProviders.CreateAsync` | `SamlProvidersTests.CreateAsync_PostsTheConfiguration` |
+| GET | `authentication/providers/SAML/{stanza_name}` | `ISamlProviders.GetAsync` | `SamlProvidersTests.GetAsync_SendsGetForTheName` |
+| POST | `authentication/providers/SAML/{stanza_name}` | `ISamlProviders.UpdateAsync` | `SamlProvidersTests.UpdateAsync_PostsTheChanges` |
+| POST | `authentication/providers/SAML/{stanza_name}/enable` | `ISamlProviders.EnableAsync` | `SamlProvidersTests.EnableAsync_PostsToEnable` |
+| POST | `authentication/providers/SAML/{stanza_name}/disable` | `ISamlProviders.DisableAsync` | `SamlProvidersTests.DisableAsync_PostsToDisable` |
+| POST | `auth/login` | `ISessions.LoginAsync` | `SessionsTests.LoginAsync_PostsTheCredentials` |
+| GET | `authentication/current-context` | `ICurrentContext.GetAsync` | `CurrentContextTests.GetAsync_SendsGet` |
+| GET | `authentication/httpauth-tokens` | `ISessions.ListAsync` | `SessionsTests.ListAsync_SendsGet` |
+| GET | `authentication/httpauth-tokens/{name}` | `ISessions.GetAsync` | `SessionsTests.GetAsync_SendsGetForTheName` |
+| DELETE | `authentication/httpauth-tokens/{name}` | `ISessions.DeleteAsync` | `SessionsTests.DeleteAsync_SendsDelete` |
+| GET | `authentication/users` | `IUsers.ListAsync` | `UsersTests.ListAsync_SendsGet` |
+| POST | `authentication/users` | `IUsers.CreateAsync` | `UsersTests.CreateAsync_PostsTheUser` |
+| GET | `authentication/users/{name}` | `IUsers.GetAsync` | `UsersTests.GetAsync_SendsGetForTheName` |
+| POST | `authentication/users/{name}` | `IUsers.UpdateAsync` | `UsersTests.UpdateAsync_PostsTheChanges` |
+| DELETE | `authentication/users/{name}` | `IUsers.DeleteAsync` | `UsersTests.DeleteAsync_SendsDelete` |
+| GET | `authorization/capabilities` | `ICapabilities.ListAsync` | `CapabilitiesTests.ListAsync_SendsGet` |
+| GET | `authorization/fieldfilters` | `IFieldFilters.ListAsync` | `FieldFiltersTests.ListAsync_SendsGet` |
+| POST | `authorization/fieldfilters` | `IFieldFilters.CreateAsync` | `FieldFiltersTests.CreateAsync_PostsTheFilter` |
+| GET | `authorization/fieldfilters/{name}` | `IFieldFilters.GetAsync` | `FieldFiltersTests.GetAsync_SendsGetForTheName` |
+| POST | `authorization/fieldfilters/{name}` | `IFieldFilters.UpdateAsync` | `FieldFiltersTests.UpdateAsync_PostsTheChanges` |
+| DELETE | `authorization/fieldfilters/{name}` | `IFieldFilters.DeleteAsync` | `FieldFiltersTests.DeleteAsync_SendsDelete` |
+| GET | `authorization/grantable_capabilities` | `ICapabilities.ListGrantableAsync` | `CapabilitiesTests.ListGrantableAsync_SendsGet` |
+| GET | `authorization/roles` | `IRoles.ListAsync` | `RolesTests.ListAsync_SendsGet` |
+| POST | `authorization/roles` | `IRoles.CreateAsync` | `RolesTests.CreateAsync_PostsTheRole` |
+| GET | `authorization/roles/{name}` | `IRoles.GetAsync` | `RolesTests.GetAsync_SendsGetForTheName` |
+| POST | `authorization/roles/{name}` | `IRoles.UpdateAsync` | `RolesTests.UpdateAsync_PostsTheChanges` |
+| DELETE | `authorization/roles/{name}` | `IRoles.DeleteAsync` | `RolesTests.DeleteAsync_SendsDelete` |
+| GET | `authorization/tokens` | `IAuthenticationTokens.ListAsync` | `AuthenticationTokensTests.ListAsync_SendsTheFilters` |
+| POST | `authorization/tokens` | `IAuthenticationTokens.CreateAsync` | `AuthenticationTokensTests.CreateAsync_PostsTheToken` |
+| POST | `authorization/tokens/{name}` | `IAuthenticationTokens.UpdateStatusAsync` | `AuthenticationTokensTests.UpdateStatusAsync_PostsTheStatus` |
+| DELETE | `authorization/tokens/{name}` | `IAuthenticationTokens.DeleteAsync` | `AuthenticationTokensTests.DeleteAsync_SendsTheTokenId` |
+| POST | `oauth2/v1/token` | `IOAuth2Tokens.ExchangeAsync` | `OAuth2TokensTests.ExchangeAsync_PostsTheAssertionToTheRootPath` |
+| GET | `storage/passwords` | `IStoragePasswords.ListAsync` | `StoragePasswordsTests.ListAsync_SendsGet` |
+| POST | `storage/passwords` | `IStoragePasswords.CreateAsync` | `StoragePasswordsTests.CreateAsync_PostsTheCredential` |
+| GET | `storage/passwords/{name}` | `IStoragePasswords.GetAsync` | `StoragePasswordsTests.GetAsync_EscapesTheColonsOfTheName` |
+| POST | `storage/passwords/{name}` | `IStoragePasswords.UpdateAsync` | `StoragePasswordsTests.UpdateAsync_PostsTheNewPassword` |
+| DELETE | `storage/passwords/{name}` | `IStoragePasswords.DeleteAsync` | `StoragePasswordsTests.DeleteAsync_SendsDelete` |
