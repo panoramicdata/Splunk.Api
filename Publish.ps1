@@ -38,7 +38,7 @@ if (-not $SkipPublishVerification) {
 		exit 1
 	}
 
-	gh auth status 2>&1 | Out-Null
+	gh auth token 2>&1 | Out-Null
 	if ($LASTEXITCODE -ne 0) {
 		Write-Error "The GitHub CLI is not authenticated. Run 'gh auth login', or re-run with -SkipPublishVerification to publish without verification."
 		exit 1
