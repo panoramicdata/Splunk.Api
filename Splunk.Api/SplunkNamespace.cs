@@ -20,14 +20,15 @@ public sealed record SplunkNamespace(string Owner, string App)
 	public static SplunkNamespace Shared(string app) => new("nobody", app);
 
 	/// <summary>The path prefix this namespace selects, with each part escaped as one segment.</summary>
-	internal string PathPrefix
+	internal string PathPrefix => $"servicesNS/{Segment(Owner, nameof(Owner))}/{Segment(App, nameof(App))}/";
+
+	private static string Segment(string value, string name)
 	{
-		get
-		{
-			ArgumentException.ThrowIfNullOrWhiteSpace(Owner);
-			ArgumentException.ThrowIfNullOrWhiteSpace(App);
-			return $"servicesNS/{Uri.EscapeDataString(Owner)}/{Uri.EscapeDataString(App)}/";
-		}
+		ArgumentException.ThrowIfNullOrWhiteSpace(value, name);
+		// EscapeDataString leaves dots alone, and Uri removes "." and ".." segments, which would leave servicesNS.
+		return value is "." or ".."
+			? throw new ArgumentException($"The namespace {name} cannot be \"{value}\".", name)
+			: Uri.EscapeDataString(value);
 	}
 
 	/// <inheritdoc />
