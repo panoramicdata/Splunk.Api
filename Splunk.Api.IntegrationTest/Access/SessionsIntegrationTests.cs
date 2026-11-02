@@ -25,7 +25,7 @@ public class SessionsIntegrationTests(SplunkFixture fixture)
 	public async Task LoginAsync_IsAllowedByAReadOnlyClient()
 	{
 		var credentials = fixture.CreateOptions();
-		using var client = new SplunkClient(fixture.CreateOptions(o => o.ReadOnly = true));
+		using var client = new SplunkClient(fixture.CreateOptions(o => o.IsReadOnly = true));
 
 		var login = await client.Sessions.LoginAsync(new LoginRequest { Username = credentials.Username!, Password = credentials.Password!, Cookie = true }, TestContext.Current.CancellationToken);
 

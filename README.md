@@ -166,7 +166,7 @@ Batches go in one request; indexer acknowledgement is supported through `Channel
 
 ## Read-only mode
 
-`ReadOnly = true` makes the client refuse, before anything is sent, every request that could change Splunk: any DELETE,
+`IsReadOnly = true` makes the client refuse, before anything is sent, every request that could change Splunk: any DELETE,
 and any POST other than logging in and running, controlling or parsing searches. It raises `SplunkReadOnlyException`.
 It cannot police the SPL inside a search (`| delete`, `| outputlookup`), so use a Splunk role without those capabilities
 for a truly read-only identity.
