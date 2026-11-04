@@ -70,6 +70,18 @@ public class OptionsTests
 		act.Should().NotThrow();
 	}
 
+#pragma warning disable CS0618 // The obsolete alias is under test
+	[Fact]
+	public void ReadOnlyAlias_ReadsAndWritesIsReadOnly()
+	{
+		var options = new SplunkClientOptions { ReadOnly = true };
+
+		options.IsReadOnly.Should().BeTrue();
+		options.IsReadOnly = false;
+		options.ReadOnly.Should().BeFalse();
+	}
+#pragma warning restore CS0618
+
 	[Fact]
 	public void Defaults_AreDocumentedValues()
 	{
@@ -80,7 +92,7 @@ public class OptionsTests
 		options.MaxRetries.Should().Be(3);
 		options.RetryBaseDelay.Should().Be(TimeSpan.FromSeconds(1));
 		options.MaxRetryDelay.Should().Be(TimeSpan.FromSeconds(30));
-		options.ReadOnly.Should().BeFalse();
+		options.IsReadOnly.Should().BeFalse();
 		options.UseBasicAuthentication.Should().BeFalse();
 		options.Namespace.Should().BeNull();
 		options.Logger.Should().BeNull();
@@ -109,7 +121,7 @@ public class OptionsTests
 			Username = "admin",
 			Password = "the-password",
 			Namespace = SplunkNamespace.Shared("search"),
-			ReadOnly = true
+			IsReadOnly = true
 		};
 
 		options.ToString().Should().Be(

@@ -50,7 +50,17 @@ public class SplunkClientOptions : SplunkConnectionOptions
 	/// This guards the REST surface, not the SPL inside a search: a search that runs <c>| delete</c>, <c>| outputlookup</c>
 	/// or <c>| collect</c> still runs. Use a Splunk role without those capabilities for a truly read-only identity.
 	/// </remarks>
-	public bool ReadOnly { get; set; }
+	public bool IsReadOnly { get; set; }
+
+	/// <summary>
+	/// Use <see cref="IsReadOnly"/>.
+	/// </summary>
+	[Obsolete("Use IsReadOnly")]
+	public bool ReadOnly
+	{
+		get => IsReadOnly;
+		set => IsReadOnly = value;
+	}
 
 	internal AuthenticationKind AuthenticationKind
 		=> !string.IsNullOrWhiteSpace(Token)
@@ -98,7 +108,7 @@ public class SplunkClientOptions : SplunkConnectionOptions
 
 	/// <inheritdoc />
 	public override string ToString()
-		=> $"SplunkClientOptions {{ BaseUrl = {MaskUserInfo(BaseUrl)}, Token = {Mask(Token)}, Username = {Username}, Password = {Mask(Password)}, Namespace = {Namespace}, ReadOnly = {ReadOnly} }}";
+		=> $"SplunkClientOptions {{ BaseUrl = {MaskUserInfo(BaseUrl)}, Token = {Mask(Token)}, Username = {Username}, Password = {Mask(Password)}, Namespace = {Namespace}, ReadOnly = {IsReadOnly} }}";
 
 	private static string Mask(string? secret) => string.IsNullOrEmpty(secret) ? "(none)" : "***";
 

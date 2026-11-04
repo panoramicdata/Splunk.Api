@@ -57,7 +57,7 @@ public class SessionsTests
 			o.Token = null;
 			o.Username = "admin";
 			o.Password = "client-password";
-			o.ReadOnly = true;
+			o.IsReadOnly = true;
 		});
 
 		var login = await client.Sessions.LoginAsync(new LoginRequest { Username = "other", Password = "pw" }, TestContext.Current.CancellationToken);

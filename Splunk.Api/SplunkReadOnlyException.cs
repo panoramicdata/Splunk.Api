@@ -1,7 +1,7 @@
 namespace Splunk.Api;
 
 /// <summary>
-/// Raised, before anything is sent, when a client created with <see cref="SplunkClientOptions.ReadOnly"/> is asked to
+/// Raised, before anything is sent, when a client created with <see cref="SplunkClientOptions.IsReadOnly"/> is asked to
 /// make a request that could change Splunk.
 /// </summary>
 /// <param name="method">The refused HTTP method.</param>

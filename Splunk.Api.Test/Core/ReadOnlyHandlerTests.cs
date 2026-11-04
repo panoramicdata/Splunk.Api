@@ -76,10 +76,10 @@ public class ReadOnlyHandlerTests
 	}
 
 	[Fact]
-	public async Task Client_ReadOnly_RefusesBeforeSending()
+	public async Task Client_IsReadOnly_RefusesBeforeSending()
 	{
 		var stub = new StubHandler();
-		using var client = TestClient.Create(stub, o => o.ReadOnly = true);
+		using var client = TestClient.Create(stub, o => o.IsReadOnly = true);
 		var probe = client.For<IProbe>();
 
 		var act = () => probe.DeleteAsync("services/saved/searches/x", TestContext.Current.CancellationToken);
@@ -90,11 +90,11 @@ public class ReadOnlyHandlerTests
 	}
 
 	[Fact]
-	public async Task Client_ReadOnly_SeesTheNamespacedPath()
+	public async Task Client_IsReadOnly_SeesTheNamespacedPath()
 	{
 		var stub = new StubHandler();
 		stub.Enqueue(HttpStatusCode.Created);
-		using var client = TestClient.Create(stub, o => (o.ReadOnly, o.Namespace) = (true, SplunkNamespace.Shared("search")));
+		using var client = TestClient.Create(stub, o => (o.IsReadOnly, o.Namespace) = (true, SplunkNamespace.Shared("search")));
 		var probe = client.For<IProbe>();
 
 		await probe.PostAsync("services/search/v2/jobs", new Dictionary<string, string?> { ["search"] = "search *" }, TestContext.Current.CancellationToken);

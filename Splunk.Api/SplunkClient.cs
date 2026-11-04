@@ -133,7 +133,7 @@ public sealed partial class SplunkClient : IDisposable
 		HttpMessageHandler handler = new RetryHandler(options) { InnerHandler = innerHandler };
 		handler = new AuthenticationHandler(options, baseAddress) { InnerHandler = handler };
 		handler = new OutputModeHandler { InnerHandler = handler };
-		if (options.ReadOnly)
+		if (options.IsReadOnly)
 		{
 			handler = new ReadOnlyHandler(baseAddress) { InnerHandler = handler };
 		}
