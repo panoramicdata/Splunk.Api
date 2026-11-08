@@ -85,16 +85,7 @@ public class TolerantConverterTests
 	public void String_WritesAJsonString()
 		=> Json.Write(new TolerantStringConverter(), "a\"b").Should().Be("\"a\\u0022b\"");
 
-	private sealed class Shapes
-	{
-		public string? Name { get; init; }
-
-		public bool Flag { get; init; }
-
-		public bool? Maybe { get; init; }
-
-		public IReadOnlyDictionary<string, string> Links { get; init; } = new Dictionary<string, string>();
-	}
+	private sealed record Shapes(string? Name, bool Flag, bool? Maybe, IReadOnlyDictionary<string, string> Links);
 
 	[Fact]
 	public void Options_ReadLooseShapesInAModel()
