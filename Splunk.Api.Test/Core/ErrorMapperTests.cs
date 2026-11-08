@@ -46,8 +46,7 @@ public class ErrorMapperTests
 		// An ordinary string, not a raw one: Lizard misreads the quotes of a raw literal that holds a URL.
 		var exception = await MapAsync(
 			"<?xml version=\"1.0\"?>\n<response xmlns:s=\"http://dev.splunk.com/ns/rest\"><messages><msg type=\"INFO\">note</msg>"
-				+ "<s:msg type=\"ERROR\">\n  Unknown search command 'x'.\n</s:msg><msg>untyped</msg></messages></response>",
-			HttpStatusCode.BadRequest);
+				+ "<s:msg type=\"ERROR\">\n  Unknown search command 'x'.\n</s:msg><msg>untyped</msg></messages></response>");
 
 		exception.Message.Should().Be("Unknown search command 'x'.");
 		exception.Messages.Select(m => m.ToString()).Should().Equal("INFO: note", "ERROR: Unknown search command 'x'.", ": untyped");

@@ -16,7 +16,7 @@ internal static class TolerantReader
 			JsonTokenType.True => true,
 			JsonTokenType.False => false,
 			JsonTokenType.Null => null,
-			JsonTokenType.Number => reader.GetDouble() != 0,
+			JsonTokenType.Number => Math.Abs(reader.GetDouble()) > 0,
 			JsonTokenType.String => ParseBoolean(reader.GetString()!),
 			_ => throw new JsonException($"Cannot read a boolean from a JSON {reader.TokenType}.")
 		};
