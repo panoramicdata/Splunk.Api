@@ -2,13 +2,15 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Splunk.Api.svg)](https://www.nuget.org/packages/Splunk.Api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4.svg)](https://dotnet.microsoft.com/)
+[![.NET 11.0](https://img.shields.io/badge/.NET-10.0-512BD4.svg)](https://dotnet.microsoft.com/)
 [![CI](https://github.com/panoramicdata/Splunk.Api/actions/workflows/ci.yml/badge.svg)](https://github.com/panoramicdata/Splunk.Api/actions/workflows/ci.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1c76d7154abe41a4a370da2e8107f8cb)](https://app.codacy.com/gh/panoramicdata/Splunk.Api/dashboard)
 [![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/1c76d7154abe41a4a370da2e8107f8cb)](https://app.codacy.com/gh/panoramicdata/Splunk.Api/dashboard)
 
 A typed, modern .NET client for the [Splunk Enterprise REST API](https://help.splunk.com/en/splunk-enterprise/rest-api-reference/10.6/introduction/using-the-rest-api-reference)
 (version 10.6), built on Refit and System.Text.Json, plus a client for the HTTP Event Collector.
+
+Supports .NET 11.0.
 
 Splunk.Api is an independent open-source project by Panoramic Data Limited. It is not made, endorsed or supported by
 Splunk Inc. Splunk is a trademark of Splunk Inc.
@@ -19,7 +21,7 @@ Splunk Inc. Splunk is a trademark of Splunk Inc.
 dotnet add package Splunk.Api
 ```
 
-Splunk.Api targets .NET 10. The package version follows the REST API reference it implements: `10.6.x` targets
+Splunk.Api targets .NET 11.0. The package version follows the REST API reference it implements: `10.6.x` targets
 Splunk Enterprise 10.6. Most endpoints also work on earlier releases that have them.
 
 ## Quick start
