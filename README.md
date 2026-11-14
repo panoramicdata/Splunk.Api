@@ -7,6 +7,8 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1c76d7154abe41a4a370da2e8107f8cb)](https://app.codacy.com/gh/panoramicdata/Splunk.Api/dashboard)
 [![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/1c76d7154abe41a4a370da2e8107f8cb)](https://app.codacy.com/gh/panoramicdata/Splunk.Api/dashboard)
 
+> **Need help with APIs or .NET?** Panoramic Data are experts in APIs and .NET, and we can help with your development. [Contact us](https://www.panoramicdata.com/contact-us) or see our [software services](https://www.panoramicdata.com/services/software).
+
 A typed, modern .NET client for the [Splunk Enterprise REST API](https://help.splunk.com/en/splunk-enterprise/rest-api-reference/10.6/introduction/using-the-rest-api-reference)
 (version 10.6), built on Refit and System.Text.Json, plus a client for the HTTP Event Collector.
 
