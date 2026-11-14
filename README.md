@@ -2,7 +2,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Splunk.Api.svg)](https://www.nuget.org/packages/Splunk.Api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![.NET 11.0](https://img.shields.io/badge/.NET-10.0-512BD4.svg)](https://dotnet.microsoft.com/)
+[![.NET 11.0](https://img.shields.io/badge/.NET-11.0-512BD4.svg)](https://dotnet.microsoft.com/)
 [![CI](https://github.com/panoramicdata/Splunk.Api/actions/workflows/ci.yml/badge.svg)](https://github.com/panoramicdata/Splunk.Api/actions/workflows/ci.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1c76d7154abe41a4a370da2e8107f8cb)](https://app.codacy.com/gh/panoramicdata/Splunk.Api/dashboard)
 [![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/1c76d7154abe41a4a370da2e8107f8cb)](https://app.codacy.com/gh/panoramicdata/Splunk.Api/dashboard)
