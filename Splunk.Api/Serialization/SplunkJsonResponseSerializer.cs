@@ -9,7 +9,7 @@ namespace Splunk.Api.Serialization;
 /// The base of the Refit content serializers: responses are read as JSON with <see cref="SplunkJson.Options"/>; each
 /// derived serializer decides how request bodies are written.
 /// </summary>
-internal abstract class SplunkJsonResponseSerializer : IHttpContentSerializer
+internal abstract class SplunkJsonResponseSerializer : IHttpContentSerializer, IReflectionFieldNameProvider
 {
 	private readonly SystemTextJsonContentSerializer _json = new(SplunkJson.Options);
 
@@ -22,7 +22,7 @@ internal abstract class SplunkJsonResponseSerializer : IHttpContentSerializer
 
 	/// <inheritdoc />
 	public string? GetFieldNameForProperty(PropertyInfo propertyInfo)
-		=> _json.GetFieldNameForProperty(propertyInfo);
+		=> propertyInfo.GetCustomAttribute<System.Text.Json.Serialization.JsonPropertyNameAttribute>()?.Name;
 
 	/// <summary>Wraps JSON text as UTF-8 <c>application/json</c> content.</summary>
 	protected static StringContent JsonContent(string text)

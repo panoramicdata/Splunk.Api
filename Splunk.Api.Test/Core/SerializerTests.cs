@@ -82,7 +82,7 @@ public class SerializerTests
 		CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("fr-FR");
 		try
 		{
-			new SplunkUrlParameterFormatter().Format(value, typeof(SerializerTests), value?.GetType() ?? typeof(object)).Should().Be(expected);
+			new SplunkUrlParameterFormatter().Format(value, Refit.GeneratedParameterAttributeProvider.Empty, value?.GetType() ?? typeof(object)).Should().Be(expected);
 		}
 		finally
 		{
