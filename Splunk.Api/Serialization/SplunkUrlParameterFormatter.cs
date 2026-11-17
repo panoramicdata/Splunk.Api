@@ -10,7 +10,7 @@ namespace Splunk.Api.Serialization;
 internal sealed class SplunkUrlParameterFormatter : DefaultUrlParameterFormatter
 {
 	/// <inheritdoc />
-	public override string? Format(object? parameterValue, ICustomAttributeProvider attributeProvider, Type type)
+	public override string? Format(object? parameterValue, IParameterAttributeProvider attributeProvider, Type type)
 		=> parameterValue switch
 		{
 			null => null,
